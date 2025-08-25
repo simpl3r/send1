@@ -17,7 +17,7 @@ const CELO_CONTRACT_ADDRESS = '0x471EcE3750Da237f93B8E339c536989b8978a438';
 const TRANSFER_FUNCTION_SELECTOR = '0xa9059cbb';
 
 // Конфигурация API
-const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS'; // Получаем из переменных окружения Vercel
+const NEYNAR_API_KEY = 'NEYNAR_API_DOCS'; // Публичный ключ для демонстрации
 const NEYNAR_BASE_URL = 'https://api.neynar.com/v2';
 
 // DOM элементы
