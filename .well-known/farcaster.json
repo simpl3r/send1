@@ -4,8 +4,7 @@
     "header": "eyJmaWQiOjMzMzc5OSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDEzQjM3OEU2OTU2MjVhQmZGYjFFMzJEOTc4MTEzNzg2YmEwNzM3RjYifQ",
     "payload": "eyJkb21haW4iOiJzZW5kMS52ZXJjZWwuYXBwIn0",
     "signature": "TP/hFL2B/CIRfcmd81g5jIesL+Z4YNRQfUdzBlcn+ax2ebr5MSQrQ1FYvHxa1paDIX0Fsvh610nLANfYeSxv3Bw="
-  }
-}
+  },
   "name": "CELO Sender",
   "description": "Send CELO tokens via smart contract on Farcaster",
   "homeUrl": "https://send1.vercel.app/",
