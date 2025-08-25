@@ -387,33 +387,33 @@ async function searchByUsername(username) {
                     console.log('User data from Neynar:', user);
                     
                     // Согласно Farcaster архитектуре, приоритет адресов:
-                    // 1. Верифицированные Ethereum адреса (связанные с аккаунтом)
-                    // 2. Custody address (адрес контроля аккаунта)
+                    // 1. Primary Farcaster Wallet (verified_addresses.eth_addresses) - основные верифицированные адреса
+                    // 2. Custody address (адрес контроля аккаунта) - только как fallback
                     let walletAddress = null;
                     
                     console.log('User verified_addresses:', user.verified_addresses);
                     console.log('User custody_address:', user.custody_address);
                     
-                    // Проверяем верифицированные Ethereum адреса
+                    // Приоритет 1: Primary Farcaster Wallet - верифицированные Ethereum адреса
                     if (user.verified_addresses && 
                         user.verified_addresses.eth_addresses && 
                         Array.isArray(user.verified_addresses.eth_addresses) && 
                         user.verified_addresses.eth_addresses.length > 0) {
-                        // Берем первый верифицированный адрес
+                        // Берем первый верифицированный адрес - это Primary Farcaster Wallet
                         walletAddress = user.verified_addresses.eth_addresses[0];
-                        console.log('Using verified eth address:', walletAddress);
+                        console.log('Using Primary Farcaster Wallet (verified eth address):', walletAddress);
                     }
-                    // Если нет верифицированных адресов, используем custody address
+                    // Приоритет 2: Custody address как fallback
                     else if (user.custody_address && user.custody_address.startsWith('0x')) {
                         walletAddress = user.custody_address;
-                        console.log('Using custody address:', walletAddress);
+                        console.log('Using custody address as fallback:', walletAddress);
                     }
-                    // Если адресов нет, используем FID для создания детерминированного адреса
+                    // Приоритет 3: FID-based адрес как последний fallback
                     else {
                         // Создаем детерминированный адрес на основе FID
                         const fidHex = user.fid.toString(16).padStart(8, '0');
                         walletAddress = '0x' + fidHex.padEnd(40, '0');
-                        console.log('Using FID-based address:', walletAddress);
+                        console.log('Using FID-based address as last fallback:', walletAddress);
                     }
                     
                     return {
