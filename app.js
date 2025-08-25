@@ -142,8 +142,23 @@ function shortenAddress(address) {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 }
 
-// Загружаем ethers.js для работы с Ethereum
+// Загружаем ethers.js для работы с Ethereum из надежного CDN
 const script = document.createElement('script');
-script.src = 'https://cdn.ethers.io/lib/ethers-5.2.umd.min.js';
+script.src = 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js';
 script.onload = initApp;
+script.onerror = function() {
+    console.error('Не удалось загрузить ethers.js');
+    showStatus('Ошибка загрузки необходимых библиотек', 'error');
+};
 document.body.appendChild(script);
+
+// Автоматически пытаемся подключить кошелек при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Проверяем, доступен ли ethereum провайдер
+    if (window.ethereum) {
+        // Если доступен, автоматически запускаем подключение
+        setTimeout(() => {
+            connectButton.click();
+        }, 1000); // Небольшая задержка для уверенности, что все инициализировано
+    }
+});
