@@ -205,24 +205,25 @@ button:disabled {
 /* Search functionality styles */
 .search-container {
     display: flex;
-    gap: 8px;
-    align-items: center;
+    gap: 6px;
+    align-items: stretch;
 }
 
 .search-container input {
     flex: 1;
+    min-width: 0;
 }
 
 .search-btn {
     background: #56DF7C;
     border: none;
     border-radius: 6px;
-    padding: 8px 10px;
+    padding: 6px 8px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     transition: all 0.2s ease;
-    min-width: 36px;
-    height: 36px;
+    width: 32px;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
