@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1",
   "name": "CELO Sender",
   "description": "Send CELO tokens via smart contract on Farcaster",
   "homeUrl": "http://localhost:3000/",
@@ -7,7 +7,7 @@
   "splashImageUrl": "http://localhost:3000/splash.svg",
   "webhookUrl": "http://localhost:3000/webhook",
   "miniapp": {
-    "version": "1.0.0",
+    "version": "1",
     "name": "CELO Sender",
     "description": "Send CELO tokens via smart contract directly from Farcaster",
     "shortDescription": "Send CELO tokens easily",
