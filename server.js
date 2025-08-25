@@ -21,7 +21,7 @@ const server = http.createServer((req, res) => {
   let filePath;
   // Обработка специальных путей для Farcaster
   if (req.url === '/.well-known/farcaster.json') {
-    filePath = './farcaster.json';
+    filePath = './.well-known/farcaster.json';
   } else {
     // Нормализуем URL
     filePath = '.' + req.url;

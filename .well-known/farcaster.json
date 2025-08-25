@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "name": "CELO Sender",
+  "description": "Send CELO tokens via smart contract on Farcaster",
+  "homeUrl": "http://localhost:3000/",
+  "iconUrl": "http://localhost:3000/icon.svg",
+  "splashImageUrl": "http://localhost:3000/splash.svg",
+  "webhookUrl": "http://localhost:3000/webhook",
+  "miniapp": {
+    "version": "1.0.0",
+    "name": "CELO Sender",
+    "description": "Send CELO tokens via smart contract directly from Farcaster",
+    "shortDescription": "Send CELO tokens easily",
+    "category": "finance",
+    "tags": ["crypto", "celo", "transfer", "wallet"],
+    "homeUrl": "http://localhost:3000/",
+    "iconUrl": "http://localhost:3000/icon.svg",
+    "splashImageUrl": "http://localhost:3000/splash.svg",
+    "webhookUrl": "http://localhost:3000/webhook",
+    "permissions": [
+      "sign"
+    ],
+    "frames": {
+      "minWidth": 400,
+      "maxWidth": 500,
+      "minHeight": 400,
+      "maxHeight": 600
+    },
+    "developer": {
+      "name": "CELO Developer",
+      "url": "http://localhost:3000/",
+      "email": "developer@localhost"
+    },
+    "support": {
+      "url": "http://localhost:3000/support",
+      "email": "support@localhost"
+    },
+    "privacy": {
+      "policyUrl": "http://localhost:3000/privacy"
+    },
+    "terms": {
+      "serviceUrl": "http://localhost:3000/terms"
+    }
+  }
+}
