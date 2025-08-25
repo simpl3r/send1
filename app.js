@@ -16,19 +16,28 @@ const CELO_CONTRACT_ADDRESS = '0x471EcE3750Da237f93B8E339c536989b8978a438';
 // Селектор функции transfer (0xa9059cbb)
 const TRANSFER_FUNCTION_SELECTOR = '0xa9059cbb';
 
-// Элементы DOM
+// Конфигурация API
+const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS'; // Получаем из переменных окружения Vercel
+const NEYNAR_BASE_URL = 'https://api.neynar.com/v2';
+
+// DOM элементы
 const connectButton = document.getElementById('connectButton');
 const transferForm = document.getElementById('transferForm');
-const usernameSearchInput = document.getElementById('usernameSearch');
-const searchButton = document.getElementById('searchButton');
-const searchResults = document.getElementById('searchResults');
 const recipientInput = document.getElementById('recipient');
 const amountInput = document.getElementById('amount');
 const transferButton = document.getElementById('transferButton');
 const sendToMyselfButton = document.getElementById('sendToMyselfButton');
+const statusElement = document.getElementById('status');
 const increaseButton = document.getElementById('increaseButton');
 const decreaseButton = document.getElementById('decreaseButton');
-const statusElement = document.getElementById('status');
+const usernameSearchInput = document.getElementById('usernameSearch');
+const autocompleteDropdown = document.getElementById('autocompleteDropdown');
+const searchLoading = document.getElementById('searchLoading');
+
+// Переменные для автодополнения
+let searchTimeout = null;
+let currentSearchResults = [];
+let selectedIndex = -1;
 
 // Параметры сети CELO
 const CELO_NETWORK = {
@@ -72,15 +81,15 @@ function setupEventListeners() {
     sendToMyselfButton.addEventListener('click', fillMyAddress);
     increaseButton.addEventListener('click', increaseAmount);
     decreaseButton.addEventListener('click', decreaseAmount);
-    searchButton.addEventListener('click', searchUsers);
-    usernameSearchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchUsers();
-        }
-    });
-    usernameSearchInput.addEventListener('input', function() {
-        if (this.value.trim() === '') {
-            hideSearchResults();
+    // Обработчики событий для автодополнения
+    usernameSearchInput.addEventListener('input', handleSearchInput);
+    usernameSearchInput.addEventListener('keydown', handleKeyNavigation);
+    usernameSearchInput.addEventListener('focus', handleSearchFocus);
+    
+    // Скрываем выпадающий список при клике вне области
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.autocomplete-container')) {
+            hideAutocomplete();
         }
     });
 }
@@ -251,28 +260,100 @@ function shortenAddress(address) {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 }
 
-// Функции поиска пользователей
-async function searchUsers() {
-    const username = usernameSearchInput.value.trim();
-    if (!username) {
-        showStatus('Please enter a username to search', 'error');
+// Функции автодополнения
+function handleSearchInput(e) {
+    const query = e.target.value.trim();
+    
+    // Очищаем предыдущий таймер
+    if (searchTimeout) {
+        clearTimeout(searchTimeout);
+    }
+    
+    if (query.length === 0) {
+        hideAutocomplete();
         return;
     }
+    
+    if (query.length < 2) {
+        return; // Минимум 2 символа для поиска
+    }
+    
+    // Debounce - ждем 300ms после последнего ввода
+    searchTimeout = setTimeout(() => {
+        performSearch(query);
+    }, 300);
+}
 
+function handleKeyNavigation(e) {
+    const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
+    
+    if (items.length === 0) return;
+    
+    switch (e.key) {
+        case 'ArrowDown':
+            e.preventDefault();
+            selectedIndex = selectedIndex < items.length - 1 ? selectedIndex + 1 : 0;
+            updateSelection();
+            break;
+        case 'ArrowUp':
+            e.preventDefault();
+            selectedIndex = selectedIndex > 0 ? selectedIndex - 1 : items.length - 1;
+            updateSelection();
+            break;
+        case 'Enter':
+            e.preventDefault();
+            if (selectedIndex >= 0 && currentSearchResults[selectedIndex]) {
+                const user = currentSearchResults[selectedIndex];
+                selectUser(user.address, user.username, user.displayName || user.username);
+            }
+            break;
+        case 'Escape':
+            hideAutocomplete();
+            usernameSearchInput.blur();
+            break;
+    }
+}
+
+function handleSearchFocus() {
+    const query = usernameSearchInput.value.trim();
+    if (query.length >= 2 && currentSearchResults.length > 0) {
+        showAutocomplete();
+    }
+}
+
+function updateSelection(items) {
+    items.forEach((item, index) => {
+        if (index === selectedIndex) {
+            item.classList.add('selected');
+            // Прокручиваем к выбранному элементу
+            item.scrollIntoView({ block: 'nearest' });
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+}
+
+async function performSearch(query) {
+    if (!query.trim()) {
+        hideAutocomplete();
+        return;
+    }
+    
     showSearchLoading();
     
     try {
-        // Поиск через Fname Registry
-        const userInfo = await searchByUsername(username);
-        if (userInfo) {
-            displaySearchResults([userInfo]);
+        const user = await searchByUsername(query);
+        if (user) {
+            currentSearchResults = [user];
+            displayAutocompleteResults(currentSearchResults);
         } else {
+            currentSearchResults = [];
             showNoResults();
         }
     } catch (error) {
         console.error('Search error:', error);
-        showStatus('Error searching for users', 'error');
-        hideSearchResults();
+        showStatus('Search failed. Please try again.', 'error');
+        hideAutocomplete();
     }
 }
 
@@ -281,17 +362,16 @@ async function searchByUsername(username) {
         // Убираем @ если есть
         const cleanUsername = username.replace('@', '').toLowerCase();
         
-        // Используем публичный Neynar API endpoint согласно документации Farcaster
-        // Farcaster рекомендует использовать Neynar для запросов к Snapchain
+        // Используем Neynar API с конфигурированными переменными
         try {
-            console.log('Searching user via Neynar public API:', cleanUsername);
+            console.log('Searching user via Neynar API:', cleanUsername);
             
-            // Используем публичный endpoint без API ключа для демонстрации
-            const response = await fetch(`https://api.neynar.com/v2/farcaster/user/by_username?username=${cleanUsername}`, {
+            // Используем конфигурированные переменные для API запроса
+            const response = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/by_username?username=${cleanUsername}`, {
                 method: 'GET',
                 headers: {
-                    'Accept': 'application/json'
-                    // Убираем API ключ для использования публичного доступа
+                    'Accept': 'application/json',
+                    'api_key': NEYNAR_API_KEY
                 }
             });
             
@@ -423,28 +503,41 @@ async function searchByUsername(username) {
 }
 
 function showSearchLoading() {
-    searchResults.style.display = 'block';
-    searchResults.innerHTML = '<div class="search-loading">Searching...</div>';
+    searchLoading.style.display = 'block';
+    autocompleteDropdown.style.display = 'none';
 }
 
 function showNoResults() {
-    searchResults.style.display = 'block';
-    searchResults.innerHTML = '<div class="search-no-results">No users found</div>';
+    searchLoading.style.display = 'none';
+    autocompleteDropdown.style.display = 'block';
+    autocompleteDropdown.innerHTML = '<div class="autocomplete-no-results">No users found</div>';
+    selectedIndex = -1;
 }
 
-function hideSearchResults() {
-    searchResults.style.display = 'none';
-    searchResults.innerHTML = '';
+function hideAutocomplete() {
+    searchLoading.style.display = 'none';
+    autocompleteDropdown.style.display = 'none';
+    autocompleteDropdown.innerHTML = '';
+    selectedIndex = -1;
 }
 
-function displaySearchResults(users) {
+function showAutocomplete() {
+    if (currentSearchResults.length > 0) {
+        autocompleteDropdown.style.display = 'block';
+    }
+}
+
+function displayAutocompleteResults(users) {
     if (!users || users.length === 0) {
         showNoResults();
         return;
     }
 
-    searchResults.style.display = 'block';
-    searchResults.innerHTML = users.map((user, index) => {
+    searchLoading.style.display = 'none';
+    autocompleteDropdown.style.display = 'block';
+    selectedIndex = -1;
+    
+    autocompleteDropdown.innerHTML = users.map((user, index) => {
         // Используем pfpUrl если доступен, иначе первую букву username
         const avatarContent = user.pfpUrl 
             ? `<img src="${user.pfpUrl}" alt="${user.username}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` 
@@ -454,18 +547,21 @@ function displaySearchResults(users) {
         const displayName = user.displayName || user.username;
         
         return `
-            <div class="search-result-item" data-user-index="${index}">
-                <div class="search-result-avatar">${avatarContent}</div>
-                <div class="search-result-info">
-                    <div class="search-result-username">${displayName}</div>
-                    <div class="search-result-address">@${user.username} • ${shortenAddress(user.address)}</div>
+            <div class="autocomplete-item" data-user-index="${index}">
+                <div class="autocomplete-avatar">${avatarContent}</div>
+                <div class="autocomplete-info">
+                    <div class="autocomplete-username">${displayName}</div>
+                    <div class="autocomplete-details">
+                        <span class="autocomplete-handle">@${user.username}</span>
+                        <span class="autocomplete-address">${shortenAddress(user.address)}</span>
+                    </div>
                 </div>
             </div>
         `;
     }).join('');
     
     // Добавляем обработчики событий для каждого элемента результата
-    const resultItems = searchResults.querySelectorAll('.search-result-item');
+    const resultItems = autocompleteDropdown.querySelectorAll('.autocomplete-item');
     resultItems.forEach((item, index) => {
         item.addEventListener('click', () => {
             const user = users[index];
@@ -475,21 +571,26 @@ function displaySearchResults(users) {
 }
 
 function selectUser(address, username, displayName) {
-    console.log('selectUser called with:', { address, username, displayName });
+    console.log('Selecting user:', { address, username, displayName });
     
-    if (!address || address === 'undefined' || address === 'null') {
-        console.error('Invalid address provided to selectUser:', address);
-        showStatus('Error: Invalid wallet address', 'error');
+    // Проверяем, что адрес валидный
+    if (!address || !ethers.isAddress(address)) {
+        console.error('Invalid address provided:', address);
+        showStatus('Invalid user address', 'error');
         return;
     }
     
+    // Устанавливаем адрес в поле получателя
     recipientInput.value = address;
-    console.log('Recipient input value set to:', recipientInput.value);
     
-    hideSearchResults();
-    usernameSearchInput.value = '';
-    const name = displayName || username;
-    showStatus(`Selected ${name} (@${username}) - ${shortenAddress(address)}`, 'success');
+    // Устанавливаем выбранного пользователя в поле поиска
+    usernameSearchInput.value = displayName || username;
+    
+    // Скрываем автодополнение
+    hideAutocomplete();
+    
+    // Показываем статус
+    showStatus(`Selected user: ${displayName || username} (${shortenAddress(address)})`, 'success');
 }
 
 // Загружаем ethers.js для работы с Ethereum из надежного CDN
