@@ -279,23 +279,32 @@ async function searchUsers() {
 async function searchByUsername(username) {
     try {
         // Убираем @ если есть
-        const cleanUsername = username.replace('@', '');
+        const cleanUsername = username.replace('@', '').toLowerCase();
         
-        // Поиск через Fname Registry
-        const response = await fetch(`https://fnames.farcaster.xyz/transfers/current?name=${cleanUsername}`);
+        // Поиск через Fname Registry API
+        const response = await fetch(`https://fnames.farcaster.xyz/transfers?name=${cleanUsername}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
         
         if (!response.ok) {
-            throw new Error('Username not found');
+            console.log('API response not ok:', response.status, response.statusText);
+            throw new Error(`API Error: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log('API response data:', data);
         
         if (data.transfers && data.transfers.length > 0) {
-            const transfer = data.transfers[0];
+            // Берем последний (самый актуальный) трансфер
+            const transfer = data.transfers[data.transfers.length - 1];
             return {
-                username: transfer.username,
+                username: cleanUsername,
                 fid: transfer.to,
-                address: transfer.owner
+                address: transfer.owner || transfer.to
             };
         }
         

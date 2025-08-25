@@ -217,15 +217,16 @@ button:disabled {
     background: #56DF7C;
     border: none;
     border-radius: 6px;
-    padding: 10px 12px;
+    padding: 8px 10px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     transition: all 0.2s ease;
-    min-width: 44px;
-    height: 44px;
+    min-width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .search-btn:hover {
