@@ -1,0 +1,14 @@
+{
+  "name": "CELO Transfer",
+  "description": "Отправка токенов CELO через контракт",
+  "version": "1.0.0",
+  "frames": {
+    "minWidth": 400,
+    "maxWidth": 500,
+    "minHeight": 400,
+    "maxHeight": 600
+  },
+  "permissions": [
+    "sign"
+  ]
+}
