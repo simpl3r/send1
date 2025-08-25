@@ -281,7 +281,44 @@ async function searchByUsername(username) {
         // Убираем @ если есть
         const cleanUsername = username.replace('@', '').toLowerCase();
         
-        // Попробуем несколько API endpoints
+        // Используем Neynar API для получения полной информации о пользователе
+        try {
+            console.log('Searching user via Neynar API:', cleanUsername);
+            const response = await fetch(`https://api.neynar.com/v2/farcaster/user/by_username?username=${cleanUsername}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'x-api-key': 'NEYNAR_API_DOCS_KEY' // Публичный ключ для демонстрации
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Neynar API response:', data);
+                
+                if (data.user) {
+                    const user = data.user;
+                    // Получаем первый верифицированный Ethereum адрес или custody address
+                    let walletAddress = user.custody_address;
+                    
+                    if (user.verified_addresses && user.verified_addresses.eth_addresses && user.verified_addresses.eth_addresses.length > 0) {
+                        walletAddress = user.verified_addresses.eth_addresses[0];
+                    }
+                    
+                    return {
+                        username: user.username,
+                        fid: user.fid,
+                        address: walletAddress,
+                        displayName: user.display_name,
+                        pfpUrl: user.pfp_url
+                    };
+                }
+            }
+        } catch (neynarError) {
+            console.log('Neynar API failed, trying fallback:', neynarError);
+        }
+        
+        // Fallback к старому API если Neynar не работает
         const endpoints = [
             `https://fnames.farcaster.xyz/transfers/current?name=${cleanUsername}`,
             `https://fnames.farcaster.xyz/transfers?name=${cleanUsername}`
@@ -289,7 +326,7 @@ async function searchByUsername(username) {
         
         for (const endpoint of endpoints) {
             try {
-                console.log('Trying endpoint:', endpoint);
+                console.log('Trying fallback endpoint:', endpoint);
                 const response = await fetch(endpoint, {
                     method: 'GET',
                     headers: {
@@ -299,7 +336,7 @@ async function searchByUsername(username) {
                 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('API response data:', data);
+                    console.log('Fallback API response data:', data);
                     
                     // Обработка разных форматов ответа
                     if (data.transfers && data.transfers.length > 0) {
@@ -361,24 +398,32 @@ function displaySearchResults(users) {
 
     searchResults.style.display = 'block';
     searchResults.innerHTML = users.map(user => {
-        const avatar = user.username.charAt(0).toUpperCase();
+        // Используем pfpUrl если доступен, иначе первую букву username
+        const avatarContent = user.pfpUrl 
+            ? `<img src="${user.pfpUrl}" alt="${user.username}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` 
+            : user.username.charAt(0).toUpperCase();
+        
+        // Используем displayName если доступен, иначе username
+        const displayName = user.displayName || user.username;
+        
         return `
-            <div class="search-result-item" onclick="selectUser('${user.address}', '${user.username}')">
-                <div class="search-result-avatar">${avatar}</div>
+            <div class="search-result-item" onclick="selectUser('${user.address}', '${user.username}', '${displayName}')">
+                <div class="search-result-avatar">${avatarContent}</div>
                 <div class="search-result-info">
-                    <div class="search-result-username">@${user.username}</div>
-                    <div class="search-result-address">${shortenAddress(user.address)}</div>
+                    <div class="search-result-username">${displayName}</div>
+                    <div class="search-result-address">@${user.username} • ${shortenAddress(user.address)}</div>
                 </div>
             </div>
         `;
     }).join('');
 }
 
-function selectUser(address, username) {
+function selectUser(address, username, displayName) {
     recipientInput.value = address;
     hideSearchResults();
     usernameSearchInput.value = '';
-    showStatus(`Selected @${username} (${shortenAddress(address)})`, 'success');
+    const name = displayName || username;
+    showStatus(`Selected ${name} (@${username}) - ${shortenAddress(address)}`, 'success');
 }
 
 // Загружаем ethers.js для работы с Ethereum из надежного CDN
