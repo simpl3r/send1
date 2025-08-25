@@ -343,9 +343,9 @@ async function performSearch(query) {
     showSearchLoading();
     
     try {
-        const user = await searchByUsername(query);
-        if (user) {
-            currentSearchResults = [user];
+        const users = await searchMultipleUsers(query);
+        if (users && users.length > 0) {
+            currentSearchResults = users;
             displayAutocompleteResults(currentSearchResults);
         } else {
             currentSearchResults = [];
@@ -355,6 +355,91 @@ async function performSearch(query) {
         console.error('Search error:', error);
         showStatus('Search failed. Please try again.', 'error');
         hideAutocomplete();
+    }
+}
+
+// Новая функция для поиска множественных пользователей
+async function searchMultipleUsers(query) {
+    try {
+        // Убираем @ если есть
+        const cleanQuery = query.replace('@', '').toLowerCase();
+        
+        console.log('Searching multiple users via Neynar API:', cleanQuery);
+        
+        // Используем Neynar API search endpoint для множественных результатов
+        const response = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/search?q=${encodeURIComponent(cleanQuery)}&limit=10`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'api_key': NEYNAR_API_KEY
+            }
+        });
+        
+        console.log('Neynar search API response status:', response.status);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Neynar search API response:', data);
+            
+            if (data.result && data.result.users && data.result.users.length > 0) {
+                const users = data.result.users.map(user => {
+                    console.log('Processing user from search:', user);
+                    
+                    // Приоритет адресов для Primary Farcaster Wallet:
+                    let walletAddress = null;
+                    
+                    // Приоритет 1: verified_addresses.primary.eth_address - Primary Farcaster Wallet
+                    if (user.verified_addresses && 
+                        user.verified_addresses.primary && 
+                        user.verified_addresses.primary.eth_address) {
+                        walletAddress = user.verified_addresses.primary.eth_address;
+                        console.log('Using primary verified eth address:', walletAddress);
+                    }
+                    // Приоритет 2: Первый адрес из verified_addresses.eth_addresses как fallback
+                    else if (user.verified_addresses && 
+                            user.verified_addresses.eth_addresses && 
+                            user.verified_addresses.eth_addresses.length > 0) {
+                        walletAddress = user.verified_addresses.eth_addresses[0];
+                        console.log('Using first verified eth address as fallback:', walletAddress);
+                    }
+                    // Приоритет 3: Custody address как дополнительный fallback
+                    else if (user.custody_address && user.custody_address.startsWith('0x')) {
+                        walletAddress = user.custody_address;
+                        console.log('Using custody address as fallback:', walletAddress);
+                    }
+                    // Приоритет 4: FID-based адрес как последний fallback
+                    else {
+                        const fidHex = user.fid.toString(16).padStart(8, '0');
+                        walletAddress = '0x' + fidHex.padEnd(40, '0');
+                        console.log('Using FID-based address as last fallback:', walletAddress);
+                    }
+                    
+                    return {
+                        username: user.username,
+                        fid: user.fid,
+                        address: walletAddress,
+                        displayName: user.display_name,
+                        pfpUrl: user.pfp_url
+                    };
+                });
+                
+                console.log('Processed users:', users);
+                return users;
+            }
+        } else {
+            console.log('Neynar search API failed with status:', response.status);
+        }
+        
+        // Fallback: если поиск не дал результатов, попробуем точный поиск по username
+        console.log('Falling back to exact username search');
+        const exactUser = await searchByUsername(cleanQuery);
+        return exactUser ? [exactUser] : [];
+        
+    } catch (error) {
+        console.error('Error in searchMultipleUsers:', error);
+        // Fallback к старой функции при ошибке
+        const exactUser = await searchByUsername(query);
+        return exactUser ? [exactUser] : [];
     }
 }
 
