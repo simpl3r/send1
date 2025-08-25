@@ -1,6 +1,6 @@
 {
   "name": "CELO Transfer",
-  "description": "Отправка токенов CELO через контракт",
+  "description": "Send CELO tokens via smart contract",
   "version": "1.0.0",
   "frames": {
     "minWidth": 400,

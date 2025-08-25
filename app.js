@@ -22,7 +22,23 @@ const transferForm = document.getElementById('transferForm');
 const recipientInput = document.getElementById('recipient');
 const amountInput = document.getElementById('amount');
 const transferButton = document.getElementById('transferButton');
+const sendToMyselfButton = document.getElementById('sendToMyselfButton');
+const increaseButton = document.getElementById('increaseButton');
+const decreaseButton = document.getElementById('decreaseButton');
 const statusElement = document.getElementById('status');
+
+// Параметры сети CELO
+const CELO_NETWORK = {
+    chainId: '0xa4ec', // 42220 в hex
+    chainName: 'Celo Mainnet',
+    nativeCurrency: {
+        name: 'CELO',
+        symbol: 'CELO',
+        decimals: 18
+    },
+    rpcUrls: ['https://forno.celo.org'],
+    blockExplorerUrls: ['https://explorer.celo.org']
+};
 
 // Состояние приложения
 let userAccount = null;
@@ -36,14 +52,14 @@ async function initApp() {
             provider = window.ethereum;
             console.log('Ethereum provider найден');
         } else {
-            showStatus('Для работы приложения требуется MetaMask или другой Ethereum кошелек', 'error');
+            showStatus('MetaMask or another Ethereum wallet is required for the app to work', 'error');
         }
         
         // Настраиваем обработчики событий
         setupEventListeners();
     } catch (error) {
         console.error('Ошибка инициализации:', error);
-        showStatus('Ошибка инициализации приложения', 'error');
+        showStatus('Application initialization error', 'error');
     }
 }
 
@@ -51,26 +67,80 @@ async function initApp() {
 function setupEventListeners() {
     connectButton.addEventListener('click', connectWallet);
     transferButton.addEventListener('click', sendTransaction);
+    sendToMyselfButton.addEventListener('click', fillMyAddress);
+    increaseButton.addEventListener('click', increaseAmount);
+    decreaseButton.addEventListener('click', decreaseAmount);
 }
 
 // Подключение к кошельку
 async function connectWallet() {
     try {
-        showStatus('Подключение к кошельку...', '');
+        showStatus('Connecting to wallet...', '');
         
         // Запрашиваем доступ к аккаунтам пользователя
         const accounts = await provider.request({ method: 'eth_requestAccounts' });
         userAccount = accounts[0];
         
-        showStatus(`Кошелек подключен: ${shortenAddress(userAccount)}`, 'success');
+        // Автоматически переключаемся на сеть CELO
+        await switchToCeloNetwork();
+        
+        showStatus(`Wallet connected: ${shortenAddress(userAccount)}`, 'success');
         
         // Показываем форму для отправки CELO
         connectButton.style.display = 'none';
         transferForm.style.display = 'block';
     } catch (error) {
         console.error('Ошибка подключения к кошельку:', error);
-        showStatus('Не удалось подключиться к кошельку', 'error');
+        showStatus('Failed to connect to wallet', 'error');
     }
+}
+
+// Переключение на сеть CELO
+async function switchToCeloNetwork() {
+    try {
+        // Пытаемся переключиться на сеть CELO
+        await provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: CELO_NETWORK.chainId }],
+        });
+    } catch (switchError) {
+        // Если сеть не найдена, добавляем её
+        if (switchError.code === 4902) {
+            try {
+                await provider.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [CELO_NETWORK],
+                });
+            } catch (addError) {
+                console.error('Ошибка добавления сети CELO:', addError);
+                showStatus('Failed to add CELO network', 'error');
+            }
+        } else {
+            console.error('Ошибка переключения на сеть CELO:', switchError);
+            showStatus('Failed to switch to CELO network', 'error');
+        }
+    }
+}
+
+// Заполнение адреса текущего пользователя
+function fillMyAddress() {
+    if (userAccount) {
+        recipientInput.value = userAccount;
+    }
+}
+
+// Увеличение количества
+function increaseAmount() {
+    const currentValue = parseFloat(amountInput.value) || 0;
+    const newValue = (currentValue + 0.001).toFixed(3);
+    amountInput.value = newValue;
+}
+
+// Уменьшение количества
+function decreaseAmount() {
+    const currentValue = parseFloat(amountInput.value) || 0;
+    const newValue = Math.max(0.001, currentValue - 0.001).toFixed(3);
+    amountInput.value = newValue;
 }
 
 // Отправка транзакции
@@ -81,30 +151,35 @@ async function sendTransaction() {
         const amount = amountInput.value.trim();
         
         if (!recipient || !amount) {
-            showStatus('Пожалуйста, заполните все поля', 'error');
+            showStatus('Please fill in all fields', 'error');
             return;
         }
         
         if (!recipient.startsWith('0x') || recipient.length !== 42) {
-            showStatus('Неверный формат адреса получателя', 'error');
+            showStatus('Invalid recipient address format', 'error');
             return;
         }
         
         if (parseFloat(amount) <= 0) {
-            showStatus('Сумма должна быть больше нуля', 'error');
+            showStatus('Amount must be greater than zero', 'error');
             return;
         }
         
-        showStatus('Подготовка транзакции...', '');
+        showStatus('Preparing transaction...', '');
         
         // Конвертируем сумму в wei (18 десятичных знаков для CELO)
-        const amountInWei = ethers.utils.parseUnits(amount, 18).toString();
+        const amountInWei = ethers.utils.parseUnits(amount, 18);
         
         // Кодируем данные для вызова функции transfer
         // Функция transfer принимает два параметра: адрес получателя и сумму
         const paddedAddress = recipient.slice(2).padStart(64, '0');
-        const paddedAmount = amountInWei.toString(16).padStart(64, '0');
+        const paddedAmount = amountInWei.toHexString().slice(2).padStart(64, '0');
         const data = `${TRANSFER_FUNCTION_SELECTOR}${paddedAddress}${paddedAmount}`;
+        
+        console.log('Amount:', amount);
+        console.log('Amount in Wei:', amountInWei.toString());
+        console.log('Padded Amount:', paddedAmount);
+        console.log('Transaction data:', data);
         
         // Создаем транзакцию
         const transactionParameters = {
@@ -114,7 +189,7 @@ async function sendTransaction() {
             gas: '0x30D40', // 200,000 gas
         };
         
-        showStatus('Подтвердите транзакцию в вашем кошельке...', '');
+        showStatus('Confirm transaction in your wallet...', '');
         
         // Отправляем транзакцию
         const txHash = await provider.request({
@@ -122,10 +197,10 @@ async function sendTransaction() {
             params: [transactionParameters],
         });
         
-        showStatus(`Транзакция отправлена! Хэш: ${txHash}`, 'success');
+        showStatus(`Transaction sent! Hash: ${txHash}`, 'success');
     } catch (error) {
         console.error('Ошибка отправки транзакции:', error);
-        showStatus('Ошибка отправки транзакции', 'error');
+        showStatus('Error sending transaction', 'error');
     }
 }
 
@@ -148,7 +223,7 @@ script.src = 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js';
 script.onload = initApp;
 script.onerror = function() {
     console.error('Не удалось загрузить ethers.js');
-    showStatus('Ошибка загрузки необходимых библиотек', 'error');
+    showStatus('Error loading required libraries', 'error');
 };
 document.body.appendChild(script);
 
