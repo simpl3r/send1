@@ -444,7 +444,7 @@ function displaySearchResults(users) {
     }
 
     searchResults.style.display = 'block';
-    searchResults.innerHTML = users.map(user => {
+    searchResults.innerHTML = users.map((user, index) => {
         // Используем pfpUrl если доступен, иначе первую букву username
         const avatarContent = user.pfpUrl 
             ? `<img src="${user.pfpUrl}" alt="${user.username}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` 
@@ -454,7 +454,7 @@ function displaySearchResults(users) {
         const displayName = user.displayName || user.username;
         
         return `
-            <div class="search-result-item" onclick="selectUser('${user.address}', '${user.username}', '${displayName}')">
+            <div class="search-result-item" data-user-index="${index}">
                 <div class="search-result-avatar">${avatarContent}</div>
                 <div class="search-result-info">
                     <div class="search-result-username">${displayName}</div>
@@ -463,6 +463,15 @@ function displaySearchResults(users) {
             </div>
         `;
     }).join('');
+    
+    // Добавляем обработчики событий для каждого элемента результата
+    const resultItems = searchResults.querySelectorAll('.search-result-item');
+    resultItems.forEach((item, index) => {
+        item.addEventListener('click', () => {
+            const user = users[index];
+            selectUser(user.address, user.username, user.displayName || user.username);
+        });
+    });
 }
 
 function selectUser(address, username, displayName) {
