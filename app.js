@@ -47,16 +47,15 @@ let provider = null;
 // Инициализация приложения
 async function initApp() {
     try {
-        // Проверяем, доступен ли ethereum провайдер
-        if (window.ethereum) {
-            provider = window.ethereum;
-            console.log('Ethereum provider найден');
-        } else {
-            showStatus('MetaMask or another Ethereum wallet is required for the app to work', 'error');
-        }
+        // Получаем Ethereum провайдер из Farcaster SDK
+        provider = await sdk.wallet.getEthereumProvider();
+        console.log('Farcaster Ethereum provider получен');
         
         // Настраиваем обработчики событий
         setupEventListeners();
+        
+        // Автоматически проверяем подключение кошелька
+        await checkWalletConnection();
     } catch (error) {
         console.error('Ошибка инициализации:', error);
         showStatus('Application initialization error', 'error');
@@ -70,6 +69,27 @@ function setupEventListeners() {
     sendToMyselfButton.addEventListener('click', fillMyAddress);
     increaseButton.addEventListener('click', increaseAmount);
     decreaseButton.addEventListener('click', decreaseAmount);
+}
+
+// Проверка подключения кошелька
+async function checkWalletConnection() {
+    try {
+        // Проверяем, есть ли уже подключенные аккаунты
+        const accounts = await provider.request({ method: 'eth_accounts' });
+        
+        if (accounts && accounts.length > 0) {
+            userAccount = accounts[0];
+            await switchToCeloNetwork();
+            showStatus(`Wallet connected: ${shortenAddress(userAccount)}`, 'success');
+            connectButton.style.display = 'none';
+            transferForm.style.display = 'block';
+        } else {
+            showStatus('Please connect your wallet', '');
+        }
+    } catch (error) {
+        console.error('Ошибка проверки подключения кошелька:', error);
+        showStatus('Please connect your wallet', '');
+    }
 }
 
 // Подключение к кошельку
