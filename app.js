@@ -19,6 +19,9 @@ const TRANSFER_FUNCTION_SELECTOR = '0xa9059cbb';
 // Элементы DOM
 const connectButton = document.getElementById('connectButton');
 const transferForm = document.getElementById('transferForm');
+const usernameSearchInput = document.getElementById('usernameSearch');
+const searchButton = document.getElementById('searchButton');
+const searchResults = document.getElementById('searchResults');
 const recipientInput = document.getElementById('recipient');
 const amountInput = document.getElementById('amount');
 const transferButton = document.getElementById('transferButton');
@@ -69,6 +72,17 @@ function setupEventListeners() {
     sendToMyselfButton.addEventListener('click', fillMyAddress);
     increaseButton.addEventListener('click', increaseAmount);
     decreaseButton.addEventListener('click', decreaseAmount);
+    searchButton.addEventListener('click', searchUsers);
+    usernameSearchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchUsers();
+        }
+    });
+    usernameSearchInput.addEventListener('input', function() {
+        if (this.value.trim() === '') {
+            hideSearchResults();
+        }
+    });
 }
 
 // Проверка подключения кошелька
@@ -235,6 +249,104 @@ function showStatus(message, type) {
 
 function shortenAddress(address) {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+}
+
+// Функции поиска пользователей
+async function searchUsers() {
+    const username = usernameSearchInput.value.trim();
+    if (!username) {
+        showStatus('Please enter a username to search', 'error');
+        return;
+    }
+
+    showSearchLoading();
+    
+    try {
+        // Поиск через Fname Registry
+        const userInfo = await searchByUsername(username);
+        if (userInfo) {
+            displaySearchResults([userInfo]);
+        } else {
+            showNoResults();
+        }
+    } catch (error) {
+        console.error('Search error:', error);
+        showStatus('Error searching for users', 'error');
+        hideSearchResults();
+    }
+}
+
+async function searchByUsername(username) {
+    try {
+        // Убираем @ если есть
+        const cleanUsername = username.replace('@', '');
+        
+        // Поиск через Fname Registry
+        const response = await fetch(`https://fnames.farcaster.xyz/transfers/current?name=${cleanUsername}`);
+        
+        if (!response.ok) {
+            throw new Error('Username not found');
+        }
+        
+        const data = await response.json();
+        
+        if (data.transfers && data.transfers.length > 0) {
+            const transfer = data.transfers[0];
+            return {
+                username: transfer.username,
+                fid: transfer.to,
+                address: transfer.owner
+            };
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('Error searching username:', error);
+        return null;
+    }
+}
+
+function showSearchLoading() {
+    searchResults.style.display = 'block';
+    searchResults.innerHTML = '<div class="search-loading">Searching...</div>';
+}
+
+function showNoResults() {
+    searchResults.style.display = 'block';
+    searchResults.innerHTML = '<div class="search-no-results">No users found</div>';
+}
+
+function hideSearchResults() {
+    searchResults.style.display = 'none';
+    searchResults.innerHTML = '';
+}
+
+function displaySearchResults(users) {
+    if (!users || users.length === 0) {
+        showNoResults();
+        return;
+    }
+
+    searchResults.style.display = 'block';
+    searchResults.innerHTML = users.map(user => {
+        const avatar = user.username.charAt(0).toUpperCase();
+        return `
+            <div class="search-result-item" onclick="selectUser('${user.address}', '${user.username}')">
+                <div class="search-result-avatar">${avatar}</div>
+                <div class="search-result-info">
+                    <div class="search-result-username">@${user.username}</div>
+                    <div class="search-result-address">${shortenAddress(user.address)}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function selectUser(address, username) {
+    recipientInput.value = address;
+    hideSearchResults();
+    usernameSearchInput.value = '';
+    showStatus(`Selected @${username} (${shortenAddress(address)})`, 'success');
 }
 
 // Загружаем ethers.js для работы с Ethereum из надежного CDN

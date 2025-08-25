@@ -202,6 +202,108 @@ button:disabled {
     gap: 2px;
 }
 
+/* Search functionality styles */
+.search-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.search-container input {
+    flex: 1;
+}
+
+.search-btn {
+    background: #56DF7C;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    min-width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-btn:hover {
+    background: #4BC96B;
+    transform: translateY(-1px);
+}
+
+.search-results {
+    margin-top: 8px;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    background: white;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.search-result-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #56DF7C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.search-result-info {
+    flex: 1;
+    text-align: left;
+}
+
+.search-result-username {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.search-result-address {
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+}
+
+.search-loading {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
+
+.search-no-results {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 14px;
+}
+
 /* Responsive design */
 @media (max-width: 480px) {
     body {
@@ -216,5 +318,11 @@ button:disabled {
     h1 {
         font-size: 24px;
         margin-bottom: 16px;
+    }
+    
+    .search-btn {
+        min-width: 40px;
+        height: 40px;
+        font-size: 14px;
     }
 }
