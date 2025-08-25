@@ -321,7 +321,8 @@ function handleSearchFocus() {
     }
 }
 
-function updateSelection(items) {
+function updateSelection() {
+    const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
     items.forEach((item, index) => {
         if (index === selectedIndex) {
             item.classList.add('selected');
@@ -390,13 +391,20 @@ async function searchByUsername(username) {
                     // 2. Custody address (адрес контроля аккаунта)
                     let walletAddress = null;
                     
+                    console.log('User verified_addresses:', user.verified_addresses);
+                    console.log('User custody_address:', user.custody_address);
+                    
                     // Проверяем верифицированные Ethereum адреса
-                    if (user.verified_addresses && user.verified_addresses.eth_addresses && user.verified_addresses.eth_addresses.length > 0) {
+                    if (user.verified_addresses && 
+                        user.verified_addresses.eth_addresses && 
+                        Array.isArray(user.verified_addresses.eth_addresses) && 
+                        user.verified_addresses.eth_addresses.length > 0) {
+                        // Берем первый верифицированный адрес
                         walletAddress = user.verified_addresses.eth_addresses[0];
                         console.log('Using verified eth address:', walletAddress);
                     }
                     // Если нет верифицированных адресов, используем custody address
-                    else if (user.custody_address) {
+                    else if (user.custody_address && user.custody_address.startsWith('0x')) {
                         walletAddress = user.custody_address;
                         console.log('Using custody address:', walletAddress);
                     }
@@ -573,8 +581,8 @@ function displayAutocompleteResults(users) {
 function selectUser(address, username, displayName) {
     console.log('Selecting user:', { address, username, displayName });
     
-    // Проверяем, что адрес валидный
-    if (!address || !ethers.isAddress(address)) {
+    // Проверяем, что адрес валидный (простая проверка формата)
+    if (!address || !address.startsWith('0x') || address.length !== 42) {
         console.error('Invalid address provided:', address);
         showStatus('Invalid user address', 'error');
         return;
