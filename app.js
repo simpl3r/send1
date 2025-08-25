@@ -387,26 +387,25 @@ async function searchByUsername(username) {
                     console.log('User data from Neynar:', user);
                     
                     // Согласно Farcaster архитектуре, приоритет адресов:
-                    // 1. Primary Farcaster Wallet (verified_addresses.eth_addresses) - основные верифицированные адреса
-                    // 2. Custody address (адрес контроля аккаунта) - только как fallback
+                    // 1. Custody address (адрес контроля Farcaster аккаунта) - это Farcaster wallet
+                    // 2. Verified addresses (основные кошельки пользователя) - как fallback
                     let walletAddress = null;
                     
-                    console.log('User verified_addresses:', user.verified_addresses);
                     console.log('User custody_address:', user.custody_address);
+                    console.log('User verified_addresses:', user.verified_addresses);
                     
-                    // Приоритет 1: Primary Farcaster Wallet - верифицированные Ethereum адреса
-                    if (user.verified_addresses && 
+                    // Приоритет 1: Custody address - это Farcaster wallet
+                    if (user.custody_address && user.custody_address.startsWith('0x')) {
+                        walletAddress = user.custody_address;
+                        console.log('Using Farcaster wallet (custody address):', walletAddress);
+                    }
+                    // Приоритет 2: Верифицированные Ethereum адреса как fallback
+                    else if (user.verified_addresses && 
                         user.verified_addresses.eth_addresses && 
                         Array.isArray(user.verified_addresses.eth_addresses) && 
                         user.verified_addresses.eth_addresses.length > 0) {
-                        // Берем первый верифицированный адрес - это Primary Farcaster Wallet
                         walletAddress = user.verified_addresses.eth_addresses[0];
-                        console.log('Using Primary Farcaster Wallet (verified eth address):', walletAddress);
-                    }
-                    // Приоритет 2: Custody address как fallback
-                    else if (user.custody_address && user.custody_address.startsWith('0x')) {
-                        walletAddress = user.custody_address;
-                        console.log('Using custody address as fallback:', walletAddress);
+                        console.log('Using verified eth address as fallback:', walletAddress);
                     }
                     // Приоритет 3: FID-based адрес как последний fallback
                     else {
