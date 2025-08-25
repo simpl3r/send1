@@ -1,0 +1,10 @@
+<svg width="400" height="600" viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="600" fill="#FCFF52"/>
+  <circle cx="200" cy="250" r="100" fill="#000000"/>
+  <circle cx="200" cy="250" r="75" fill="#FCFF52"/>
+  <path d="M175 225 L225 225 L225 250 L175 250 Z" fill="#000000"/>
+  <path d="M175 250 L225 250 L225 275 L175 275 Z" fill="#000000"/>
+  <text x="200" y="400" text-anchor="middle" fill="#000000" font-family="Arial, sans-serif" font-size="36" font-weight="bold">CELO Sender</text>
+  <text x="200" y="450" text-anchor="middle" fill="#000000" font-family="Arial, sans-serif" font-size="18">Send CELO tokens via smart contract</text>
+  <text x="200" y="500" text-anchor="middle" fill="#000000" font-family="Arial, sans-serif" font-size="14" opacity="0.8">Powered by Farcaster</text>
+</svg>

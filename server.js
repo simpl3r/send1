@@ -18,10 +18,16 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   console.log(`${req.method} ${req.url}`);
 
-  // Нормализуем URL
-  let filePath = '.' + req.url;
-  if (filePath === './') {
-    filePath = './index.html';
+  let filePath;
+  // Обработка специальных путей для Farcaster
+  if (req.url === '/.well-known/farcaster.json') {
+    filePath = './farcaster.json';
+  } else {
+    // Нормализуем URL
+    filePath = '.' + req.url;
+    if (filePath === './') {
+      filePath = './index.html';
+    }
   }
 
   // Получаем расширение файла

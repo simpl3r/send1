@@ -1,5 +1,5 @@
 {
-  "name": "CELO Transfer",
+  "name": "CELO Sender",
   "description": "Send CELO tokens via smart contract",
   "version": "1.0.0",
   "frames": {
