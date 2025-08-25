@@ -235,6 +235,7 @@ button:disabled {
     border-radius: 8px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     max-height: 320px;
+    min-height: 60px;
     overflow-y: auto;
     z-index: 1000;
     margin-top: 4px;
