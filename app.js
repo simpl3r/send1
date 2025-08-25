@@ -298,11 +298,25 @@ async function searchByUsername(username) {
                 
                 if (data.user) {
                     const user = data.user;
-                    // Получаем первый верифицированный Ethereum адрес или custody address
-                    let walletAddress = user.custody_address;
+                    console.log('User data from Neynar:', user);
                     
+                    // Получаем адрес в порядке приоритета: verified eth address -> custody address -> fallback
+                    let walletAddress = null;
+                    
+                    // Проверяем верифицированные Ethereum адреса
                     if (user.verified_addresses && user.verified_addresses.eth_addresses && user.verified_addresses.eth_addresses.length > 0) {
                         walletAddress = user.verified_addresses.eth_addresses[0];
+                        console.log('Using verified eth address:', walletAddress);
+                    }
+                    // Если нет верифицированных адресов, используем custody address
+                    else if (user.custody_address) {
+                        walletAddress = user.custody_address;
+                        console.log('Using custody address:', walletAddress);
+                    }
+                    // Если и custody address нет, создаем fallback адрес
+                    else {
+                        walletAddress = '0x' + user.username.toLowerCase().padEnd(40, '0');
+                        console.log('Using fallback address:', walletAddress);
                     }
                     
                     return {
@@ -419,7 +433,17 @@ function displaySearchResults(users) {
 }
 
 function selectUser(address, username, displayName) {
+    console.log('selectUser called with:', { address, username, displayName });
+    
+    if (!address || address === 'undefined' || address === 'null') {
+        console.error('Invalid address provided to selectUser:', address);
+        showStatus('Error: Invalid wallet address', 'error');
+        return;
+    }
+    
     recipientInput.value = address;
+    console.log('Recipient input value set to:', recipientInput.value);
+    
     hideSearchResults();
     usernameSearchInput.value = '';
     const name = displayName || username;
