@@ -1,5 +1,16 @@
 import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
 
+// Сообщаем Farcaster SDK, что приложение готово
+// Вызываем ready() сразу после импорта SDK
+(async function() {
+    try {
+        await sdk.actions.ready();
+        console.log('Farcaster SDK ready called successfully');
+    } catch (error) {
+        console.error('Ошибка при вызове sdk.actions.ready():', error);
+    }
+})();
+
 // Адрес контракта CELO
 const CELO_CONTRACT_ADDRESS = '0x471EcE3750Da237f93B8E339c536989b8978a438';
 // Селектор функции transfer (0xa9059cbb)
@@ -20,9 +31,6 @@ let provider = null;
 // Инициализация приложения
 async function initApp() {
     try {
-        // Сообщаем Farcaster SDK, что приложение готово
-        await sdk.actions.ready();
-        
         // Проверяем, доступен ли ethereum провайдер
         if (window.ethereum) {
             provider = window.ethereum;
