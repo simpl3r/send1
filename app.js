@@ -35,6 +35,8 @@ async function loadConfig() {
 // DOM элементы
 const connectButton = document.getElementById('connectButton');
 const transferForm = document.getElementById('transferForm');
+const walletInfo = document.getElementById('walletInfo');
+const balanceAmount = document.getElementById('balanceAmount');
 const recipientInput = document.getElementById('recipient');
 const amountInput = document.getElementById('amount');
 const transferButton = document.getElementById('transferButton');
@@ -120,7 +122,9 @@ async function checkWalletConnection() {
             await switchToCeloNetwork();
             showStatus(`Wallet connected: ${shortenAddress(userAccount)}`, 'success');
             connectButton.style.display = 'none';
+            walletInfo.style.display = 'block';
             transferForm.style.display = 'block';
+            await updateBalanceDisplay();
         } else {
             showStatus('Please connect your wallet', '');
         }
@@ -144,9 +148,11 @@ async function connectWallet() {
         
         showStatus(`Wallet connected: ${shortenAddress(userAccount)}`, 'success');
         
-        // Показываем форму для отправки CELO
+        // Показываем информацию о кошельке и форму для отправки CELO
         connectButton.style.display = 'none';
+        walletInfo.style.display = 'block';
         transferForm.style.display = 'block';
+        await updateBalanceDisplay();
     } catch (error) {
         console.error('Ошибка подключения к кошельку:', error);
         showStatus('Failed to connect to wallet', 'error');
@@ -256,6 +262,11 @@ async function sendTransaction() {
         });
         
         showStatus(`Transaction sent! Hash: ${txHash}`, 'success');
+        
+        // Обновляем баланс после успешной транзакции
+        setTimeout(async () => {
+            await updateBalanceDisplay();
+        }, 2000); // Ждем 2 секунды для подтверждения транзакции
     } catch (error) {
         console.error('Ошибка отправки транзакции:', error);
         showStatus('Error sending transaction', 'error');
@@ -273,6 +284,40 @@ function showStatus(message, type) {
 
 function shortenAddress(address) {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+}
+
+// Получение баланса CELO
+async function getCeloBalance(address) {
+    try {
+        const balance = await provider.request({
+            method: 'eth_getBalance',
+            params: [address, 'latest']
+        });
+        
+        // Конвертируем из wei в CELO (18 decimals)
+        const balanceInCelo = parseFloat(ethers.utils.formatEther(balance));
+        return balanceInCelo;
+    } catch (error) {
+        console.error('Ошибка получения баланса:', error);
+        return 0;
+    }
+}
+
+// Обновление отображения баланса
+async function updateBalanceDisplay() {
+    if (!userAccount) {
+        balanceAmount.textContent = 'Not connected';
+        return;
+    }
+    
+    try {
+        balanceAmount.textContent = 'Loading...';
+        const balance = await getCeloBalance(userAccount);
+        balanceAmount.textContent = `${balance.toFixed(4)} CELO`;
+    } catch (error) {
+        console.error('Ошибка обновления баланса:', error);
+        balanceAmount.textContent = 'Error loading balance';
+    }
 }
 
 // Функции автодополнения

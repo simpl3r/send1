@@ -128,6 +128,29 @@ button:disabled {
     color: #FFFFFF;
 }
 
+.balance-display {
+    background: rgba(86, 223, 124, 0.1);
+    border: 1px solid rgba(86, 223, 124, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px 0;
+    text-align: center;
+}
+
+.balance-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.balance-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
 .send-to-myself-btn {
     background: #FCFF52;
     color: #000000;
