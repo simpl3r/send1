@@ -11,8 +11,5 @@
       "src": "/(.*)",
       "dest": "/server.js"
     }
-  ],
-  "env": {
-    "NEYNAR_API_KEY": "@neynar_api_key"
-  }
+  ]
 }
