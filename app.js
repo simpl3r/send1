@@ -17,8 +17,20 @@ const CELO_CONTRACT_ADDRESS = '0x471EcE3750Da237f93B8E339c536989b8978a438';
 const TRANSFER_FUNCTION_SELECTOR = '0xa9059cbb';
 
 // Конфигурация API
-const NEYNAR_API_KEY = 'NEYNAR_API_DOCS'; // Публичный ключ для демонстрации
+let NEYNAR_API_KEY = "NEYNAR_API_DOCS"; // Будет загружен с сервера
 const NEYNAR_BASE_URL = 'https://api.neynar.com/v2';
+
+// Функция для загрузки конфигурации с сервера
+async function loadConfig() {
+    try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        NEYNAR_API_KEY = config.NEYNAR_API_KEY;
+        console.log('API ключ загружен:', NEYNAR_API_KEY ? 'пользовательский' : 'публичный');
+    } catch (error) {
+        console.warn('Ошибка загрузки конфигурации, используем публичный ключ:', error);
+    }
+}
 
 // DOM элементы
 const connectButton = document.getElementById('connectButton');
@@ -59,6 +71,9 @@ let provider = null;
 // Инициализация приложения
 async function initApp() {
     try {
+        // Загружаем конфигурацию API ключа
+        await loadConfig();
+        
         // Получаем Ethereum провайдер из Farcaster SDK
         provider = await sdk.wallet.getEthereumProvider();
         console.log('Farcaster Ethereum provider получен');

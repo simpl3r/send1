@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
 
 const PORT = 3000;
 
@@ -17,6 +18,13 @@ const MIME_TYPES = {
 
 const server = http.createServer((req, res) => {
   console.log(`${req.method} ${req.url}`);
+
+  // API endpoint для конфигурации
+  if (req.url === '/api/config' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ NEYNAR_API_KEY: process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS' }));
+    return;
+  }
 
   let filePath;
   // Обработка специальных путей для Farcaster
