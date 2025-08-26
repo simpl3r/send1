@@ -21,7 +21,7 @@
     "category": "finance",
     "tags": ["crypto", "celo", "transfer", "wallet"],
     "homeUrl": "https://send1.vercel.app/",
-    "iconUrl": "https://send1.vercel.app/icon.svg",
+    "iconUrl": "https://send1.vercel.app/icon-1024.png",
     "splashImageUrl": "https://send1.vercel.app/splash.svg",
     "previewImageUrl": "https://send1.vercel.app/splash.svg",
     "webhookUrl": "https://send1.vercel.app/webhook",
