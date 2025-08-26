@@ -21,6 +21,7 @@
     "homeUrl": "https://send1.vercel.app/",
     "iconUrl": "https://send1.vercel.app/icon.svg",
     "splashImageUrl": "https://send1.vercel.app/splash.svg",
+    "previewImageUrl": "https://send1.vercel.app/splash.svg",
     "webhookUrl": "https://send1.vercel.app/webhook",
     "permissions": [
       "sign"
