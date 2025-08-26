@@ -113,6 +113,18 @@ button:disabled {
     border: 1px solid #f5c6cb;
 }
 
+.status a {
+    color: #00d4aa;
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.status a:hover {
+    color: #00b894;
+    text-decoration: none;
+}
+
 .connect-button {
     background: #FCFF52;
     color: #000000;

@@ -265,7 +265,9 @@ async function sendTransaction() {
             params: [transactionParameters],
         });
         
-        showStatus(`Transaction sent! Hash: ${txHash}`, 'success');
+        const explorerUrl = `https://explorer.celo.org/tx/${txHash}`;
+        const linkMessage = `Transaction sent! <a href="${explorerUrl}" target="_blank" style="color: #00d4aa; text-decoration: underline;">View on Explorer</a>`;
+        showStatus(linkMessage, 'success', true);
         
         // Обновляем баланс после успешной транзакции
         setTimeout(async () => {
@@ -278,8 +280,12 @@ async function sendTransaction() {
 }
 
 // Вспомогательные функции
-function showStatus(message, type) {
-    statusElement.textContent = message;
+function showStatus(message, type, isHTML = false) {
+    if (isHTML) {
+        statusElement.innerHTML = message;
+    } else {
+        statusElement.textContent = message;
+    }
     statusElement.className = 'status';
     if (type) {
         statusElement.classList.add(type);
