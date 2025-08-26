@@ -17,7 +17,6 @@
   "author": "CELO Developer",
   "license": "MIT",
   "dependencies": {
-    "canvas": "^3.2.0",
     "dotenv": "^16.0.0"
   },
   "engines": {
