@@ -27,9 +27,13 @@ const server = http.createServer((req, res) => {
   }
 
   let filePath;
-  // Обработка специальных путей для Farcaster
+  // Редирект для hosted manifest Farcaster
   if (req.url === '/.well-known/farcaster.json') {
-    filePath = './.well-known/farcaster.json';
+    // Замените YOUR_HOSTED_MANIFEST_ID на реальный ID после создания hosted manifest
+    const hostedManifestUrl = 'https://api.farcaster.xyz/miniapps/hosted-manifest/YOUR_HOSTED_MANIFEST_ID';
+    res.writeHead(307, { 'Location': hostedManifestUrl });
+    res.end();
+    return;
   } else {
     // Нормализуем URL
     filePath = '.' + req.url;

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CELO Sender - Send CELO tokens via Farcaster</title>
+    
+    <!-- Open Graph Meta Tags for Embed Preview -->
+    <meta property="og:title" content="CELO Sender">
+    <meta property="og:description" content="Send CELO tokens via smart contract directly from Farcaster">
+    <meta property="og:image" content="https://send1.vercel.app/splash.svg">
+    <meta property="og:image:width" content="400">
+    <meta property="og:image:height" content="600">
+    <meta property="og:url" content="https://send1.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="CELO Sender">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="CELO Sender">
+    <meta name="twitter:description" content="Send CELO tokens via smart contract directly from Farcaster">
+    <meta name="twitter:image" content="https://send1.vercel.app/splash.svg">
+    
+    <!-- Farcaster Frame Meta Tags -->
+    <meta name="fc:frame" content="vNext">
+    <meta name="fc:frame:title" content="CELO Sender">
+    <meta name="fc:frame:description" content="Send CELO tokens easily">
+    <meta name="fc:frame:image" content="https://send1.vercel.app/splash.svg">
+    <meta name="fc:frame:image:aspect_ratio" content="1:1.5">
+    <meta name="fc:frame:button:1" content="Open CELO Sender">
+    <meta name="fc:frame:button:1:action" content="link">
+    <meta name="fc:frame:button:1:target" content="https://send1.vercel.app/">
+    
+    <!-- Farcaster Mini App Meta Tags -->
+    <meta name="farcaster:miniapp" content="true">
+    <meta name="farcaster:miniapp:name" content="CELO Sender">
+    <meta name="farcaster:miniapp:description" content="Send CELO tokens easily">
+    <meta name="farcaster:miniapp:icon" content="https://send1.vercel.app/icon.svg">
+    <meta name="farcaster:miniapp:splash" content="https://send1.vercel.app/splash.svg">
+    <meta name="farcaster:miniapp:manifest" content="https://send1.vercel.app/.well-known/farcaster.json">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FCFF52 0%, #FFE066 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #000;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .logo::before {
+            content: '';
+            width: 90px;
+            height: 90px;
+            background: #FCFF52;
+            border-radius: 50%;
+            position: absolute;
+        }
+        
+        .logo::after {
+            content: '₵';
+            font-size: 48px;
+            font-weight: bold;
+            color: #000;
+            z-index: 1;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .description {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .feature {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .feature h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .feature p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #000;
+            color: #FCFF52;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .powered-by {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .description {
+                font-size: 1rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    
+    <script>
+        // Auto-redirect to main app after 5 seconds
+        setTimeout(() => {
+            window.location.href = 'https://send1.vercel.app/';
+        }, 5000);
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"></div>
+        
+        <h1>CELO Sender</h1>
+        
+        <p class="description">
+            Send CELO tokens via smart contract directly from Farcaster.
+            Fast, secure, and seamless crypto transfers.
+        </p>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>🚀 Fast Transfers</h3>
+                <p>Send CELO tokens instantly via smart contracts</p>
+            </div>
+            
+            <div class="feature">
+                <h3>🔒 Secure</h3>
+                <p>Built on CELO blockchain with Farcaster integration</p>
+            </div>
+            
+            <div class="feature">
+                <h3>💫 Easy to Use</h3>
+                <p>Simple interface directly in your Farcaster feed</p>
+            </div>
+        </div>
+        
+        <a href="https://send1.vercel.app/" class="cta-button">
+            Open CELO Sender
+        </a>
+        
+        <p class="powered-by">
+            Powered by Farcaster • Auto-redirecting in 5 seconds
+        </p>
+    </div>
+</body>
+</html>

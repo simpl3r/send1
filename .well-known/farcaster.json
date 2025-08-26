@@ -11,6 +11,7 @@
   "iconUrl": "https://send1.vercel.app/icon.svg",
   "splashImageUrl": "https://send1.vercel.app/splash.svg",
   "previewUrl": "https://send1.vercel.app/preview.html",
+  "homeUrlEmbedPreview": "https://send1.vercel.app/embed-preview.html",
   "webhookUrl": "https://send1.vercel.app/webhook",
   "miniapp": {
     "version": "1",
