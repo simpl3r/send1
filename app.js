@@ -190,6 +190,10 @@ async function switchToCeloNetwork() {
 function fillMyAddress() {
     if (userAccount) {
         recipientInput.value = userAccount;
+        // Очищаем поле поиска по username
+        usernameSearchInput.value = '';
+        // Скрываем автодополнение
+        hideAutocomplete();
     }
 }
 
