@@ -24,6 +24,10 @@
     {
       "src": "*.json",
       "use": "@vercel/static"
+    },
+    {
+      "src": ".well-known/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -32,7 +36,11 @@
       "dest": "/server.js"
     },
     {
-      "src": "/(.*\\.(js|css|html|ico|png|jpg|jpeg|gif|svg))",
+      "src": "/.well-known/(.*)",
+      "dest": "/.well-known/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|html|ico|png|jpg|jpeg|gif|svg|json))",
       "dest": "/$1"
     },
     {
