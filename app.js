@@ -265,8 +265,9 @@ async function sendTransaction() {
             params: [transactionParameters],
         });
         
-        const explorerUrl = `https://explorer.celo.org/tx/${txHash}`;
-        const linkMessage = `Transaction sent! <a href="${explorerUrl}" target="_blank" style="color: #00d4aa; text-decoration: underline;">View on Explorer</a>`;
+        const explorerUrl = `https://celoscan.io/tx/${txHash}`;
+        const shortHash = `${txHash.substring(0, 8)}...${txHash.substring(txHash.length - 6)}`;
+        const linkMessage = `Transaction sent! <a href="${explorerUrl}" target="_blank" style="color: #00d4aa; text-decoration: underline;">${shortHash}</a>`;
         showStatus(linkMessage, 'success', true);
         
         // Обновляем баланс после успешной транзакции
