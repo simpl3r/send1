@@ -327,14 +327,14 @@ button:disabled {
 .autocomplete-item {
     display: flex;
     align-items: center;
-    padding: 6px 10px;
+    padding: 4px 8px;
     cursor: pointer;
     border-bottom: 1px solid #f1f5f9;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    margin: 0 4px;
-    border-radius: 6px;
-    margin-bottom: 2px;
+    margin: 0 3px;
+    border-radius: 4px;
+    margin-bottom: 1px;
 }
 
 .autocomplete-item:hover,
@@ -356,8 +356,8 @@ button:disabled {
 
 /* Modern Avatar Styles */
 .autocomplete-avatar {
-    width: 30px;
-    height: 30px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: linear-gradient(135deg, #56DF7C 0%, #22c55e 100%);
     color: white;
@@ -365,9 +365,9 @@ button:disabled {
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    margin-right: 8px;
-    font-size: 12px;
-    box-shadow: 0 2px 6px rgba(86, 223, 124, 0.25);
+    margin-right: 6px;
+    font-size: 11px;
+    box-shadow: 0 1px 4px rgba(86, 223, 124, 0.25);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(255, 255, 255, 0.9);
 }
@@ -387,8 +387,8 @@ button:disabled {
 .autocomplete-username {
     font-weight: 700;
     color: #111827;
-    margin-bottom: 2px;
-    font-size: 13px;
+    margin-bottom: 1px;
+    font-size: 12px;
     letter-spacing: -0.01em;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -396,11 +396,11 @@ button:disabled {
 }
 
 .autocomplete-details {
-    font-size: 11px;
+    font-size: 10px;
     color: #6b7280;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     flex-wrap: wrap;
 }
 
@@ -408,18 +408,18 @@ button:disabled {
     color: #059669;
     font-weight: 600;
     background: rgba(5, 150, 105, 0.1);
-    padding: 2px 8px;
-    border-radius: 6px;
-    font-size: 13px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
 }
 
 .autocomplete-address {
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
     background: #f8fafc;
     color: #475569;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
     border: 1px solid #e2e8f0;
     font-weight: 500;
 }
