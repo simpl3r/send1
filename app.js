@@ -473,11 +473,30 @@ async function searchMultipleUsers(query, signal) {
         
         console.log('Searching multiple users via Neynar API:', cleanQuery);
         
+        // Получаем FID текущего пользователя из SDK (если доступен)
+        let viewerFid = null;
+        try {
+            const context = await sdk.context;
+            if (context && context.user && context.user.fid) {
+                viewerFid = context.user.fid;
+            }
+        } catch (e) {
+            console.log('Could not get viewer FID from SDK:', e.message);
+        }
+        
+        // Строим URL с параметрами
+        let searchUrl = `${NEYNAR_BASE_URL}/farcaster/user/search?q=${encodeURIComponent(cleanQuery)}&limit=15`;
+        if (viewerFid) {
+            searchUrl += `&viewer_fid=${viewerFid}`;
+            console.log('Using viewer_fid:', viewerFid);
+        }
+        
         // Используем Neynar API search endpoint для множественных результатов
-        const response = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/search?q=${encodeURIComponent(cleanQuery)}&limit=10`, {
+        const response = await fetch(searchUrl, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'application/json',
                 'api_key': NEYNAR_API_KEY
             },
             signal: signal
@@ -527,15 +546,43 @@ async function searchMultipleUsers(query, signal) {
                         fid: user.fid,
                         address: walletAddress,
                         displayName: user.display_name,
-                        pfpUrl: user.pfp_url
+                        pfpUrl: user.pfp_url,
+                        // Добавляем метрики для сортировки
+                        neynarScore: user.experimental?.neynar_user_score || 0,
+                        followerCount: user.follower_count || 0,
+                        powerBadge: user.power_badge || false,
+                        verifiedAddresses: user.verified_addresses?.eth_addresses?.length || 0
                     };
                 });
                 
-                console.log('Processed users:', users);
+                // Сортируем результаты по качеству пользователя
+                users.sort((a, b) => {
+                    // Приоритет 1: Power Badge
+                    if (a.powerBadge !== b.powerBadge) {
+                        return b.powerBadge - a.powerBadge;
+                    }
+                    
+                    // Приоритет 2: Neynar Score (качество пользователя)
+                    if (Math.abs(a.neynarScore - b.neynarScore) > 0.1) {
+                        return b.neynarScore - a.neynarScore;
+                    }
+                    
+                    // Приоритет 3: Количество верифицированных адресов
+                    if (a.verifiedAddresses !== b.verifiedAddresses) {
+                        return b.verifiedAddresses - a.verifiedAddresses;
+                    }
+                    
+                    // Приоритет 4: Количество подписчиков
+                    return b.followerCount - a.followerCount;
+                });
+                
+                console.log('Processed and sorted users:', users);
                 return users;
             }
         } else {
             console.log('Neynar search API failed with status:', response.status);
+            const errorText = await response.text().catch(() => 'Unknown error');
+            console.log('Error response:', errorText);
         }
         
         // Fallback: если поиск не дал результатов, попробуем точный поиск по username
@@ -544,10 +591,29 @@ async function searchMultipleUsers(query, signal) {
         return exactUser ? [exactUser] : [];
         
     } catch (error) {
+        if (error.name === 'AbortError') {
+            console.log('Search request was aborted');
+            return [];
+        }
+        
         console.error('Error in searchMultipleUsers:', error);
-        // Fallback к старой функции при ошибке
-        const exactUser = await searchByUsername(query);
-        return exactUser ? [exactUser] : [];
+        
+        // Проверяем тип ошибки для лучшей диагностики
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            console.log('Network error detected, trying fallback search');
+        } else if (error.message.includes('API key')) {
+            console.error('API key issue detected');
+            return [];
+        }
+        
+        // Fallback к старой функции при ошибке (только если не AbortError)
+        try {
+            const exactUser = await searchByUsername(query);
+            return exactUser ? [exactUser] : [];
+        } catch (fallbackError) {
+            console.error('Fallback search also failed:', fallbackError);
+            return [];
+        }
     }
 }
 
