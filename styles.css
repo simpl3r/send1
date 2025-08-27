@@ -237,7 +237,7 @@ button:disabled {
     gap: 2px;
 }
 
-/* Autocomplete container */
+/* Modern Search Field Container */
 .autocomplete-container {
     position: relative;
     width: 100%;
@@ -245,36 +245,49 @@ button:disabled {
 
 .autocomplete-container input {
     width: 100%;
-    padding: 12px;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
+    padding: 16px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
     font-size: 16px;
-    transition: all 0.2s ease;
-    background: white;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #ffffff;
+    color: #1f2937;
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.autocomplete-container input::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
 }
 
 .autocomplete-container input:focus {
     outline: none;
     border-color: #56DF7C;
-    box-shadow: 0 0 0 3px rgba(86, 223, 124, 0.1);
+    box-shadow: 0 0 0 4px rgba(86, 223, 124, 0.12), 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
 }
 
-/* Dropdown styles */
+/* Modern Dropdown Styles */
 .autocomplete-dropdown {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
-    background: white;
-    border: 1px solid #e1e5e9;
-    border-radius: 8px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    max-height: 320px;
-    min-height: 60px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    max-height: 360px;
+    min-height: 80px;
     overflow-y: auto;
     z-index: 1000;
-    margin-top: 4px;
-    animation: dropdownFadeIn 0.2s ease-out;
+    margin-top: 8px;
+    animation: dropdownFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+    border-top: 3px solid #56DF7C;
 }
 
 @keyframes dropdownFadeIn {
@@ -288,85 +301,165 @@ button:disabled {
     }
 }
 
-/* Dropdown item styles */
+/* Modern Dropdown Item Styles */
 .autocomplete-item {
     display: flex;
     align-items: center;
-    padding: 12px 16px;
+    padding: 16px 20px;
     cursor: pointer;
-    border-bottom: 1px solid #f3f4f6;
-    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    margin: 0 8px;
+    border-radius: 12px;
+    margin-bottom: 4px;
 }
 
 .autocomplete-item:hover,
 .autocomplete-item.highlighted {
-    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-    border-left: 3px solid #56DF7C;
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border-left: 4px solid #56DF7C;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(86, 223, 124, 0.15);
 }
 
 .autocomplete-item:last-child {
     border-bottom: none;
-    border-radius: 0 0 8px 8px;
+    margin-bottom: 8px;
 }
 
 .autocomplete-item:first-child {
-    border-radius: 8px 8px 0 0;
+    margin-top: 8px;
 }
 
-/* Avatar styles */
+/* Modern Avatar Styles */
 .autocomplete-avatar {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #56DF7C 0%, #329F3B 100%);
+    background: linear-gradient(135deg, #56DF7C 0%, #22c55e 100%);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    margin-right: 14px;
+    font-weight: 700;
+    margin-right: 16px;
     font-size: 18px;
-    box-shadow: 0 2px 8px rgba(86, 223, 124, 0.3);
-    transition: transform 0.2s ease;
+    box-shadow: 0 4px 12px rgba(86, 223, 124, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 3px solid rgba(255, 255, 255, 0.9);
 }
 
 .autocomplete-item:hover .autocomplete-avatar {
-    transform: scale(1.05);
+    transform: scale(1.08) rotate(5deg);
+    box-shadow: 0 6px 20px rgba(86, 223, 124, 0.4);
 }
 
-/* User info styles */
+/* Modern User Info Styles */
 .autocomplete-info {
     flex: 1;
     min-width: 0;
+    line-height: 1.4;
 }
 
 .autocomplete-username {
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 4px;
-    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .autocomplete-details {
-    font-size: 13px;
+    font-size: 14px;
     color: #6b7280;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .autocomplete-handle {
-    color: #56DF7C;
-    font-weight: 500;
+    color: #059669;
+    font-weight: 600;
+    background: rgba(5, 150, 105, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 13px;
 }
 
 .autocomplete-address {
-    font-family: 'Courier New', monospace;
-    background: #f3f4f6;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+    background: #f8fafc;
+    color: #475569;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid #e2e8f0;
+    font-weight: 500;
+}
+
+/* User Badges */
+.user-badges {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-power {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+.badge-verified {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    border: 1px solid #60a5fa;
+}
+
+.badge-follower-count {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    border: 1px solid #a78bfa;
+}
+
+.badge-icon {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+}
+
+/* User Score Indicator */
+.user-score {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 24px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
 }
 
 /* Loading and empty states */
