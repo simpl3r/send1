@@ -302,8 +302,8 @@ button:disabled {
     border: 1px solid #e5e7eb;
     border-radius: 10px;
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    max-height: 240px;
-    min-height: 60px;
+    max-height: 180px;
+    min-height: 50px;
     overflow-y: auto;
     z-index: 1000;
     margin-top: 4px;
@@ -652,6 +652,23 @@ button:disabled {
 }
 
 /* Responsive design */
+@media (max-width: 768px) {
+    .autocomplete-dropdown {
+        max-height: 150px;
+        min-height: 40px;
+    }
+    
+    .autocomplete-item {
+        padding: 8px 12px;
+    }
+    
+    .autocomplete-avatar {
+        width: 32px;
+        height: 32px;
+        margin-right: 10px;
+    }
+}
+
 @media (max-width: 480px) {
     body {
         padding: 10px;
@@ -671,6 +688,21 @@ button:disabled {
         min-width: 40px;
         height: 40px;
         font-size: 14px;
+    }
+    
+    .autocomplete-dropdown {
+        max-height: 120px;
+        min-height: 35px;
+    }
+    
+    .autocomplete-item {
+        padding: 6px 10px;
+    }
+    
+    .autocomplete-avatar {
+        width: 28px;
+        height: 28px;
+        margin-right: 8px;
     }
     
     .user-chip {

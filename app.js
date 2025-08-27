@@ -816,8 +816,17 @@ function selectUser(address, username, displayName, pfpUrl) {
     // Обновляем отображение выбранного пользователя
     updateSelectedUsersDisplay();
     
-    // Фокусируемся обратно на поле поиска для удобства
-    usernameSearchInput.focus();
+    // На мобильных устройствах убираем фокус для сворачивания клавиатуры
+    if (window.innerWidth <= 768) {
+        usernameSearchInput.blur();
+        // Дополнительно скрываем клавиатуру через небольшую задержку
+        setTimeout(() => {
+            document.activeElement.blur();
+        }, 100);
+    } else {
+        // На десктопе фокусируемся обратно на поле поиска для удобства
+        usernameSearchInput.focus();
+    }
     
     // Показываем статус
     showStatus(`Selected user: ${displayName || username}`, 'success');
