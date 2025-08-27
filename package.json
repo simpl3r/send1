@@ -17,7 +17,8 @@
   "author": "CELO Developer",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "node-fetch": "^2.6.7"
   },
   "engines": {
     "node": ">=22.11.0"

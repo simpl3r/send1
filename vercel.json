@@ -1,43 +1,20 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
+  "functions": {
+    "api/config.js": {
+      "runtime": "nodejs18.x"
     },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
+    "api/farcaster-manifest.js": {
+      "runtime": "nodejs18.x"
     },
-    {
-      "src": "*.js",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.css",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.svg",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.png",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.json",
-      "use": "@vercel/static"
-    },
-    {
-      "src": ".well-known/**",
-      "use": "@vercel/static"
+    "api/test-neynar.js": {
+      "runtime": "nodejs18.x"
     }
-  ],
+  },
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/server.js"
+      "src": "/.well-known/farcaster.json",
+      "dest": "/api/farcaster-manifest"
     },
     {
       "src": "/.well-known/(.*)",

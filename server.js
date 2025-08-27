@@ -28,6 +28,56 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // API endpoint для тестирования Neynar
+  if (req.url.startsWith('/api/test-neynar') && req.method === 'GET') {
+    const url = new URL(req.url, `http://localhost:${PORT}`);
+    const query = url.searchParams.get('q') || 'vitalik';
+    const apiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
+    
+    console.log('Testing Neynar API with query:', query);
+    
+    // Импортируем fetch для Node.js
+    const fetch = require('node-fetch');
+    
+    const neynarUrl = `https://api.neynar.com/v2/farcaster/user/search?q=${encodeURIComponent(query)}&limit=5`;
+    
+    fetch(neynarUrl, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'api_key': apiKey
+      }
+    })
+    .then(response => {
+      console.log('Neynar API response status:', response.status);
+      return response.json().then(data => ({ status: response.status, data }));
+    })
+    .then(({ status, data }) => {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: status === 200,
+        status,
+        query,
+        apiKey: apiKey.substring(0, 8) + '...',
+        neynarResponse: data,
+        timestamp: new Date().toISOString()
+      }));
+    })
+    .catch(error => {
+      console.error('Error testing Neynar API:', error);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        success: false,
+        error: error.message,
+        query,
+        apiKey: apiKey.substring(0, 8) + '...',
+        timestamp: new Date().toISOString()
+      }));
+    });
+    return;
+  }
+
   let filePath;
   // Редирект для hosted manifest Farcaster
   if (req.url === '/.well-known/farcaster.json') {
