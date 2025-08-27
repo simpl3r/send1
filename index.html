@@ -51,11 +51,13 @@
             <div class="form-group">
                 <label for="usernameSearch">Search by Username</label>
                 <div class="autocomplete-container">
-                    <input type="text" id="usernameSearch" placeholder="Search Farcaster users..." autocomplete="off">
+                    <div class="search-input-wrapper">
+                        <div id="selectedUsers" class="selected-users-inline"></div>
+                        <input type="text" id="usernameSearch" placeholder="Search Farcaster users..." autocomplete="off">
+                    </div>
                     <div id="autocompleteDropdown" class="autocomplete-dropdown" style="display: none;"></div>
                     <div class="search-loading" id="searchLoading" style="display: none;">Searching...</div>
                 </div>
-                <div id="selectedUsers" class="selected-users-container"></div>
             </div>
             
             <div class="form-group">
