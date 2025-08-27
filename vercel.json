@@ -1,16 +1,5 @@
 {
   "version": 2,
-  "functions": {
-    "api/config.js": {
-      "runtime": "nodejs20.x"
-    },
-    "api/farcaster-manifest.js": {
-      "runtime": "nodejs20.x"
-    },
-    "api/test-neynar.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "routes": [
     {
       "src": "/.well-known/farcaster.json",
