@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CELO Sender</title>
     
     <!-- Farcaster Mini App meta tags -->
@@ -51,10 +51,11 @@
             <div class="form-group">
                 <label for="usernameSearch">Search by Username</label>
                 <div class="autocomplete-container">
-                    <input type="text" id="usernameSearch" placeholder="🔍 Search Farcaster users..." autocomplete="off">
+                    <input type="text" id="usernameSearch" placeholder="Search Farcaster users..." autocomplete="off">
                     <div id="autocompleteDropdown" class="autocomplete-dropdown" style="display: none;"></div>
                     <div class="search-loading" id="searchLoading" style="display: none;">Searching...</div>
                 </div>
+                <div id="selectedUsers" class="selected-users-container" style="display: none;"></div>
             </div>
             
             <div class="form-group">

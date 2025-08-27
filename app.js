@@ -777,13 +777,16 @@ function displayAutocompleteResults(users) {
     resultItems.forEach((item, index) => {
         item.addEventListener('click', () => {
             const user = users[index];
-            selectUser(user.address, user.username, user.displayName || user.username);
+            selectUser(user.address, user.username, user.displayName || user.username, user.pfpUrl);
         });
     });
 }
 
-function selectUser(address, username, displayName) {
-    console.log('Selecting user:', { address, username, displayName });
+// Массив для хранения выбранных пользователей
+let selectedUsers = [];
+
+function selectUser(address, username, displayName, pfpUrl) {
+    console.log('Selecting user:', { address, username, displayName, pfpUrl });
     
     // Проверяем, что адрес валидный (простая проверка формата)
     if (!address || !address.startsWith('0x') || address.length !== 42) {
@@ -792,17 +795,70 @@ function selectUser(address, username, displayName) {
         return;
     }
     
-    // Устанавливаем адрес в поле получателя
+    // Проверяем, не выбран ли уже этот пользователь
+    if (selectedUsers.find(user => user.address === address)) {
+        showStatus('User already selected', 'error');
+        return;
+    }
+    
+    // Добавляем пользователя в массив выбранных
+    const user = {
+        address,
+        username,
+        displayName: displayName || username,
+        pfpUrl
+    };
+    selectedUsers.push(user);
+    
+    // Устанавливаем адрес в поле получателя (последний выбранный)
     recipientInput.value = address;
     
-    // Устанавливаем выбранного пользователя в поле поиска
-    usernameSearchInput.value = displayName || username;
+    // Очищаем поле поиска
+    usernameSearchInput.value = '';
     
     // Скрываем автодополнение
     hideAutocomplete();
     
+    // Обновляем отображение выбранных пользователей
+    updateSelectedUsersDisplay();
+    
     // Показываем статус
-    showStatus(`Selected user: ${displayName || username} (${shortenAddress(address)})`, 'success');
+    showStatus(`Selected user: ${displayName || username}`, 'success');
+}
+
+function updateSelectedUsersDisplay() {
+    const container = document.getElementById('selectedUsers');
+    
+    if (selectedUsers.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    container.innerHTML = selectedUsers.map((user, index) => {
+        const avatarSrc = user.pfpUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=56DF7C&color=fff&size=24`;
+        
+        return `
+            <div class="user-chip" data-user-index="${index}">
+                <img src="${avatarSrc}" alt="${user.username}" class="user-chip-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=56DF7C&color=fff&size=24'">
+                <span class="user-chip-name">${user.displayName}</span>
+                <button class="user-chip-remove" onclick="removeSelectedUser(${index})" title="Remove user">×</button>
+            </div>
+        `;
+    }).join('');
+}
+
+function removeSelectedUser(index) {
+    selectedUsers.splice(index, 1);
+    updateSelectedUsersDisplay();
+    
+    // Если есть выбранные пользователи, устанавливаем последнего в поле получателя
+    if (selectedUsers.length > 0) {
+        recipientInput.value = selectedUsers[selectedUsers.length - 1].address;
+    } else {
+        recipientInput.value = '';
+    }
+    
+    showStatus('User removed', 'success');
 }
 
 // Загружаем ethers.js для работы с Ethereum из надежного CDN
