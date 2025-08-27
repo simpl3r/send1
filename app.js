@@ -52,6 +52,8 @@ const searchLoading = document.getElementById('searchLoading');
 let searchTimeout = null;
 let currentSearchResults = [];
 let selectedIndex = -1;
+let currentAbortController = null;
+let searchCache = new Map();
 
 // Параметры сети CELO
 const CELO_NETWORK = {
@@ -340,13 +342,32 @@ function handleSearchInput(e) {
         clearTimeout(searchTimeout);
     }
     
+    // Отменяем предыдущий запрос
+    if (currentAbortController) {
+        currentAbortController.abort();
+        currentAbortController = null;
+    }
+    
     if (query.length === 0) {
         hideAutocomplete();
         return;
     }
     
-    if (query.length < 2) {
-        return; // Минимум 2 символа для поиска
+    if (query.length < 3) {
+        return; // Минимум 3 символа для поиска (согласно документации Neynar)
+    }
+    
+    // Проверяем кэш
+    if (searchCache.has(query)) {
+        const cachedResults = searchCache.get(query);
+        if (cachedResults.length > 0) {
+            currentSearchResults = cachedResults;
+            displayAutocompleteResults(currentSearchResults);
+        } else {
+            currentSearchResults = [];
+            showNoResults();
+        }
+        return;
     }
     
     // Debounce - ждем 300ms после последнего ввода
@@ -387,7 +408,7 @@ function handleKeyNavigation(e) {
 
 function handleSearchFocus() {
     const query = usernameSearchInput.value.trim();
-    if (query.length >= 2 && currentSearchResults.length > 0) {
+    if (query.length >= 3 && currentSearchResults.length > 0) {
         showAutocomplete();
     }
 }
@@ -413,8 +434,15 @@ async function performSearch(query) {
     
     showSearchLoading();
     
+    // Создаем новый AbortController для этого запроса
+    currentAbortController = new AbortController();
+    
     try {
-        const users = await searchMultipleUsers(query);
+        const users = await searchMultipleUsers(query, currentAbortController.signal);
+        
+        // Сохраняем результаты в кэш
+        searchCache.set(query, users || []);
+        
         if (users && users.length > 0) {
             currentSearchResults = users;
             displayAutocompleteResults(currentSearchResults);
@@ -423,14 +451,22 @@ async function performSearch(query) {
             showNoResults();
         }
     } catch (error) {
+        // Игнорируем ошибки отмены запроса
+        if (error.name === 'AbortError') {
+            console.log('Search request was aborted');
+            return;
+        }
+        
         console.error('Search error:', error);
         showStatus('Search failed. Please try again.', 'error');
         hideAutocomplete();
+    } finally {
+        currentAbortController = null;
     }
 }
 
 // Новая функция для поиска множественных пользователей
-async function searchMultipleUsers(query) {
+async function searchMultipleUsers(query, signal) {
     try {
         // Убираем @ если есть
         const cleanQuery = query.replace('@', '').toLowerCase();
@@ -443,7 +479,8 @@ async function searchMultipleUsers(query) {
             headers: {
                 'Accept': 'application/json',
                 'api_key': NEYNAR_API_KEY
-            }
+            },
+            signal: signal
         });
         
         console.log('Neynar search API response status:', response.status);
