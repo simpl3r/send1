@@ -46,32 +46,36 @@ label {
 input {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid #dee2e6;
-    border-radius: 6px;
+    border: 1px solid rgba(86, 223, 124, 0.3);
+    border-radius: 8px;
     font-size: 16px;
+    font-weight: 500;
     box-sizing: border-box;
-    transition: border-color 0.3s;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(86, 223, 124, 0.08);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     -webkit-appearance: none;
-    -webkit-border-radius: 6px;
+    -webkit-border-radius: 8px;
 }
 
 input:focus {
     outline: none;
     border-color: #56DF7C;
-    box-shadow: 0 0 0 3px rgba(86, 223, 124, 0.1);
+    box-shadow: 0 0 0 4px rgba(86, 223, 124, 0.12), 0 2px 6px rgba(86, 223, 124, 0.1);
 }
 
 button {
     background: #56DF7C;
     color: #000000;
-    border: none;
-    border-radius: 12px;
+    border: 1px solid rgba(86, 223, 124, 0.3);
+    border-radius: 8px;
     padding: 14px 24px;
     font-size: 16px;
     font-weight: 600;
     width: 100%;
     cursor: pointer;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 4px rgba(86, 223, 124, 0.15);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     margin-bottom: 12px;
     letter-spacing: 0.01em;
 }
@@ -80,6 +84,7 @@ button:hover {
     box-shadow: 0 4px 12px rgba(86, 223, 124, 0.3);
     background: #329F3B;
     color: #FFFFFF;
+    border-color: #329F3B;
 }
 
 button:disabled {
@@ -128,16 +133,20 @@ button:disabled {
 .connect-button {
     background: #FCFF52;
     color: #000000;
+    border: 1px solid rgba(252, 255, 82, 0.3);
+    border-radius: 8px;
     margin-bottom: 16px;
     padding: 14px 24px;
     font-size: 16px;
     font-weight: 600;
+    box-shadow: 0 2px 4px rgba(252, 255, 82, 0.15);
 }
 
 .connect-button:hover {
-    box-shadow: 0 8px 24px rgba(252, 255, 82, 0.4);
+    box-shadow: 0 4px 12px rgba(252, 255, 82, 0.4);
     background: #476520;
     color: #FFFFFF;
+    border-color: #476520;
 }
 
 .balance-display {
@@ -174,21 +183,23 @@ button:disabled {
 .send-to-myself-btn {
     background: #FCFF52;
     color: #000000;
-    border: none;
-    border-radius: 12px;
+    border: 1px solid rgba(252, 255, 82, 0.3);
+    border-radius: 8px;
     padding: 12px 20px;
     font-size: 14px;
     margin-bottom: 12px;
     cursor: pointer;
-    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 4px rgba(252, 255, 82, 0.15);
+    transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     width: 100%;
     font-weight: 600;
 }
 
 .send-to-myself-btn:hover {
-    box-shadow: 0 3px 10px rgba(252, 255, 82, 0.3);
+    box-shadow: 0 4px 12px rgba(252, 255, 82, 0.3);
     background: #476520;
     color: #FFFFFF;
+    border-color: #476520;
 }
 
 .button-group {
@@ -255,13 +266,13 @@ button:disabled {
     flex-wrap: wrap;
     align-items: center;
     gap: 4px;
-    padding: 6px 10px;
-    border: 1px solid #d1d5db;
+    padding: 8px 12px;
+    border: 1px solid rgba(86, 223, 124, 0.3);
     border-radius: 8px;
     background: #ffffff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 4px rgba(86, 223, 124, 0.08);
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    min-height: 36px;
+    min-height: 40px;
 }
 
 .search-input-wrapper:focus-within {
@@ -556,15 +567,15 @@ button:disabled {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    border-radius: 6px;
-    padding: 4px 8px;
+    background: linear-gradient(135deg, #56DF7C 0%, #329F3B 100%);
+    border: 1px solid rgba(86, 223, 124, 0.3);
+    border-radius: 8px;
+    padding: 6px 10px;
     font-size: 14px;
-    font-weight: 500;
-    color: var(--palette-text, #ffffff);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-    transition: background 0.1s ease, box-shadow 0.1s ease;
+    font-weight: 600;
+    color: #000000;
+    box-shadow: 0 2px 4px rgba(86, 223, 124, 0.15);
+    transition: background 0.15s ease, box-shadow 0.15s ease;
     cursor: pointer;
     max-width: 180px;
     flex-shrink: 0;
@@ -580,14 +591,15 @@ button:disabled {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(86, 223, 124, 0.1) 0%, rgba(50, 159, 59, 0.1) 100%);
     opacity: 0;
-    transition: opacity 0.1s ease;
+    transition: opacity 0.15s ease;
 }
 
 .user-chip:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+    background: linear-gradient(135deg, #329F3B 0%, #22c55e 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(86, 223, 124, 0.3);
 }
 
 .user-chip:hover::before {
