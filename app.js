@@ -482,7 +482,7 @@ async function searchMultipleUsers(query, signal) {
         }
         
         // Строим URL с параметрами
-        let searchUrl = `${NEYNAR_BASE_URL}/farcaster/user/search?q=${encodeURIComponent(cleanQuery)}&limit=15`;
+        let searchUrl = `${NEYNAR_BASE_URL}/farcaster/user/search?q=${encodeURIComponent(cleanQuery)}&limit=10`;
         if (viewerFid) {
             searchUrl += `&viewer_fid=${viewerFid}`;
             console.log('Using viewer_fid:', viewerFid);
