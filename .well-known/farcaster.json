@@ -1,53 +1,20 @@
 {
-  "version": "1",
+  "frame": {
+    "name": "CELO Sender",
+    "version": "1",
+    "iconUrl": "https://send1.vercel.app/icon-1024.png",
+    "homeUrl": "https://send1.vercel.app",
+    "imageUrl": "https://send1.vercel.app/icon.png",
+    "splashImageUrl": "https://send1.vercel.app/splash.png",
+    "splashBackgroundColor": "#FCFF52",
+    "webhookUrl": "https://send1.vercel.app/api/webhook",
+    "subtitle": "Send CELO tokens easily",
+    "description": "Send CELO tokens via smart contract directly from Farcaster",
+    "primaryCategory": "finance"
+  },
   "accountAssociation": {
     "header": "eyJmaWQiOjMzMzc5OSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDEzQjM3OEU2OTU2MjVhQmZGYjFFMzJEOTc4MTEzNzg2YmEwNzM3RjYifQ",
     "payload": "eyJkb21haW4iOiJzZW5kMS52ZXJjZWwuYXBwIn0",
     "signature": "TP/hFL2B/CIRfcmd81g5jIesL+Z4YNRQfUdzBlcn+ax2ebr5MSQrQ1FYvHxa1paDIX0Fsvh610nLANfYeSxv3Bw="
-  },
-  "name": "CELO Sender",
-  "description": "Send CELO tokens via smart contract on Farcaster",
-  "homeUrl": "https://send1.vercel.app/",
-  "iconUrl": "https://send1.vercel.app/icon-1024.png",
-  "splashImageUrl": "https://send1.vercel.app/splash.svg",
-  "previewUrl": "https://send1.vercel.app/preview.html",
-  "homeUrlEmbedPreview": "https://send1.vercel.app/embed-preview.html",
-  "webhookUrl": "https://send1.vercel.app/webhook",
-  "miniapp": {
-    "version": "1",
-    "name": "CELO Sender",
-    "description": "Send CELO tokens via smart contract directly from Farcaster",
-    "shortDescription": "Send CELO tokens easily",
-    "category": "finance",
-    "tags": ["crypto", "celo", "transfer", "wallet"],
-    "homeUrl": "https://send1.vercel.app/",
-    "iconUrl": "https://send1.vercel.app/icon-1024.png",
-    "splashImageUrl": "https://send1.vercel.app/splash.svg",
-    "previewImageUrl": "https://send1.vercel.app/splash.svg",
-    "webhookUrl": "https://send1.vercel.app/webhook",
-    "permissions": [
-      "sign"
-    ],
-    "frames": {
-      "minWidth": 400,
-      "maxWidth": 500,
-      "minHeight": 400,
-      "maxHeight": 600
-    },
-    "developer": {
-      "name": "CELO Developer",
-      "url": "https://send1.vercel.app/",
-      "email": "developer@localhost"
-    },
-    "support": {
-      "url": "https://send1.vercel.app/support",
-      "email": "support@localhost"
-    },
-    "privacy": {
-      "policyUrl": "https://send1.vercel.app/privacy"
-    },
-    "terms": {
-      "serviceUrl": "https://send1.vercel.app/terms"
-    }
   }
 }

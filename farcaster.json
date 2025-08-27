@@ -1,0 +1,10 @@
+{
+  "name": "CELO Sender",
+  "version": "1.0.0",
+  "description": "Send CELO tokens via smart contract",
+  "splashImageUrl": "./splash.png",
+  "splashBackgroundColor": "#FCFF52",
+  "homeUrl": "./index.html",
+  "iconUrl": "./splash.png",
+  "imageUrl": "./splash.png"
+}
