@@ -795,22 +795,16 @@ function selectUser(address, username, displayName, pfpUrl) {
         return;
     }
     
-    // Проверяем, не выбран ли уже этот пользователь
-    if (selectedUsers.find(user => user.address === address)) {
-        showStatus('User already selected', 'error');
-        return;
-    }
-    
-    // Добавляем пользователя в массив выбранных
+    // Заменяем текущего выбранного пользователя новым (только один пользователь)
     const user = {
         address,
         username,
         displayName: displayName || username,
         pfpUrl
     };
-    selectedUsers.push(user);
+    selectedUsers = [user];
     
-    // Устанавливаем адрес в поле получателя (последний выбранный)
+    // Устанавливаем адрес в поле получателя
     recipientInput.value = address;
     
     // Очищаем поле поиска
@@ -819,7 +813,7 @@ function selectUser(address, username, displayName, pfpUrl) {
     // Скрываем автодополнение
     hideAutocomplete();
     
-    // Обновляем отображение выбранных пользователей
+    // Обновляем отображение выбранного пользователя
     updateSelectedUsersDisplay();
     
     // Фокусируемся обратно на поле поиска для удобства
@@ -834,25 +828,24 @@ function updateSelectedUsersDisplay() {
     
     if (selectedUsers.length === 0) {
         container.innerHTML = '';
-        // Обновляем placeholder когда нет выбранных пользователей
-        usernameSearchInput.placeholder = 'Search Farcaster users...';
+        // Обновляем placeholder когда нет выбранного пользователя
+        usernameSearchInput.placeholder = 'Search Farcaster user...';
         return;
     }
     
-    // Обновляем placeholder когда есть выбранные пользователи
-    usernameSearchInput.placeholder = 'Add more users...';
+    // Обновляем placeholder когда есть выбранный пользователь
+    usernameSearchInput.placeholder = 'Change user...';
     
-    container.innerHTML = selectedUsers.map((user, index) => {
-        const avatarSrc = user.pfpUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=56DF7C&color=fff&size=20`;
-        
-        return `
-            <div class="user-chip" data-user-index="${index}">
-                <img src="${avatarSrc}" alt="${user.username}" class="user-chip-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=56DF7C&color=fff&size=20'">
-                <span class="user-chip-name">${user.displayName}</span>
-                <button class="user-chip-remove" onclick="removeSelectedUser(${index})" title="Remove user">×</button>
-            </div>
-        `;
-    }).join('');
+    const user = selectedUsers[0]; // Только один пользователь
+    const avatarSrc = user.pfpUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=56DF7C&color=fff&size=18`;
+    
+    container.innerHTML = `
+        <div class="user-chip" data-user-index="0">
+             <img src="${avatarSrc}" alt="${user.username}" class="user-chip-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=56DF7C&color=fff&size=18'">
+             <span class="user-chip-name">${user.displayName}</span>
+             <button class="user-chip-remove" onclick="removeSelectedUser(0)" title="Remove user">×</button>
+         </div>
+    `;
 }
 
 function removeSelectedUser(index) {

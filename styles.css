@@ -255,16 +255,16 @@ button:disabled {
 
 .search-input-wrapper {
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
-    padding: 8px 12px;
-    border: 2px solid #e5e7eb;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
     border-radius: 8px;
     background: #ffffff;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    min-height: 44px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    min-height: 36px;
 }
 
 .search-input-wrapper:focus-within {
@@ -275,11 +275,11 @@ button:disabled {
 
 .autocomplete-container input {
     flex: 1;
-    min-width: 120px;
+    min-width: 100px;
     border: none;
     outline: none;
     padding: 4px 0;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     background: transparent;
     color: #1f2937;
@@ -555,19 +555,20 @@ button:disabled {
 .user-chip {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     background: #56DF7C;
     border: 1px solid #22c55e;
-    border-radius: 16px;
-    padding: 2px 8px 2px 2px;
-    font-size: 12px;
+    border-radius: 12px;
+    padding: 1px 6px 1px 1px;
+    font-size: 11px;
     font-weight: 600;
     color: #000000;
-    box-shadow: 0 1px 3px rgba(86, 223, 124, 0.3);
+    box-shadow: 0 1px 2px rgba(86, 223, 124, 0.25);
     transition: all 0.2s ease;
     cursor: pointer;
-    max-width: 140px;
+    max-width: 120px;
     flex-shrink: 0;
+    height: 24px;
 }
 
 .user-chip:hover {
@@ -578,8 +579,8 @@ button:disabled {
 }
 
 .user-chip-avatar {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid rgba(255, 255, 255, 0.5);
@@ -595,8 +596,8 @@ button:disabled {
 }
 
 .user-chip-remove {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: rgba(0, 0, 0, 0.2);
     color: #000000;
@@ -605,11 +606,11 @@ button:disabled {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: bold;
     transition: all 0.2s ease;
     flex-shrink: 0;
-    margin-left: 2px;
+    margin-left: 1px;
 }
 
 .user-chip-remove:hover {
