@@ -22,8 +22,9 @@ const server = http.createServer((req, res) => {
   // API endpoint для конфигурации
   if (req.url === '/api/config' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    // Используем публичный ключ для демонстрации, так как пользовательский ключ требует платного плана
-    res.end(JSON.stringify({ NEYNAR_API_KEY: 'NEYNAR_API_DOCS' }));
+    // Используем пользовательский ключ из .env, если доступен, иначе публичный
+    const apiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
+    res.end(JSON.stringify({ NEYNAR_API_KEY: apiKey }));
     return;
   }
 
