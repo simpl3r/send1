@@ -327,14 +327,15 @@ button:disabled {
 .autocomplete-item {
     display: flex;
     align-items: center;
-    padding: 4px 8px;
+    padding: 2px 6px;
     cursor: pointer;
     border-bottom: 1px solid #f1f5f9;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    margin: 0 3px;
-    border-radius: 4px;
+    margin: 0 2px;
+    border-radius: 3px;
     margin-bottom: 1px;
+    min-height: 32px;
 }
 
 .autocomplete-item:hover,
@@ -356,8 +357,8 @@ button:disabled {
 
 /* Modern Avatar Styles */
 .autocomplete-avatar {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: linear-gradient(135deg, #56DF7C 0%, #22c55e 100%);
     color: white;
@@ -365,11 +366,12 @@ button:disabled {
     align-items: center;
     justify-content: center;
     font-weight: 700;
-    margin-right: 6px;
-    font-size: 11px;
-    box-shadow: 0 1px 4px rgba(86, 223, 124, 0.25);
+    margin-right: 5px;
+    font-size: 10px;
+    box-shadow: 0 1px 3px rgba(86, 223, 124, 0.25);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(255, 255, 255, 0.9);
+    flex-shrink: 0;
 }
 
 .autocomplete-item:hover .autocomplete-avatar {
@@ -387,39 +389,42 @@ button:disabled {
 .autocomplete-username {
     font-weight: 700;
     color: #111827;
-    margin-bottom: 1px;
-    font-size: 12px;
+    margin-bottom: 0;
+    font-size: 11px;
     letter-spacing: -0.01em;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 1.2;
 }
 
 .autocomplete-details {
-    font-size: 10px;
+    font-size: 9px;
     color: #6b7280;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     flex-wrap: wrap;
+    line-height: 1.1;
+    margin-top: 1px;
 }
 
 .autocomplete-handle {
     color: #059669;
     font-weight: 600;
     background: rgba(5, 150, 105, 0.1);
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 11px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 9px;
 }
 
 .autocomplete-address {
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
     background: #f8fafc;
     color: #475569;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 8px;
     border: 1px solid #e2e8f0;
     font-weight: 500;
 }
