@@ -85,8 +85,8 @@ async function initApp() {
         // Настраиваем обработчики событий
         setupEventListeners();
         
-        // Автоматически проверяем подключение кошелька
-        await checkWalletConnection();
+        // Автоматически подключаем кошелек согласно практикам Farcaster Mini Apps
+        await autoConnectWallet();
     } catch (error) {
         console.error('Ошибка инициализации:', error);
         showStatus('Application initialization error', 'error');
@@ -113,48 +113,45 @@ function setupEventListeners() {
     });
 }
 
-// Проверка подключения кошелька
-async function checkWalletConnection() {
+// Автоматическое подключение кошелька согласно практикам Farcaster Mini Apps
+async function autoConnectWallet() {
     try {
-        // Проверяем, есть ли уже подключенные аккаунты
-        const accounts = await provider.request({ method: 'eth_accounts' });
+        showStatus('Connecting to wallet...', '');
+        
+        // В Farcaster Mini Apps кошелек автоматически доступен
+        // Сначала проверяем существующие подключения
+        let accounts = await provider.request({ method: 'eth_accounts' });
+        
+        // Если нет подключенных аккаунтов, запрашиваем доступ
+        if (!accounts || accounts.length === 0) {
+            accounts = await provider.request({ method: 'eth_requestAccounts' });
+        }
         
         if (accounts && accounts.length > 0) {
             userAccount = accounts[0];
             await switchToCeloNetwork();
             showStatus(`Wallet connected: ${shortenAddress(userAccount)}`, 'success');
+            
+            // Скрываем кнопку подключения и показываем интерфейс
             connectButton.style.display = 'none';
             walletInfo.style.display = 'block';
             transferForm.style.display = 'block';
             await updateBalanceDisplay();
         } else {
-            showStatus('Please connect your wallet', '');
+            showStatus('Wallet connection required', 'error');
+            connectButton.style.display = 'block';
         }
     } catch (error) {
-        console.error('Ошибка проверки подключения кошелька:', error);
-        showStatus('Please connect your wallet', '');
+        console.error('Ошибка автоматического подключения кошелька:', error);
+        showStatus('Wallet connection failed', 'error');
+        connectButton.style.display = 'block';
     }
 }
 
-// Подключение к кошельку
+// Подключение к кошельку (fallback для ручного подключения)
 async function connectWallet() {
     try {
-        showStatus('Connecting to wallet...', '');
-        
-        // Запрашиваем доступ к аккаунтам пользователя
-        const accounts = await provider.request({ method: 'eth_requestAccounts' });
-        userAccount = accounts[0];
-        
-        // Автоматически переключаемся на сеть CELO
-        await switchToCeloNetwork();
-        
-        showStatus(`Wallet connected: ${shortenAddress(userAccount)}`, 'success');
-        
-        // Показываем информацию о кошельке и форму для отправки CELO
-        connectButton.style.display = 'none';
-        walletInfo.style.display = 'block';
-        transferForm.style.display = 'block';
-        await updateBalanceDisplay();
+        await autoConnectWallet();
     } catch (error) {
         console.error('Ошибка подключения к кошельку:', error);
         showStatus('Failed to connect to wallet', 'error');
