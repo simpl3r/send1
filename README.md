@@ -41,6 +41,24 @@ A Farcaster Mini App for sending CELO tokens via smart contract.
   - Для разработки: используется публичный ключ по умолчанию
   - Для продакшена: обязательно установите ваш собственный ключ
 
+## Настройка API ключа Neynar
+
+**ВАЖНО:** Функция поиска пользователей Neynar требует платного плана. В настоящее время приложение использует публичный демо-ключ `NEYNAR_API_DOCS` для демонстрации функциональности.
+
+### Для использования собственного API ключа:
+
+1. Зарегистрируйтесь на [Neynar](https://neynar.com) и получите API ключ
+2. Обновите план до платного на [neynar.com/#pricing](https://neynar.com/#pricing)
+3. Скопируйте `.env.example` в `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+4. Добавьте ваш API ключ в файл `.env`:
+   ```
+   NEYNAR_API_KEY=your_actual_api_key_here
+   ```
+5. Обновите `server.js`, чтобы использовать ваш ключ вместо публичного
+
 ### Testing in Farcaster
 
 1. Enable Developer Mode in Farcaster settings
