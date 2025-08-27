@@ -861,6 +861,9 @@ function removeSelectedUser(index) {
     showStatus('User removed', 'success');
 }
 
+// Делаем функцию доступной глобально для onclick
+window.removeSelectedUser = removeSelectedUser;
+
 // Загружаем ethers.js для работы с Ethereum из надежного CDN
 const script = document.createElement('script');
 script.src = 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js';
