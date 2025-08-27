@@ -551,40 +551,65 @@ button:disabled {
     display: none;
 }
 
-/* User Chip Styles */
+/* User Chip Styles - Modern Neynar-inspired Design */
 .user-chip {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: #56DF7C;
-    border: 1px solid #22c55e;
-    border-radius: 14px;
-    padding: 3px 8px 3px 3px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #000000;
-    box-shadow: 0 1px 2px rgba(86, 223, 124, 0.25);
-    transition: all 0.2s ease;
+    gap: 8px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 4px 12px 4px 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    max-width: 140px;
+    max-width: 180px;
     flex-shrink: 0;
-    height: 28px;
+    height: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.user-chip::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 .user-chip:hover {
-    background: #22c55e;
-    border-color: #16a34a;
-    box-shadow: 0 2px 6px rgba(86, 223, 124, 0.4);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transform: translateY(-1px);
 }
 
+.user-chip:hover::before {
+    opacity: 1;
+}
+
 .user-chip-avatar {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 2px solid #ffffff;
     flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition: all 0.2s ease;
+}
+
+.user-chip:hover .user-chip-avatar {
+    transform: scale(1.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
 .user-chip-name {
@@ -593,30 +618,37 @@ button:disabled {
     white-space: nowrap;
     flex: 1;
     min-width: 0;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    position: relative;
+    z-index: 1;
 }
 
 .user-chip-remove {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2);
-    color: #000000;
+    background: rgba(148, 163, 184, 0.2);
+    color: #64748b;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
-    font-weight: bold;
-    transition: all 0.2s ease;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
-    margin-left: 2px;
+    margin-left: 4px;
+    position: relative;
+    z-index: 2;
 }
 
 .user-chip-remove:hover {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(239, 68, 68, 0.9);
     color: #ffffff;
     transform: scale(1.1);
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
 
 /* Responsive design */
@@ -642,12 +674,21 @@ button:disabled {
     }
     
     .user-chip {
-        max-width: 150px;
-        font-size: 13px;
+        max-width: 160px;
+        font-size: 12px;
+        height: 30px;
+        padding: 3px 10px 3px 3px;
+        gap: 6px;
     }
     
     .user-chip-avatar {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
+    }
+    
+    .user-chip-remove {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
     }
 }

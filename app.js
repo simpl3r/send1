@@ -837,11 +837,11 @@ function updateSelectedUsersDisplay() {
     usernameSearchInput.placeholder = 'Change user...';
     
     const user = selectedUsers[0]; // Только один пользователь
-    const avatarSrc = user.pfpUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=56DF7C&color=fff&size=22`;
+    const avatarSrc = user.pfpUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=f1f5f9&color=334155&size=24`;
     
     container.innerHTML = `
         <div class="user-chip" data-user-index="0">
-             <img src="${avatarSrc}" alt="${user.username}" class="user-chip-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=56DF7C&color=fff&size=22'">
+             <img src="${avatarSrc}" alt="${user.username}" class="user-chip-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=f1f5f9&color=334155&size=24'">
              <span class="user-chip-name">${user.displayName}</span>
              <button class="user-chip-remove" onclick="removeSelectedUser(0)" title="Remove user">×</button>
          </div>
