@@ -71,14 +71,13 @@ button {
     font-weight: 600;
     width: 100%;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
     margin-bottom: 12px;
     letter-spacing: 0.01em;
 }
 
 button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(86, 223, 124, 0.4);
+    box-shadow: 0 4px 12px rgba(86, 223, 124, 0.3);
     background: #329F3B;
     color: #FFFFFF;
 }
@@ -86,7 +85,6 @@ button:hover {
 button:disabled {
     background: #6c757d;
     cursor: not-allowed;
-    transform: none;
     box-shadow: none;
 }
 
@@ -182,14 +180,13 @@ button:disabled {
     font-size: 14px;
     margin-bottom: 12px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
     width: 100%;
     font-weight: 600;
 }
 
 .send-to-myself-btn:hover {
-    box-shadow: 0 6px 20px rgba(252, 255, 82, 0.4);
-    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(252, 255, 82, 0.3);
     background: #476520;
     color: #FFFFFF;
 }
@@ -263,14 +260,13 @@ button:disabled {
     border-radius: 8px;
     background: #ffffff;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
     min-height: 36px;
 }
 
 .search-input-wrapper:focus-within {
     border-color: #56DF7C;
-    box-shadow: 0 0 0 4px rgba(86, 223, 124, 0.12), 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);
+    box-shadow: 0 0 0 4px rgba(86, 223, 124, 0.12), 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .autocomplete-container input {
@@ -307,7 +303,7 @@ button:disabled {
     overflow-y: auto;
     z-index: 1000;
     margin-top: 4px;
-    animation: dropdownFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: dropdownFadeIn 0.1s ease-out;
     backdrop-filter: blur(8px);
     border-top: 2px solid #56DF7C;
 }
@@ -315,7 +311,7 @@ button:disabled {
 @keyframes dropdownFadeIn {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-2px);
     }
     to {
         opacity: 1;
@@ -330,7 +326,7 @@ button:disabled {
     padding: 2px 6px;
     cursor: pointer;
     border-bottom: 1px solid #f1f5f9;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.1s ease, box-shadow 0.1s ease;
     position: relative;
     margin: 0 2px;
     border-radius: 3px;
@@ -342,8 +338,7 @@ button:disabled {
 .autocomplete-item.highlighted {
     background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
     border-left: 4px solid #56DF7C;
-    transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(86, 223, 124, 0.15);
+    box-shadow: 0 2px 6px rgba(86, 223, 124, 0.1);
 }
 
 .autocomplete-item:last-child {
@@ -369,7 +364,7 @@ button:disabled {
     margin-right: 5px;
     font-size: 10px;
     box-shadow: 0 1px 3px rgba(86, 223, 124, 0.25);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.1s ease;
     border: 1px solid rgba(255, 255, 255, 0.9);
     flex-shrink: 0;
 }
@@ -390,7 +385,7 @@ button:disabled {
     font-weight: 700;
     color: #111827;
     margin-bottom: 0;
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: -0.01em;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -399,7 +394,7 @@ button:disabled {
 }
 
 .autocomplete-details {
-    font-size: 9px;
+    font-size: 10px;
     color: #6b7280;
     display: flex;
     align-items: center;
@@ -415,7 +410,7 @@ button:disabled {
     background: rgba(5, 150, 105, 0.1);
     padding: 1px 4px;
     border-radius: 3px;
-    font-size: 9px;
+    font-size: 10px;
 }
 
 .autocomplete-address {
@@ -424,7 +419,7 @@ button:disabled {
     color: #475569;
     padding: 1px 4px;
     border-radius: 3px;
-    font-size: 8px;
+    font-size: 9px;
     border: 1px solid #e2e8f0;
     font-weight: 500;
 }
@@ -569,7 +564,7 @@ button:disabled {
     font-weight: 500;
     color: var(--palette-text, #ffffff);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.1s ease, box-shadow 0.1s ease;
     cursor: pointer;
     max-width: 180px;
     flex-shrink: 0;
@@ -587,13 +582,12 @@ button:disabled {
     bottom: 0;
     background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.1s ease;
 }
 
 .user-chip:hover {
     background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transform: translateY(-1px);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
 }
 
 .user-chip:hover::before {
@@ -608,12 +602,12 @@ button:disabled {
     border: 2px solid #ffffff;
     flex-shrink: 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-    transition: all 0.2s ease;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 .user-chip:hover .user-chip-avatar {
-    transform: scale(1.05);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transform: scale(1.02);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .user-chip-name {
@@ -641,7 +635,7 @@ button:disabled {
     justify-content: center;
     font-size: 12px;
     font-weight: 600;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background 0.1s ease, color 0.1s ease;
     flex-shrink: 0;
     margin-left: 4px;
     position: relative;
@@ -651,8 +645,7 @@ button:disabled {
 .user-chip-remove:hover {
     background: rgba(239, 68, 68, 0.9);
     color: #ffffff;
-    transform: scale(1.1);
-    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
 }
 
 /* Responsive design */
