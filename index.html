@@ -5,27 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CELO Sender</title>
     
-    <!-- Farcaster Mini App meta tags -->
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://send1.vercel.app/OG.png" />
-    <meta property="fc:frame:image:aspect_ratio" content="1.5:1" />
-    <meta property="fc:frame:button:1" content="Open App" />
-    <meta property="fc:frame:button:1:action" content="link" />
-    <meta property="fc:frame:button:1:target" content="https://send1.vercel.app/" />
-    <meta property="fc:frame:post_url" content="https://send1.vercel.app/api/webhook" />
-    
-    <!-- Farcaster Mini App specific meta tags -->
-    <meta name="farcaster:miniapp" content="true" />
-    <meta name="farcaster:miniapp:name" content="CELO Sender" />
-    <meta name="farcaster:miniapp:description" content="Send CELO tokens via smart contract on Farcaster" />
-    <meta name="farcaster:miniapp:icon" content="https://send1.vercel.app/icon-1024.png" />
-    <meta name="farcaster:miniapp:splash" content="https://send1.vercel.app/OG.png" />
-    <meta name="farcaster:miniapp:manifest" content="https://send1.vercel.app/.well-known/farcaster.json" />
-    <meta name="farcaster:frame" content="vNext" />
-    <meta name="farcaster:frame:image" content="https://send1.vercel.app/OG.png" />
-    <meta name="farcaster:frame:button:1" content="Open CELO Sender" />
-    <meta name="farcaster:frame:button:1:action" content="link" />
-    <meta name="farcaster:frame:button:1:target" content="https://send1.vercel.app/" />
+    <!-- Farcaster Mini App meta tags (new JSON format) -->
+    <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://send1.vercel.app/OG-farcaster.png","button":{"title":"🚀 Open CELO Sender","action":{"type":"launch_miniapp","url":"https://send1.vercel.app/","name":"CELO Sender","splashImageUrl":"https://send1.vercel.app/OG-farcaster.png","splashBackgroundColor":"#35D07F"}}}' />
+    <!-- For backward compatibility -->
+    <meta name="fc:frame" content='{"version":"1","imageUrl":"https://send1.vercel.app/OG-farcaster.png","button":{"title":"🚀 Open CELO Sender","action":{"type":"launch_frame","url":"https://send1.vercel.app/","name":"CELO Sender","splashImageUrl":"https://send1.vercel.app/OG-farcaster.png","splashBackgroundColor":"#35D07F"}}}' />
     
     <!-- Open Graph meta tags -->
     <meta property="og:title" content="CELO Sender" />
