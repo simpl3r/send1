@@ -43,7 +43,7 @@ label {
     font-size: 14px;
 }
 
-input {
+input:not(.autocomplete-container input) {
     width: 100%;
     padding: 12px 16px;
     border: 1px solid rgba(86, 223, 124, 0.3);
@@ -58,7 +58,7 @@ input {
     -webkit-border-radius: 8px;
 }
 
-input:focus {
+input:not(.autocomplete-container input):focus {
     outline: none;
     border-color: #56DF7C;
     box-shadow: 0 0 0 4px rgba(86, 223, 124, 0.12), 0 2px 6px rgba(86, 223, 124, 0.1);
@@ -283,8 +283,8 @@ button:disabled {
 .autocomplete-container input {
     flex: 1;
     min-width: 100px;
-    border: none;
-    outline: none;
+    border: none !important;
+    outline: none !important;
     padding: 4px 0;
     font-size: 14px;
     font-weight: 500;
@@ -292,6 +292,7 @@ button:disabled {
     color: #1f2937;
     letter-spacing: 0.01em;
     line-height: 1.4;
+    box-shadow: none !important;
 }
 
 .autocomplete-container input::placeholder {
