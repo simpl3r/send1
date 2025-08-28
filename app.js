@@ -33,7 +33,6 @@ async function loadConfig() {
 }
 
 // DOM элементы
-const connectButton = document.getElementById('connectButton');
 const transferForm = document.getElementById('transferForm');
 const walletInfo = document.getElementById('walletInfo');
 const balanceAmount = document.getElementById('balanceAmount');
@@ -95,7 +94,6 @@ async function initApp() {
 
 // Настройка обработчиков событий
 function setupEventListeners() {
-    connectButton.addEventListener('click', connectWallet);
     transferButton.addEventListener('click', sendTransaction);
     sendToMyselfButton.addEventListener('click', fillMyAddress);
     increaseButton.addEventListener('click', increaseAmount);
@@ -120,8 +118,12 @@ async function autoConnectWallet() {
         
         // Проверяем, что provider инициализирован
         if (!provider) {
+            // Для локальной разработки игнорируем ошибки подключения
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                showStatus('Local development mode - wallet not required', 'success');
+                return;
+            }
             showStatus('Wallet provider not available', 'error');
-            connectButton.style.display = 'block';
             return;
         }
         
@@ -138,20 +140,18 @@ async function autoConnectWallet() {
             userAccount = accounts[0];
             await switchToCeloNetwork();
             showStatus(`Wallet connected: ${shortenAddress(userAccount)}`, 'success');
-            
-            // Скрываем кнопку подключения и показываем интерфейс
-            connectButton.style.display = 'none';
-            walletInfo.style.display = 'block';
-            transferForm.style.display = 'block';
             await updateBalanceDisplay();
         } else {
             showStatus('Wallet connection required', 'error');
-            connectButton.style.display = 'block';
         }
     } catch (error) {
-        console.error('Ошибка автоматического подключения кошелька:', error);
+        console.error('Ошибка автоматического подключения кошелька');
+        // Для локальной разработки игнорируем ошибки подключения
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            showStatus('Local development mode - wallet errors ignored', 'success');
+            return;
+        }
         showStatus('Wallet connection failed', 'error');
-        connectButton.style.display = 'block';
     }
 }
 
@@ -175,7 +175,7 @@ async function switchToCeloNetwork() {
         });
     } catch (switchError) {
         // Если сеть не найдена, добавляем её
-        if (switchError.code === 4902) {
+        if (switchError && switchError.code === 4902) {
             try {
                 await provider.request({
                     method: 'wallet_addEthereumChain',
