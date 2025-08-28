@@ -118,6 +118,13 @@ async function autoConnectWallet() {
     try {
         showStatus('Connecting to wallet...', '');
         
+        // Проверяем, что provider инициализирован
+        if (!provider) {
+            showStatus('Wallet provider not available', 'error');
+            connectButton.style.display = 'block';
+            return;
+        }
+        
         // В Farcaster Mini Apps кошелек автоматически доступен
         // Сначала проверяем существующие подключения
         let accounts = await provider.request({ method: 'eth_accounts' });
@@ -210,6 +217,42 @@ function decreaseAmount() {
     amountInput.value = newValue;
 }
 
+// Функция для оценки стоимости газа
+async function estimateGasCost() {
+    try {
+        // Получаем текущую цену газа
+        const gasPrice = await provider.request({
+            method: 'eth_gasPrice',
+            params: []
+        });
+        
+        // Используем фиксированный лимит газа 200,000
+        const gasLimit = 200000;
+        
+        // Рассчитываем стоимость газа в wei
+        const gasCostWei = ethers.BigNumber.from(gasPrice).mul(gasLimit);
+        
+        // Конвертируем в CELO
+        const gasCostCelo = parseFloat(ethers.utils.formatEther(gasCostWei));
+        
+        return {
+            gasCostWei,
+            gasCostCelo,
+            gasPrice,
+            gasLimit
+        };
+    } catch (error) {
+        console.error('Ошибка оценки стоимости газа:', error);
+        // Возвращаем консервативную оценку
+        return {
+            gasCostWei: ethers.utils.parseEther('0.001'), // 0.001 CELO
+            gasCostCelo: 0.001,
+            gasPrice: '0x3B9ACA00', // 1 Gwei
+            gasLimit: 200000
+        };
+    }
+}
+
 // Отправка транзакции
 async function sendTransaction() {
     try {
@@ -232,6 +275,23 @@ async function sendTransaction() {
             return;
         }
         
+        showStatus('Checking balance and estimating fees...', '');
+        
+        // Получаем текущий баланс
+        const currentBalance = await getCeloBalance(userAccount);
+        
+        // Оцениваем стоимость газа
+        const gasEstimate = await estimateGasCost();
+        
+        // Проверяем, достаточно ли средств для транзакции + комиссия
+        const totalRequired = parseFloat(amount) + gasEstimate.gasCostCelo;
+        
+        if (currentBalance < totalRequired) {
+            const shortfall = (totalRequired - currentBalance).toFixed(6);
+            showStatus(`Insufficient balance. You need ${totalRequired.toFixed(6)} CELO (${amount} + ${gasEstimate.gasCostCelo.toFixed(6)} gas fee), but have only ${currentBalance.toFixed(6)} CELO. Missing: ${shortfall} CELO`, 'error');
+            return;
+        }
+        
         showStatus('Preparing transaction...', '');
         
         // Конвертируем сумму в wei (18 десятичных знаков для CELO)
@@ -248,12 +308,13 @@ async function sendTransaction() {
         console.log('Padded Amount:', paddedAmount);
         console.log('Transaction data:', data);
         
-        // Создаем транзакцию
+        // Создаем транзакцию с динамической ценой газа
         const transactionParameters = {
             to: CELO_CONTRACT_ADDRESS,
             from: userAccount,
             data: data,
-            gas: '0x30D40', // 200,000 gas
+            gas: `0x${gasEstimate.gasLimit.toString(16)}`, // Используем оценочный лимит газа
+            gasPrice: gasEstimate.gasPrice, // Используем текущую цену газа
         };
         
         showStatus('Confirm transaction in your wallet...', '');
