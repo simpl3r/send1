@@ -944,14 +944,3 @@ script.onerror = function() {
     showStatus('Error loading required libraries', 'error');
 };
 document.body.appendChild(script);
-
-// Автоматически пытаемся подключить кошелек при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    // Проверяем, доступен ли ethereum провайдер
-    if (window.ethereum) {
-        // Если доступен, автоматически запускаем подключение
-        setTimeout(() => {
-            connectButton.click();
-        }, 1000); // Небольшая задержка для уверенности, что все инициализировано
-    }
-});
