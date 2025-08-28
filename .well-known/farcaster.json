@@ -10,7 +10,8 @@
     "webhookUrl": "https://send1.vercel.app/api/webhook",
     "subtitle": "Send CELO tokens easily",
     "description": "Send CELO tokens via smart contract directly from Farcaster",
-    "primaryCategory": "finance"
+    "primaryCategory": "finance",
+    "ogImageUrl": "https://send1.vercel.app/og.png"
   },
   "accountAssociation": {
     "header": "eyJmaWQiOjMzMzc5OSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDEzQjM3OEU2OTU2MjVhQmZGYjFFMzJEOTc4MTEzNzg2YmEwNzM3RjYifQ",
