@@ -1,17 +1,18 @@
 {
-  "frame": {
+  "miniapp": {
     "name": "CELO Sender",
     "version": "1",
     "iconUrl": "https://send1.vercel.app/icon-1024.png",
     "homeUrl": "https://send1.vercel.app/",
-    "imageUrl": "https://send1.vercel.app/splash.png",
-    "splashImageUrl": "https://send1.vercel.app/splash.png",
-    "splashBackgroundColor": "#FCFF52",
+    "imageUrl": "https://send1.vercel.app/OG-farcaster.png",
+    "splashImageUrl": "https://send1.vercel.app/splash-icon-200x200.png",
+    "splashBackgroundColor": "#35D07F",
     "webhookUrl": "https://send1.vercel.app/api/webhook",
     "subtitle": "Send CELO tokens easily",
     "description": "Send CELO tokens via smart contract directly from Farcaster",
     "primaryCategory": "finance",
-    "ogImageUrl": "https://send1.vercel.app/og.png"
+    "ogImageUrl": "https://send1.vercel.app/OG.png",
+    "buttonTitle": "🚀 Open CELO Sender"
   },
   "accountAssociation": {
     "header": "eyJmaWQiOjMzMzc5OSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweDEzQjM3OEU2OTU2MjVhQmZGYjFFMzJEOTc4MTEzNzg2YmEwNzM3RjYifQ",
