@@ -198,6 +198,10 @@ function fillMyAddress() {
         recipientInput.value = userAccount;
         // Очищаем поле поиска по username
         usernameSearchInput.value = '';
+        // Очищаем выбранных пользователей
+        selectedUsers = [];
+        // Обновляем отображение выбранных пользователей
+        updateSelectedUsersDisplay();
         // Скрываем автодополнение
         hideAutocomplete();
     }
