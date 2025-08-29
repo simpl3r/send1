@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const MIME_TYPES = {
   '.html': 'text/html',
@@ -28,18 +28,21 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+
+
   // API endpoint для тестирования Neynar
   if (req.url.startsWith('/api/test-neynar') && req.method === 'GET') {
     const url = new URL(req.url, `http://localhost:${PORT}`);
     const query = url.searchParams.get('q') || 'vitalik';
+    const limit = parseInt(url.searchParams.get('limit')) || 5;
     const apiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
     
-    console.log('Testing Neynar API with query:', query);
+    console.log('Testing Neynar API with query:', query, 'limit:', limit);
     
     // Импортируем fetch для Node.js
     const fetch = require('node-fetch');
     
-    const neynarUrl = `https://api.neynar.com/v2/farcaster/user/search?q=${encodeURIComponent(query)}&limit=5`;
+    const neynarUrl = `https://api.neynar.com/v2/farcaster/user/search?q=${encodeURIComponent(query)}&limit=${limit}`;
     
     fetch(neynarUrl, {
       method: 'GET',
@@ -59,6 +62,7 @@ const server = http.createServer((req, res) => {
         success: status === 200,
         status,
         query,
+        limit,
         apiKey: apiKey.substring(0, 8) + '...',
         neynarResponse: data,
         timestamp: new Date().toISOString()
@@ -71,6 +75,7 @@ const server = http.createServer((req, res) => {
         success: false,
         error: error.message,
         query,
+        limit,
         apiKey: apiKey.substring(0, 8) + '...',
         timestamp: new Date().toISOString()
       }));
