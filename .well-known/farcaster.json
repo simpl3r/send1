@@ -11,7 +11,7 @@
     "subtitle": "Send CELO tokens easily",
     "description": "Send CELO tokens via smart contract directly from Farcaster",
     "primaryCategory": "finance",
-    "ogImageUrl": "https://send1.vercel.app/OG.png",
+    "ogImageUrl": "https://send1.vercel.app/OG-farcaster.png",
     "buttonTitle": "🚀 Open CELO Sender"
   },
   "accountAssociation": {
