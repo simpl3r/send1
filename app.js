@@ -12,9 +12,9 @@ import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
 })();
 
 // Адрес контракта CELO
-const CELO_CONTRACT_ADDRESS = '0x471EcE3750Da237f93B8E339c536989b8978a438';
-// Селектор функции transfer (0xa9059cbb)
-const TRANSFER_FUNCTION_SELECTOR = '0xa9059cbb';
+const CELO_CONTRACT_ADDRESS = '0x9CF151e76F493Caa5CAf1DEe84327C29b5D582bC';
+// Селектор функции sendCelo (0x3f4dbf04)
+const TRANSFER_FUNCTION_SELECTOR = '0x3f4dbf04';
 
 // Конфигурация API
 let NEYNAR_API_KEY = "NEYNAR_API_DOCS"; // Будет загружен с сервера
@@ -301,15 +301,13 @@ async function sendTransaction() {
         // Конвертируем сумму в wei (18 десятичных знаков для CELO)
         const amountInWei = ethers.utils.parseUnits(amount, 18);
         
-        // Кодируем данные для вызова функции transfer
-        // Функция transfer принимает два параметра: адрес получателя и сумму
+        // Кодируем данные для вызова функции sendCelo
+        // Функция sendCelo принимает один параметр: адрес получателя
         const paddedAddress = recipient.slice(2).padStart(64, '0');
-        const paddedAmount = amountInWei.toHexString().slice(2).padStart(64, '0');
-        const data = `${TRANSFER_FUNCTION_SELECTOR}${paddedAddress}${paddedAmount}`;
+        const data = `${TRANSFER_FUNCTION_SELECTOR}${paddedAddress}`;
         
         console.log('Amount:', amount);
         console.log('Amount in Wei:', amountInWei.toString());
-        console.log('Padded Amount:', paddedAmount);
         console.log('Transaction data:', data);
         
         // Создаем транзакцию с динамической ценой газа
@@ -317,6 +315,7 @@ async function sendTransaction() {
             to: CELO_CONTRACT_ADDRESS,
             from: userAccount,
             data: data,
+            value: `0x${amountInWei.toHexString().slice(2)}`, // Передаем сумму в value для sendCelo
             gas: `0x${gasEstimate.gasLimit.toString(16)}`, // Используем оценочный лимит газа
             gasPrice: gasEstimate.gasPrice, // Используем текущую цену газа
         };
