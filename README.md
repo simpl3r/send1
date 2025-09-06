@@ -27,7 +27,7 @@ A Farcaster Mini App for sending CELO tokens via smart contract.
 3. Configure environment variables (optional):
    ```bash
    cp .env.example .env
-   # Отредактируйте .env файл и добавьте ваш Neynar API ключ
+   # Edit the .env file and add your Neynar API key
    ```
 4. Start the development server:
    ```bash
@@ -37,27 +37,27 @@ A Farcaster Mini App for sending CELO tokens via smart contract.
 
 ### Environment Variables
 
-- `NEYNAR_API_KEY` - API ключ для Neynar (получите на https://neynar.com)
-  - Для разработки: используется публичный ключ по умолчанию
-  - Для продакшена: обязательно установите ваш собственный ключ
+- `NEYNAR_API_KEY` - API key for Neynar (get it at https://neynar.com)
+  - For development: uses public key by default
+  - For production: you must set your own key
 
-## Настройка API ключа Neynar
+## Neynar API Key Setup
 
-**ВАЖНО:** Функция поиска пользователей Neynar требует платного плана. В настоящее время приложение использует публичный демо-ключ `NEYNAR_API_DOCS` для демонстрации функциональности.
+**IMPORTANT:** Neynar user search functionality requires a paid plan. Currently, the application uses the public demo key `NEYNAR_API_DOCS` to demonstrate functionality.
 
-### Для использования собственного API ключа:
+### To use your own API key:
 
-1. Зарегистрируйтесь на [Neynar](https://neynar.com) и получите API ключ
-2. Обновите план до платного на [neynar.com/#pricing](https://neynar.com/#pricing)
-3. Скопируйте `.env.example` в `.env`:
+1. Register at [Neynar](https://neynar.com) and get an API key
+2. Upgrade to a paid plan at [neynar.com/#pricing](https://neynar.com/#pricing)
+3. Copy `.env.example` to `.env`:
    ```bash
    cp .env.example .env
    ```
-4. Добавьте ваш API ключ в файл `.env`:
+4. Add your API key to the `.env` file:
    ```
    NEYNAR_API_KEY=your_actual_api_key_here
    ```
-5. Обновите `server.js`, чтобы использовать ваш ключ вместо публичного
+5. Update `server.js` to use your key instead of the public one
 
 ### Testing in Farcaster
 
@@ -69,11 +69,11 @@ A Farcaster Mini App for sending CELO tokens via smart contract.
 
 ### Vercel Deployment
 
-1. Подключите ваш репозиторий к Vercel
-2. В настройках проекта Vercel добавьте переменные окружения:
-   - `NEYNAR_API_KEY` = ваш API ключ от Neynar
-3. Обновите URLs в `farcaster.json` на ваш production домен
-4. Деплойте проект
+1. Connect your repository to Vercel
+2. In Vercel project settings, add environment variables:
+   - `NEYNAR_API_KEY` = your Neynar API key
+3. Update URLs in `farcaster.json` to your production domain
+4. Deploy the project
 
 ### For Production
 
