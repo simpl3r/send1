@@ -21,18 +21,22 @@ export default function handler(req, res) {
   
   if (req.method === 'GET') {
     try {
-      // Используем пользовательский ключ из переменных окружения (Vercel Environment Variables)
-      const apiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
+      // Используем разные ключи для разных целей
+      const notificationApiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
+      const searchApiKey = process.env.NEYNAR_SEARCH_API_KEY || 'NEYNAR_API_DOCS';
       
       console.log('Environment variables check:', {
-        hasNeynarKey: !!process.env.NEYNAR_API_KEY,
-        keyLength: process.env.NEYNAR_API_KEY ? process.env.NEYNAR_API_KEY.length : 0,
-        usingFallback: !process.env.NEYNAR_API_KEY,
-        finalKey: apiKey.substring(0, 8) + '...' // Показываем только первые 8 символов для безопасности
+        hasNotificationKey: !!process.env.NEYNAR_API_KEY,
+        hasSearchKey: !!process.env.NEYNAR_SEARCH_API_KEY,
+        notificationKeyLength: process.env.NEYNAR_API_KEY ? process.env.NEYNAR_API_KEY.length : 0,
+        searchKeyLength: process.env.NEYNAR_SEARCH_API_KEY ? process.env.NEYNAR_SEARCH_API_KEY.length : 0,
+        finalNotificationKey: notificationApiKey.substring(0, 8) + '...',
+        finalSearchKey: searchApiKey.substring(0, 8) + '...'
       });
       
       const response = {
-        NEYNAR_API_KEY: apiKey,
+        NEYNAR_API_KEY: notificationApiKey,
+        NEYNAR_SEARCH_API_KEY: searchApiKey,
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || 'development'
       };

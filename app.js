@@ -25,7 +25,8 @@ const CELO_CONTRACT_ADDRESS = '0x9CF151e76F493Caa5CAf1DEe84327C29b5D582bC';
 const TRANSFER_FUNCTION_SELECTOR = '0x3f4dbf04';
 
 // Конфигурация API
-let NEYNAR_API_KEY = "NEYNAR_API_DOCS"; // Будет загружен с сервера
+let NEYNAR_API_KEY = "NEYNAR_API_DOCS"; // Приватный ключ для уведомлений
+let NEYNAR_SEARCH_API_KEY = "NEYNAR_API_DOCS"; // Публичный ключ для поиска
 const NEYNAR_BASE_URL = 'https://api.neynar.com/v2';
 
 // Функция для загрузки конфигурации с сервера
@@ -33,16 +34,23 @@ async function loadConfig() {
     try {
         const response = await fetch('/api/config');
         const config = await response.json();
-        NEYNAR_API_KEY = config.NEYNAR_API_KEY;
-        console.log('API ключ загружен:', NEYNAR_API_KEY ? 'пользовательский' : 'публичный');
+        NEYNAR_API_KEY = config.NEYNAR_API_KEY; // Для уведомлений
+        NEYNAR_SEARCH_API_KEY = config.NEYNAR_SEARCH_API_KEY; // Для поиска
+        console.log('API ключи загружены:', {
+            notifications: NEYNAR_API_KEY ? 'приватный' : 'публичный',
+            search: NEYNAR_SEARCH_API_KEY ? 'публичный' : 'fallback'
+        });
     } catch (error) {
-        console.warn('Ошибка загрузки конфигурации, используем публичный ключ:', error);
+        console.warn('Ошибка загрузки конфигурации, используем публичные ключи:', error);
     }
 }
 
 // DOM элементы
 const transferForm = document.getElementById('transferForm');
 const walletInfo = document.getElementById('walletInfo');
+const profileName = document.getElementById('profileName');
+const profileUsername = document.getElementById('profileUsername');
+const profileAvatar = document.getElementById('profileAvatar');
 const balanceAmount = document.getElementById('balanceAmount');
 const recipientInput = document.getElementById('recipient');
 const amountInput = document.getElementById('amount');
@@ -388,9 +396,55 @@ async function getCeloBalance(address) {
 }
 
 // Обновление отображения баланса
+async function updateFarcasterProfile() {
+    try {
+        const context = await sdk.context;
+        if (context && context.user) {
+            const user = context.user;
+            
+            // Отображаем display name или username
+            profileName.textContent = user.displayName || user.username || 'Farcaster User';
+            
+            // Отображаем username с @
+            if (user.username) {
+                profileUsername.textContent = `@${user.username}`;
+                profileUsername.style.display = 'block';
+            } else {
+                profileUsername.style.display = 'none';
+            }
+            
+            // Отображаем аватар
+            if (user.pfpUrl) {
+                profileAvatar.src = user.pfpUrl;
+                profileAvatar.style.display = 'block';
+            } else {
+                profileAvatar.style.display = 'none';
+            }
+            
+            console.log('Farcaster profile loaded:', user);
+        } else {
+            // Если нет данных пользователя Farcaster
+            profileName.textContent = 'Not connected';
+            profileUsername.style.display = 'none';
+            profileAvatar.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error loading Farcaster profile:', error);
+        profileName.textContent = 'Profile unavailable';
+        profileUsername.style.display = 'none';
+        profileAvatar.style.display = 'none';
+    }
+}
+
+function updateWalletDisplay() {
+    updateFarcasterProfile();
+}
+
 async function updateBalanceDisplay() {
+    updateWalletDisplay();
+    
     if (!userAccount) {
-        balanceAmount.textContent = 'Not connected';
+        balanceAmount.textContent = '-';
         return;
     }
     
@@ -568,7 +622,7 @@ async function searchMultipleUsers(query, signal) {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'api_key': NEYNAR_API_KEY
+                'api_key': NEYNAR_SEARCH_API_KEY
             },
             signal: signal
         });
@@ -692,7 +746,7 @@ async function searchByUsername(username) {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'api_key': NEYNAR_API_KEY
+                'api_key': NEYNAR_SEARCH_API_KEY
             }
         });
         

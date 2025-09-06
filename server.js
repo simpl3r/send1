@@ -22,9 +22,13 @@ const server = http.createServer((req, res) => {
   // API endpoint для конфигурации
   if (req.url === '/api/config' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    // Используем пользовательский ключ из переменных окружения (Vercel Environment Variables)
-    const apiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
-    res.end(JSON.stringify({ NEYNAR_API_KEY: apiKey }));
+    // Используем разные ключи для разных целей
+    const notificationApiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
+    const searchApiKey = process.env.NEYNAR_SEARCH_API_KEY || 'NEYNAR_API_DOCS';
+    res.end(JSON.stringify({ 
+      NEYNAR_API_KEY: notificationApiKey,
+      NEYNAR_SEARCH_API_KEY: searchApiKey 
+    }));
     return;
   }
 
@@ -35,7 +39,7 @@ const server = http.createServer((req, res) => {
     const url = new URL(req.url, `http://localhost:${PORT}`);
     const query = url.searchParams.get('q') || 'vitalik';
     const limit = parseInt(url.searchParams.get('limit')) || 5;
-    const apiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
+    const apiKey = process.env.NEYNAR_SEARCH_API_KEY || 'NEYNAR_API_DOCS';
     
     console.log('Testing Neynar API with query:', query, 'limit:', limit);
     

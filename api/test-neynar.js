@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
         try {
             const query = req.query.q || 'vitalik';
-            const apiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
+            const apiKey = process.env.NEYNAR_SEARCH_API_KEY || 'NEYNAR_API_DOCS';
             
             console.log('Testing Neynar API with:', {
                 query,
