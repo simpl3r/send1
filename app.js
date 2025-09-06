@@ -6,6 +6,14 @@ import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
     try {
         await sdk.actions.ready();
         console.log('Farcaster SDK ready called successfully');
+        
+        // Автоматически добавляем приложение при инициализации
+        try {
+            await sdk.actions.addMiniApp();
+            console.log('Приложение автоматически добавлено');
+        } catch (error) {
+            console.log('Приложение уже добавлено или ошибка:', error.message);
+        }
     } catch (error) {
         console.error('Ошибка при вызове sdk.actions.ready():', error);
     }
@@ -46,6 +54,7 @@ const decreaseButton = document.getElementById('decreaseButton');
 const usernameSearchInput = document.getElementById('usernameSearch');
 const autocompleteDropdown = document.getElementById('autocompleteDropdown');
 const searchLoading = document.getElementById('searchLoading');
+
 
 // Переменные для автодополнения
 let searchTimeout = null;
@@ -98,6 +107,7 @@ function setupEventListeners() {
     sendToMyselfButton.addEventListener('click', fillMyAddress);
     increaseButton.addEventListener('click', increaseAmount);
     decreaseButton.addEventListener('click', decreaseAmount);
+
     // Обработчики событий для автодополнения
     usernameSearchInput.addEventListener('input', handleSearchInput);
     usernameSearchInput.addEventListener('keydown', handleKeyNavigation);
@@ -934,6 +944,8 @@ function removeSelectedUser(index) {
     
     showStatus('User removed', 'success');
 }
+
+
 
 // Делаем функцию доступной глобально для onclick
 window.removeSelectedUser = removeSelectedUser;
