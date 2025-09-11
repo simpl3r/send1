@@ -177,7 +177,7 @@ button:disabled {
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     flex-shrink: 0;
-    max-width: 60%;
+    max-width: 55%;
     overflow: hidden;
 }
 
@@ -235,13 +235,20 @@ button:disabled {
 }
 
 .balance-amount {
-    font-size: 18px;
+    font-size: clamp(10px, 4vw, 18px);
     font-weight: 700;
     color: #000;
     font-family: 'Inter', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
     margin: 0;
     text-align: start;
     flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 0;
+    max-width: 100%;
+    word-break: break-all;
 }
 
 .send-to-myself-btn {
