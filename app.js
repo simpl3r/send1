@@ -1,4 +1,5 @@
 import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
+import { getReferralTag, submitReferral } from 'https://esm.sh/@divvi/referral-sdk';
 
 // Сообщаем Farcaster SDK, что приложение готово
 // Вызываем ready() сразу после импорта SDK
@@ -20,9 +21,12 @@ import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
 })();
 
 // Адрес контракта CELO
-const CELO_CONTRACT_ADDRESS = '0x9CF151e76F493Caa5CAf1DEe84327C29b5D582bC';
+const CELO_CONTRACT_ADDRESS = '0xAc8f5e96f45600a9a67b33C5F6f060FFf48353d6';
 // Селектор функции sendCelo (0x3f4dbf04)
 const TRANSFER_FUNCTION_SELECTOR = '0x3f4dbf04';
+
+// Divvi consumer address (ваш Divvi Identifier)
+const DIVVI_CONSUMER_ADDRESS = '0xA2c408956988672D64562A23bb0eD1d247a03B98';
 
 // Конфигурация API
 let NEYNAR_API_KEY = "NEYNAR_API_DOCS"; // Приватный ключ для уведомлений
@@ -88,6 +92,8 @@ const CELO_NETWORK = {
 let userAccount = null;
 let provider = null;
 
+
+
 // Инициализация приложения
 async function initApp() {
     try {
@@ -97,6 +103,8 @@ async function initApp() {
         // Получаем Ethereum провайдер из Farcaster SDK
         provider = await sdk.wallet.getEthereumProvider();
         console.log('Farcaster Ethereum provider получен');
+        
+
         
         // Настраиваем обработчики событий
         setupEventListeners();
@@ -322,17 +330,39 @@ async function sendTransaction() {
         // Кодируем данные для вызова функции sendCelo
         // Функция sendCelo принимает один параметр: адрес получателя
         const paddedAddress = recipient.slice(2).padStart(64, '0');
-        const data = `${TRANSFER_FUNCTION_SELECTOR}${paddedAddress}`;
+        let data = `${TRANSFER_FUNCTION_SELECTOR}${paddedAddress}`;
+        
+        // Генерируем referral tag для пользователя (Step 2 из примера)
+        try {
+            const referralTag = getReferralTag({
+                user: userAccount, // Адрес пользователя, совершающего транзакцию
+                consumer: DIVVI_CONSUMER_ADDRESS, // Ваш Divvi Identifier
+            });
+            
+            // Добавляем referral tag к data полю для отслеживания атрибуции (Step 3)
+            data = data + referralTag;
+            
+            console.log('=== DIVVI REFERRAL DEBUG ===');
+            console.log('User address:', userAccount);
+            console.log('Consumer address:', DIVVI_CONSUMER_ADDRESS);
+            console.log('Referral tag:', referralTag);
+            console.log('Final transaction data:', data);
+            console.log('=== END DEBUG ===');
+            
+        } catch (error) {
+            console.error('Ошибка создания referral tag:', error);
+            // Продолжаем без referral tag если произошла ошибка
+        }
         
         console.log('Amount:', amount);
         console.log('Amount in Wei:', amountInWei.toString());
         console.log('Transaction data:', data);
         
-        // Создаем транзакцию с динамической ценой газа
+        // Создаем транзакцию с referral tag в data поле
         const transactionParameters = {
+            from: userAccount, // Используем from для ethers.js
             to: CELO_CONTRACT_ADDRESS,
-            from: userAccount,
-            data: data,
+            data: data, // data уже содержит referral tag
             value: `0x${amountInWei.toHexString().slice(2)}`, // Передаем сумму в value для sendCelo
             gas: `0x${gasEstimate.gasLimit.toString(16)}`, // Используем оценочный лимит газа
             gasPrice: gasEstimate.gasPrice, // Используем текущую цену газа
@@ -350,6 +380,21 @@ async function sendTransaction() {
         const shortHash = `${txHash.substring(0, 8)}...${txHash.substring(txHash.length - 6)}`;
         const linkMessage = `Transaction sent! <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer" onclick="window.open('${explorerUrl}', '_blank'); return false;" style="color: #00d4aa; text-decoration: underline;">${shortHash}</a>`;
         showStatus(linkMessage, 'success', true);
+        
+        // Получаем chain ID цепи, в которую была отправлена транзакция (Step 4)
+        const chainId = 42220; // CELO mainnet chain ID
+        
+        // Отправляем транзакцию в Divvi для referral tracking (Step 5)
+        try {
+            await submitReferral({
+                txHash,
+                chainId,
+            });
+            console.log('Referral данные отправлены в Divvi');
+        } catch (divviError) {
+            console.error('Ошибка отправки referral данных:', divviError);
+            // Не показываем ошибку пользователю, так как транзакция уже прошла
+        }
         
         // Обновляем баланс после успешной транзакции
         setTimeout(async () => {
@@ -612,153 +657,7 @@ async function performSearch(query) {
     }
 }
 
-// ЗАКОММЕНТИРОВАНО: Поиск через Neynar API
-/*
-// Новая функция для поиска множественных пользователей
-async function searchMultipleUsers(query, signal) {
-    try {
-        // Убираем @ если есть
-        const cleanQuery = query.replace('@', '').toLowerCase();
-        
-        console.log('Searching multiple users via Neynar API:', cleanQuery);
-        
-        // Получаем FID текущего пользователя из SDK (если доступен)
-        let viewerFid = null;
-        try {
-            const context = await sdk.context;
-            if (context && context.user && context.user.fid) {
-                viewerFid = context.user.fid;
-            }
-        } catch (e) {
-            console.log('Could not get viewer FID from SDK:', e.message);
-        }
-        
-        // Строим URL с параметрами
-        let searchUrl = `${NEYNAR_BASE_URL}/farcaster/user/search?q=${encodeURIComponent(cleanQuery)}&limit=10`;
-        if (viewerFid) {
-            searchUrl += `&viewer_fid=${viewerFid}`;
-            console.log('Using viewer_fid:', viewerFid);
-        }
-        
-        // Используем Neynar API search endpoint для множественных результатов
-        const response = await fetch(searchUrl, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'api_key': NEYNAR_SEARCH_API_KEY
-            },
-            signal: signal
-        });
-        
-        console.log('Neynar search API response status:', response.status);
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Neynar search API response:', data);
-            
-            if (data.result && data.result.users && data.result.users.length > 0) {
-                const users = data.result.users.map(user => {
-                    console.log('Processing user from search:', user);
-                    
-                    // Приоритет адресов для Primary Farcaster Wallet:
-                    let walletAddress = null;
-                    
-                    // Приоритет 1: verified_addresses.primary.eth_address - Primary Farcaster Wallet
-                    if (user.verified_addresses && 
-                        user.verified_addresses.primary && 
-                        user.verified_addresses.primary.eth_address) {
-                        walletAddress = user.verified_addresses.primary.eth_address;
-                        console.log('Using primary verified eth address:', walletAddress);
-                    }
-                    // Приоритет 2: Первый адрес из verified_addresses.eth_addresses как fallback
-                    else if (user.verified_addresses && 
-                            user.verified_addresses.eth_addresses && 
-                            user.verified_addresses.eth_addresses.length > 0) {
-                        walletAddress = user.verified_addresses.eth_addresses[0];
-                        console.log('Using first verified eth address as fallback:', walletAddress);
-                    }
-                    // Приоритет 3: Custody address как дополнительный fallback
-                    else if (user.custody_address && user.custody_address.startsWith('0x')) {
-                        walletAddress = user.custody_address;
-                        console.log('Using custody address as fallback:', walletAddress);
-                    }
-                    // Приоритет 4: FID-based адрес как последний fallback
-                    else {
-                        const fidHex = user.fid.toString(16).padStart(8, '0');
-                        walletAddress = '0x' + fidHex.padEnd(40, '0');
-                        console.log('Using FID-based address as last fallback:', walletAddress);
-                    }
-                    
-                    return {
-                        username: user.username,
-                        fid: user.fid,
-                        address: walletAddress,
-                        displayName: user.display_name,
-                        pfpUrl: user.pfp_url,
-                        // Добавляем метрики для сортировки
-                        neynarScore: user.experimental?.neynar_user_score || 0,
-                        followerCount: user.follower_count || 0,
-                        powerBadge: user.power_badge || false,
-                        verifiedAddresses: user.verified_addresses?.eth_addresses?.length || 0
-                    };
-                });
-                
-                // Сортируем результаты по качеству пользователя
-                users.sort((a, b) => {
-                    // Приоритет 1: Power Badge
-                    if (a.powerBadge !== b.powerBadge) {
-                        return b.powerBadge - a.powerBadge;
-                    }
-                    
-                    // Приоритет 2: Neynar Score (качество пользователя)
-                    if (Math.abs(a.neynarScore - b.neynarScore) > 0.1) {
-                        return b.neynarScore - a.neynarScore;
-                    }
-                    
-                    // Приоритет 3: Количество верифицированных адресов
-                    if (a.verifiedAddresses !== b.verifiedAddresses) {
-                        return b.verifiedAddresses - a.verifiedAddresses;
-                    }
-                    
-                    // Приоритет 4: Количество подписчиков
-                    return b.followerCount - a.followerCount;
-                });
-                
-                console.log('Processed and sorted users:', users);
-                return users;
-            }
-        } else {
-            console.log('Neynar search API failed with status:', response.status);
-            const errorText = await response.text().catch(() => 'Unknown error');
-            console.log('Error response:', errorText);
-        }
-        
-        // Возвращаем пустой массив если Neynar API не дал результатов
-        console.log('No results from Neynar API');
-        return [];
-        
-    } catch (error) {
-        if (error.name === 'AbortError') {
-            console.log('Search request was aborted');
-            return [];
-        }
-        
-        console.error('Error in searchMultipleUsers:', error);
-        
-        // Проверяем тип ошибки для лучшей диагностики
-        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-            console.log('Network error detected with Neynar API');
-        } else if (error.message.includes('API key')) {
-            console.error('API key issue detected');
-        }
-        
-        // Возвращаем пустой массив при ошибке Neynar API
-        return [];
-    }
-}
 
-*/
 
 // Новая функция для поиска множественных пользователей
 async function searchMultipleUsers(query, signal) {
@@ -990,94 +889,7 @@ async function searchByUsername(username) {
     }
 }
 
-// ЗАКОММЕНТИРОВАНО: Старая реализация через Neynar API
-/*
-async function searchByUsername(username) {
-    try {
-        // Убираем @ если есть
-        const cleanUsername = username.replace('@', '').toLowerCase();
-        
-        console.log('Searching user via Neynar API:', cleanUsername);
-        
-        // Используем только Neynar API согласно документации
-        const response = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/by_username?username=${cleanUsername}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'api_key': NEYNAR_SEARCH_API_KEY
-            }
-        });
-        
-        console.log('Neynar API response status:', response.status);
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Neynar API response:', data);
-            
-            if (data.user) {
-                const user = data.user;
-                console.log('User data from Neynar:', user);
-                
-                // Согласно Neynar API, приоритет адресов для Primary Farcaster Wallet:
-                // 1. verified_addresses.primary.eth_address - Primary Farcaster Wallet
-                // 2. Первый адрес из verified_addresses.eth_addresses - как fallback
-                // 3. Custody address - как дополнительный fallback
-                // 4. FID-based адрес - как последний fallback
-                let walletAddress = null;
-                
-                console.log('User custody_address:', user.custody_address);
-                console.log('User verified_addresses:', user.verified_addresses);
-                
-                // Приоритет 1: Primary Farcaster Wallet из verified_addresses.primary.eth_address
-                if (user.verified_addresses && 
-                    user.verified_addresses.primary && 
-                    user.verified_addresses.primary.eth_address && 
-                    user.verified_addresses.primary.eth_address.startsWith('0x')) {
-                    walletAddress = user.verified_addresses.primary.eth_address;
-                    console.log('Using Primary Farcaster Wallet:', walletAddress);
-                }
-                // Приоритет 2: Первый верифицированный Ethereum адрес как fallback
-                else if (user.verified_addresses && 
-                    user.verified_addresses.eth_addresses && 
-                    Array.isArray(user.verified_addresses.eth_addresses) && 
-                    user.verified_addresses.eth_addresses.length > 0) {
-                    walletAddress = user.verified_addresses.eth_addresses[0];
-                    console.log('Using first verified eth address as fallback:', walletAddress);
-                }
-                // Приоритет 3: Custody address как дополнительный fallback
-                else if (user.custody_address && user.custody_address.startsWith('0x')) {
-                    walletAddress = user.custody_address;
-                    console.log('Using custody address as fallback:', walletAddress);
-                }
-                // Приоритет 4: FID-based адрес как последний fallback
-                else {
-                    // Создаем детерминированный адрес на основе FID
-                    const fidHex = user.fid.toString(16).padStart(8, '0');
-                    walletAddress = '0x' + fidHex.padEnd(40, '0');
-                    console.log('Using FID-based address as last fallback:', walletAddress);
-                }
-                
-                return {
-                    username: user.username,
-                    fid: user.fid,
-                    address: walletAddress,
-                    displayName: user.display_name,
-                    pfpUrl: user.pfp_url
-                };
-            }
-        } else {
-            console.log('Neynar API error:', response.status, response.statusText);
-        }
-        
-        console.log('Neynar API не вернул результатов для пользователя:', cleanUsername);
-        return null;
-        
-    } catch (error) {
-        console.error('Error searching username:', error);
-        return null;
-    }
-}
-*/
+
 
 function showSearchLoading() {
     searchLoading.style.display = 'block';

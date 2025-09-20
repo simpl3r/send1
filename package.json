@@ -17,6 +17,7 @@
   "author": "CELO Developer",
   "license": "MIT",
   "dependencies": {
+    "@divvi/referral-sdk": "^2.3.0",
     "dotenv": "^16.0.0",
     "node-fetch": "^2.6.7"
   },
