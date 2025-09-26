@@ -1,123 +1,253 @@
 # CELO Transfer Mini App
 
-A Farcaster Mini App for sending CELO tokens via smart contract.
+> A Farcaster Mini App for seamless CELO token transfers with user search functionality
 
-## Features
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D22.11.0-brightgreen)](https://nodejs.org/)
+[![Farcaster](https://img.shields.io/badge/Farcaster-Mini%20App-purple)](https://docs.farcaster.xyz/)
 
-- 🔗 Farcaster SDK integration
-- 💰 Send CELO tokens directly from Farcaster
-- 🎨 Clean, minimalist design following CELO brand guidelines
-- 📱 Mobile-optimized interface
-- 🔐 Secure wallet connection via Farcaster
+## 📖 About
 
-## Development
+CELO Transfer Mini App is a decentralized application built for the Farcaster ecosystem that enables users to send CELO tokens directly within the Farcaster interface. The app features user search functionality powered by Neynar API and provides a seamless Web3 experience.
+
+### ✨ Key Features
+
+- 🔗 **Farcaster SDK Integration** - Native integration with Farcaster ecosystem
+- 💰 **CELO Token Transfers** - Send CELO tokens via smart contract
+- 👥 **User Search** - Find recipients by Farcaster username with autocomplete
+- 🎨 **Modern UI/UX** - Clean, responsive design following CELO brand guidelines
+- 📱 **Mobile Optimized** - Perfect experience on mobile devices
+- 🔐 **Secure Wallet Connection** - Safe wallet integration via Farcaster
+- ⚡ **Real-time Gas Estimation** - Dynamic gas cost calculation
+- 🌐 **Multi-network Support** - CELO mainnet integration
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 22.11.0 or higher
+- [Node.js](https://nodejs.org/) 22.11.0 or higher
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 - Farcaster account with Developer Mode enabled
+- [Neynar API key](https://neynar.com) (optional for development)
 
-### Setup
+### Installation
 
-1. Clone or download this project
-2. Install dependencies:
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd celo-transfer-mini-app
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
-3. Configure environment variables (optional):
+
+3. **Configure environment variables** (optional)
    ```bash
    cp .env.example .env
-   # Edit the .env file and add your Neynar API key
+   # Edit .env and add your Neynar API key
    ```
-4. Start the development server:
+
+4. **Start development server**
    ```bash
    npm start
    ```
-5. Open http://localhost:3000 in your browser
+
+5. **Open in browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+### 🔧 Development Scripts
+
+```bash
+npm start          # Start development server
+npm run dev        # Alternative development command
+npm test           # Run tests (if available)
+npm run build      # Build for production
+```
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Vanilla JavaScript, HTML5, CSS3
+- **Blockchain**: CELO Network, Ethereum Web3
+- **APIs**: Farcaster SDK, Neynar API
+- **Development**: Node.js, Express.js
+- **Deployment**: Vercel, Ngrok (for testing)
+
+## ⚙️ Configuration
 
 ### Environment Variables
 
-- `NEYNAR_API_KEY` - API key for Neynar (get it at https://neynar.com)
-  - For development: uses public key by default
-  - For production: you must set your own key
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `NEYNAR_API_KEY` | Neynar API key for user search | No | `NEYNAR_API_DOCS` |
+| `NODE_ENV` | Environment mode | No | `development` |
 
-## Neynar API Key Setup
+### Neynar API Setup
 
-**IMPORTANT:** Neynar user search functionality requires a paid plan. Currently, the application uses the public demo key `NEYNAR_API_DOCS` to demonstrate functionality.
+> **Note**: User search functionality requires a Neynar API key with paid plan
 
-### To use your own API key:
+1. **Get API Key**
+   - Register at [Neynar](https://neynar.com)
+   - Upgrade to paid plan at [neynar.com/#pricing](https://neynar.com/#pricing)
 
-1. Register at [Neynar](https://neynar.com) and get an API key
-2. Upgrade to a paid plan at [neynar.com/#pricing](https://neynar.com/#pricing)
-3. Copy `.env.example` to `.env`:
+2. **Configure Environment**
    ```bash
    cp .env.example .env
+   echo "NEYNAR_API_KEY=your_actual_api_key_here" >> .env
    ```
-4. Add your API key to the `.env` file:
+
+3. **Update Server Configuration**
+   - Modify `server.js` to use your API key
+   - Restart development server
+
+## 🧪 Testing
+
+### Local Testing
+
+1. **Start Development Server**
+   ```bash
+   npm start
    ```
-   NEYNAR_API_KEY=your_actual_api_key_here
+
+2. **Test with Ngrok** (for Farcaster testing)
+   ```bash
+   ngrok http 3000
    ```
-5. Update `server.js` to use your key instead of the public one
 
-### Testing in Farcaster
+### Farcaster Integration Testing
 
-1. Enable Developer Mode in Farcaster settings
-2. Use the developer tools to preview your mini app
-3. Test the manifest at `/.well-known/farcaster.json`
+1. **Enable Developer Mode**
+   - Open Farcaster app settings
+   - Enable Developer Mode
 
-## Deployment
+2. **Test Mini App**
+   - Use Farcaster developer tools
+   - Preview your mini app
+   - Verify manifest at `/.well-known/farcaster.json`
 
-### Vercel Deployment
+## 🚀 Deployment
 
-1. Connect your repository to Vercel
-2. In Vercel project settings, add environment variables:
-   - `NEYNAR_API_KEY` = your Neynar API key
-3. Update URLs in `farcaster.json` to your production domain
-4. Deploy the project
+### Vercel (Recommended)
 
-### For Production
+1. **Connect Repository**
+   ```bash
+   # Connect your GitHub repo to Vercel
+   vercel --prod
+   ```
 
-1. Update URLs in `farcaster.json` to your production domain
-2. Host the application on a web server
-3. Ensure `farcaster.json` is accessible at `/.well-known/farcaster.json`
-4. Configure environment variables on your hosting platform:
-   - `NEYNAR_API_KEY` - your Neynar API key
-5. Submit for review in Farcaster Developer Tools
+2. **Configure Environment Variables**
+   ```bash
+   # In Vercel dashboard, add:
+   NEYNAR_API_KEY=your_api_key
+   ```
 
-### Required Files for Deployment
+3. **Update Configuration**
+   - Update URLs in `farcaster.json`
+   - Deploy the project
 
-- `index.html` - Main application interface
-- `app.js` - Application logic with Farcaster SDK
-- `farcaster.json` - Mini app manifest
-- `icon.svg` - Application icon
-- `splash.svg` - Splash screen image
-- `server.js` - Development server (optional for production)
+### Manual Deployment
 
-## File Structure
+1. **Build for Production**
+   ```bash
+   npm run build  # if build script exists
+   ```
+
+2. **Deploy Files**
+   - Upload all files to your web server
+   - Ensure `/.well-known/farcaster.json` is accessible
+   - Configure environment variables
+
+3. **Submit for Review**
+   - Test thoroughly
+   - Submit via Farcaster Developer Tools
+
+## 📁 Project Structure
 
 ```
-├── index.html          # Main HTML file
-├── app.js             # JavaScript with Farcaster SDK
-├── farcaster.json     # Farcaster manifest
-├── manifest.json      # Legacy manifest
-├── icon.svg           # App icon
-├── splash.svg         # Splash image
-├── server.js          # Development server
-├── package.json       # Node.js dependencies
-└── README.md          # This file
+celo-transfer-mini-app/
+├── 📄 index.html              # Main application interface
+├── 📄 app.js                  # Core application logic
+├── 📄 styles.css              # Application styles
+├── 📄 server.js               # Development server
+├── 📄 package.json            # Dependencies and scripts
+├── 📄 farcaster.json          # Farcaster Mini App manifest
+├── 📄 .env.example            # Environment variables template
+├── 🖼️ Assets/
+│   ├── icon-1024.png          # App icon (1024x1024)
+│   ├── splash.png             # Splash screen image
+│   ├── splash.svg             # Splash screen (vector)
+│   └── OG-farcaster.png       # Open Graph image
+├── 🔧 api/                    # Serverless functions
+│   ├── config.js              # API configuration
+│   ├── webhook.js             # Farcaster webhook
+│   ├── test-neynar.js         # Neynar API testing
+│   └── farcaster-manifest.js  # Manifest endpoint
+└── 📁 .well-known/
+    └── farcaster.json         # Farcaster manifest (public)
 ```
 
-## Manifest Configuration
+## 📚 API Reference
 
-The `farcaster.json` file contains all necessary configuration for Farcaster Mini App publication. Update the following fields before deployment:
+### Core Functions
 
-- `homeUrl` - Your production domain
-- `iconUrl` - URL to your app icon
-- `splashImageUrl` - URL to your splash image
-- `webhookUrl` - Your webhook endpoint (if needed)
-- `developer` information
-- `support` and `privacy` URLs
+- `initApp()` - Initialize Farcaster SDK and app
+- `connectWallet()` - Connect user wallet
+- `sendTransaction()` - Send CELO tokens
+- `searchMultipleUsers()` - Search Farcaster users
+- `estimateGasCost()` - Calculate transaction gas
 
-## License
+### Endpoints
 
-MIT License
+- `GET /api/config` - Get API configuration
+- `POST /api/webhook` - Farcaster webhook handler
+- `GET /api/test-neynar` - Test Neynar API connection
+- `GET /.well-known/farcaster.json` - App manifest
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create feature branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
+3. **Commit changes**
+   ```bash
+   git commit -m 'Add amazing feature'
+   ```
+4. **Push to branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+5. **Open Pull Request**
+
+### Development Guidelines
+
+- Follow existing code style
+- Add comments for complex logic
+- Test thoroughly before submitting
+- Update documentation as needed
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: [Farcaster Docs](https://docs.farcaster.xyz/)
+- **CELO Network**: [CELO Docs](https://docs.celo.org/)
+- **Neynar API**: [Neynar Docs](https://docs.neynar.com/)
+- **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
+
+## 🙏 Acknowledgments
+
+- [Farcaster](https://farcaster.xyz/) for the amazing protocol
+- [CELO](https://celo.org/) for the sustainable blockchain
+- [Neynar](https://neynar.com/) for the powerful API
+- Community contributors and testers
+
+---
+
+**Made with ❤️ for the Farcaster ecosystem**
