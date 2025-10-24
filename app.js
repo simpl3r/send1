@@ -66,6 +66,7 @@ const decreaseButton = document.getElementById('decreaseButton');
 const usernameSearchInput = document.getElementById('usernameSearch');
 const autocompleteDropdown = document.getElementById('autocompleteDropdown');
 const searchLoading = document.getElementById('searchLoading');
+const shareButton = document.getElementById('shareButton');
 
 
 // Переменные для автодополнения
@@ -135,6 +136,11 @@ function setupEventListeners() {
             hideAutocomplete();
         }
     });
+    
+    // Новый обработчик: поделиться приложением
+    if (shareButton) {
+        shareButton.addEventListener('click', shareApp);
+    }
 }
 
 // Автоматическое подключение кошелька согласно практикам Farcaster Mini Apps
@@ -1084,3 +1090,44 @@ script.onerror = function() {
     showStatus('Error loading required libraries', 'error');
 };
 document.body.appendChild(script);
+
+
+
+function shareApp() {
+    try {
+        const origin = window.location.origin;
+        const shareUrl = origin + '/';
+        const shareText = '🚀 CELO Sender — send CELO to friends in one click';
+        const isWarpcast = /Warpcast/i.test(navigator.userAgent) || /Farcaster/i.test(navigator.userAgent);
+
+        // В среде Farcaster/ Warpcast открываем композер с эмбеддом
+        const composeUrl = `https://farcaster.xyz/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
+
+        // Если есть Web Share API — используем его
+        if (navigator.share && !isWarpcast) {
+            navigator.share({ title: 'CELO Sender', text: shareText, url: shareUrl })
+                .then(() => showStatus('Shared successfully', 'success'))
+                .catch((err) => {
+                    console.warn('Share failed, fallback to compose link', err);
+                    window.open(composeUrl, '_blank');
+                });
+            return;
+        }
+
+        // Fallback: открываем композер Warpcast или копируем ссылку
+        if (isWarpcast) {
+            window.open(composeUrl, '_blank');
+        } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(shareUrl)
+                .then(() => showStatus(`Link copied: <a href="${shareUrl}" target="_blank">${shareUrl}</a>`, 'success', true))
+                .catch(() => {
+                    window.open(composeUrl, '_blank');
+                });
+        } else {
+            window.open(composeUrl, '_blank');
+        }
+    } catch (error) {
+        console.error('Share error:', error);
+        showStatus('Failed to initiate share', 'error');
+    }
+}

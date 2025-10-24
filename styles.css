@@ -835,3 +835,21 @@ button:disabled {
         font-size: 10px;
     }
 }
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.share-button {
+    width: auto !important;
+    padding: 8px 12px;
+    font-size: 13px;
+    align-self: flex-end;
+    margin-bottom: 0;
+}
+
+.share-button:hover {
+    transform: translateY(-1px);
+}
