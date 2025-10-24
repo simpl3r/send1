@@ -67,6 +67,11 @@ const usernameSearchInput = document.getElementById('usernameSearch');
 const autocompleteDropdown = document.getElementById('autocompleteDropdown');
 const searchLoading = document.getElementById('searchLoading');
 const shareButton = document.getElementById('shareButton');
+// Slider elements for Send CELO
+const transferSlider = document.getElementById('transferSlider');
+const sliderThumb = document.getElementById('sliderThumb');
+const sliderProgress = transferSlider ? transferSlider.querySelector('.slider-progress') : null;
+const sliderText = transferSlider ? transferSlider.querySelector('.slider-text') : null;
 
 
 // Переменные для автодополнения
@@ -120,7 +125,12 @@ async function initApp() {
 
 // Настройка обработчиков событий
 function setupEventListeners() {
-    transferButton.addEventListener('click', sendTransaction);
+    if (transferButton) {
+        transferButton.addEventListener('click', sendTransaction);
+    }
+    if (transferSlider) {
+        setupSlider();
+    }
     sendToMyselfButton.addEventListener('click', fillMyAddress);
     increaseButton.addEventListener('click', increaseAmount);
     decreaseButton.addEventListener('click', decreaseAmount);
@@ -1130,4 +1140,79 @@ function shareApp() {
         console.error('Share error:', error);
         showStatus('Failed to initiate share', 'error');
     }
+}
+
+// Slider interactions to send CELO on successful slide
+function setupSlider() {
+    if (!transferSlider || !sliderThumb || !sliderProgress) return;
+    let trackRect = null;
+    const threshold = 0.85; // 85% of track width to confirm
+
+    // rAF-driven rendering for smoother updates
+    let rafId = null;
+    let isDragging = false;
+    let pendingX = 0;
+
+    function render() {
+        if (!isDragging || !trackRect) return;
+        const clamped = Math.max(0, Math.min(pendingX, trackRect.width));
+        const percent = (clamped / trackRect.width) * 100;
+        // GPU-friendly transform
+        sliderProgress.style.width = `${percent}%`;
+        sliderThumb.style.transform = `translate3d(${clamped}px, -50%, 0)`;
+        rafId = requestAnimationFrame(render);
+    }
+
+    function startLoop() {
+        if (rafId == null) rafId = requestAnimationFrame(render);
+    }
+
+    function stopLoop() {
+        if (rafId != null) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    }
+
+    function onMove(e) {
+        pendingX = e.clientX - trackRect.left;
+    }
+
+    async function onUp(e) {
+        isDragging = false;
+        stopLoop();
+        transferSlider.classList.remove('dragging');
+        transferSlider.removeEventListener('pointermove', onMove);
+        const finalX = e.clientX - trackRect.left;
+        const confirmed = finalX >= trackRect.width * threshold;
+        if (confirmed) {
+            transferSlider.classList.add('success');
+            sliderProgress.style.width = '100%';
+            try {
+                await sendTransaction();
+            } finally {
+                setTimeout(() => {
+                    transferSlider.classList.remove('success');
+                    sliderProgress.style.width = '0%';
+                    sliderThumb.style.transform = 'translate3d(0px, -50%, 0)';
+                }, 800);
+            }
+        } else {
+            sliderProgress.style.width = '0%';
+            sliderThumb.style.transform = 'translate3d(0px, -50%, 0)';
+        }
+    }
+
+    transferSlider.addEventListener('pointerdown', (e) => {
+        transferSlider.classList.add('dragging');
+        // Prevent default gestures and ensure continuous events
+        transferSlider.setPointerCapture(e.pointerId);
+        trackRect = transferSlider.getBoundingClientRect();
+        isDragging = true;
+        pendingX = e.clientX - trackRect.left;
+        transferSlider.addEventListener('pointermove', onMove);
+        transferSlider.addEventListener('pointerup', onUp, { once: true });
+        transferSlider.addEventListener('pointercancel', onUp, { once: true });
+        startLoop();
+    });
 }

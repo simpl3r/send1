@@ -79,7 +79,15 @@
             
             <div class="button-group">
                 <button id="sendToMyselfButton" class="send-to-myself-btn">Choose yourself</button>
-                <button id="transferButton">Send CELO</button>
+                <div class="transfer-row">
+                    <div id="transferSlider" class="slider-button" role="button" aria-label="Slide to send">
+                        <div class="slider-track">
+                            <div class="slider-progress"></div>
+                        </div>
+                        <div class="slider-thumb" id="sliderThumb"><img class="arrow-icon" src="https://www.svgrepo.com/show/390864/arrow-right-bold.svg" alt="Arrow" /></div>
+                        <span class="slider-text">Slide to Send CELO</span>
+                    </div>
+                </div>
                 <button id="shareButton" class="share-button">Share app with friends</button>
             </div>
         </div>
