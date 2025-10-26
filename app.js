@@ -1108,33 +1108,45 @@ function shareApp() {
         const origin = window.location.origin;
         const shareUrl = origin + '/';
         const shareText = '🚀 CELO Sender — send CELO to friends in one click';
-        const isWarpcast = /Warpcast/i.test(navigator.userAgent) || /Farcaster/i.test(navigator.userAgent);
 
-        // В среде Farcaster/ Warpcast открываем композер с эмбеддом
-        const composeUrl = `https://farcaster.xyz/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
-
-        // Если есть Web Share API — используем его
-        if (navigator.share && !isWarpcast) {
-            navigator.share({ title: 'CELO Sender', text: shareText, url: shareUrl })
-                .then(() => showStatus('Shared successfully', 'success'))
-                .catch((err) => {
-                    console.warn('Share failed, fallback to compose link', err);
-                    window.open(composeUrl, '_blank');
-                });
+        // Предпочитаем официальный SDK-метод: открыть композер с текстом и эмбеддом
+        if (sdk?.actions?.composeCast) {
+            sdk.actions.composeCast({
+                text: shareText,
+                embeds: [shareUrl],
+            })
+            .then((result) => {
+                if (result?.cast) {
+                    showStatus('Post composed', 'success');
+                } else {
+                    showStatus('Share cancelled', '');
+                }
+            })
+            .catch((err) => {
+                console.warn('composeCast failed, fallback to web share or composer URL', err);
+                fallbackShare();
+            });
             return;
         }
 
-        // Fallback: открываем композер Warpcast или копируем ссылку
-        if (isWarpcast) {
-            window.open(composeUrl, '_blank');
-        } else if (navigator.clipboard) {
-            navigator.clipboard.writeText(shareUrl)
-                .then(() => showStatus(`Link copied: <a href="${shareUrl}" target="_blank">${shareUrl}</a>`, 'success', true))
-                .catch(() => {
-                    window.open(composeUrl, '_blank');
-                });
-        } else {
-            window.open(composeUrl, '_blank');
+        // Фолбэки, если composeCast недоступен
+        fallbackShare();
+
+        function fallbackShare() {
+            // Используем домен Warpcast для композера
+            const composeUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
+            const isWarpcast = /Warpcast/i.test(navigator.userAgent) || /Farcaster/i.test(navigator.userAgent);
+
+            if (navigator.share && !isWarpcast) {
+                navigator.share({ title: 'CELO Sender', text: shareText, url: shareUrl })
+                    .then(() => showStatus('Shared successfully', 'success'))
+                    .catch((err) => {
+                        console.warn('Share failed, fallback to compose link', err);
+                        window.open(composeUrl, '_blank');
+                    });
+            } else {
+                window.open(composeUrl, '_blank');
+            }
         }
     } catch (error) {
         console.error('Share error:', error);
