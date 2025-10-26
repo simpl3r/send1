@@ -251,6 +251,7 @@ function fillMyAddress() {
 
 // Увеличение количества
 function increaseAmount() {
+    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
     const currentValue = parseFloat(amountInput.value) || 0;
     const newValue = (currentValue + 0.001).toFixed(3);
     amountInput.value = newValue;
@@ -258,6 +259,7 @@ function increaseAmount() {
 
 // Уменьшение количества
 function decreaseAmount() {
+    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
     const currentValue = parseFloat(amountInput.value) || 0;
     const newValue = Math.max(0.001, currentValue - 0.001).toFixed(3);
     amountInput.value = newValue;
@@ -1162,6 +1164,7 @@ function setupSlider() {
     let rafId = null;
     let isDragging = false;
     let pendingX = 0;
+    let lastHapticStep = -1;
 
     function render() {
         if (!isDragging || !trackRect) return;
@@ -1170,6 +1173,15 @@ function setupSlider() {
         // GPU-friendly transform
         sliderProgress.style.width = `${percent}%`;
         sliderThumb.style.transform = `translate3d(${clamped}px, -50%, 0)`;
+        try {
+            if (sdk?.haptics?.selectionChanged && isDragging) {
+                const step = Math.floor(percent / 5);
+                if (step !== lastHapticStep) {
+                    sdk.haptics.selectionChanged();
+                    lastHapticStep = step;
+                }
+            }
+        } catch (_) {}
         rafId = requestAnimationFrame(render);
     }
 
@@ -1191,6 +1203,7 @@ function setupSlider() {
     async function onUp(e) {
         isDragging = false;
         stopLoop();
+        lastHapticStep = -1;
         transferSlider.classList.remove('dragging');
         transferSlider.removeEventListener('pointermove', onMove);
         const finalX = e.clientX - trackRect.left;
