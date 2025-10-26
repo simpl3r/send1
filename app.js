@@ -418,6 +418,27 @@ async function sendTransaction() {
         setTimeout(async () => {
             await updateBalanceDisplay();
         }, 2000); // Ждем 2 секунды для подтверждения транзакции
+
+        // Ждем подтверждение транзакции и даем краткий вибро-отклик
+        (async () => {
+            try {
+                const timeoutMs = 30000; // максимум 30 секунд
+                const intervalMs = 1500;
+                const start = Date.now();
+                let receipt = null;
+                while (Date.now() - start < timeoutMs) {
+                    receipt = await provider.request({
+                        method: 'eth_getTransactionReceipt',
+                        params: [txHash]
+                    });
+                    if (receipt && receipt.status === '0x1') break;
+                    await new Promise(r => setTimeout(r, intervalMs));
+                }
+                if (receipt && receipt.status === '0x1') {
+                    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
+                }
+            } catch (_) {}
+        })();
     } catch (error) {
         console.error('Ошибка отправки транзакции:', error);
         showStatus('Error sending transaction', 'error');
