@@ -20,30 +20,7 @@ import { getReferralTag, submitReferral } from 'https://esm.sh/@divvi/referral-s
     }
 })();
 
-// Хелпер для Haptics с проверкой возможностей SDK
-const haptics = {
-    impact: (style = 'medium') => {
-        try {
-            if (sdk?.haptics?.impactOccurred) {
-                sdk.haptics.impactOccurred({ style });
-            }
-        } catch (_) {}
-    },
-    selection: () => {
-        try {
-            if (sdk?.haptics?.selectionChanged) {
-                sdk.haptics.selectionChanged();
-            }
-        } catch (_) {}
-    },
-    notify: (type = 'success') => {
-        try {
-            if (sdk?.haptics?.notificationOccurred) {
-                sdk.haptics.notificationOccurred({ type });
-            }
-        } catch (_) {}
-    }
-};
+
 
 // Адрес контракта CELO
 const CELO_CONTRACT_ADDRESS = '0xAc8f5e96f45600a9a67b33C5F6f060FFf48353d6';
@@ -134,8 +111,6 @@ async function initApp() {
         // Получаем Ethereum провайдер из Farcaster SDK
         provider = await sdk.wallet.getEthereumProvider();
         console.log('Farcaster Ethereum provider получен');
-        
-
         
         // Настраиваем обработчики событий
         setupEventListeners();
@@ -279,7 +254,6 @@ function increaseAmount() {
     const currentValue = parseFloat(amountInput.value) || 0;
     const newValue = (currentValue + 0.001).toFixed(3);
     amountInput.value = newValue;
-    haptics.selection();
 }
 
 // Уменьшение количества
@@ -287,7 +261,6 @@ function decreaseAmount() {
     const currentValue = parseFloat(amountInput.value) || 0;
     const newValue = Math.max(0.001, currentValue - 0.001).toFixed(3);
     amountInput.value = newValue;
-    haptics.selection();
 }
 
 // Функция для оценки стоимости газа
@@ -347,9 +320,6 @@ async function sendTransaction() {
             showStatus('Amount must be greater than zero', 'error');
             return;
         }
-
-        // Haptics для подтверждения серьезного действия
-        haptics.impact('heavy');
 
         showStatus('Checking balance and estimating fees...', '');
         
@@ -482,10 +452,7 @@ function showStatus(message, type, isHTML = false) {
         statusElement.textContent = message;
     }
 
-    // Триггерим уведомление haptics для успеха/ошибки
-    if (type === 'success' || type === 'error') {
-        haptics.notify(type);
-    }
+
 }
 
 function shortenAddress(address) {
@@ -1136,9 +1103,6 @@ document.body.appendChild(script);
 
 function shareApp() {
     try {
-        // Вибрация при нажатии кнопки Share
-        haptics.impact('medium');
-
         const origin = window.location.origin;
         const shareUrl = origin + '/';
         const shareText = '🚀 CELO Sender — send CELO to friends in one click';
@@ -1234,8 +1198,7 @@ function setupSlider() {
         if (confirmed) {
             transferSlider.classList.add('success');
             sliderProgress.style.width = '100%';
-            // Небольшой тактильный отклик при успешном свайпе
-            haptics.impact('medium');
+
             try {
                 await sendTransaction();
             } finally {
@@ -1253,8 +1216,6 @@ function setupSlider() {
 
     transferSlider.addEventListener('pointerdown', (e) => {
         transferSlider.classList.add('dragging');
-        // Вибрация при начале перетаскивания
-        haptics.impact('light');
         // Prevent default gestures and ensure continuous events
         transferSlider.setPointerCapture(e.pointerId);
         trackRect = transferSlider.getBoundingClientRect();
