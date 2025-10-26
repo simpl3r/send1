@@ -5,8 +5,8 @@ import { getReferralTag, submitReferral } from 'https://esm.sh/@divvi/referral-s
 // Вызываем ready() сразу после импорта SDK
 (async function() {
     try {
-        await sdk.actions.ready();
-        console.log('Farcaster SDK ready called successfully');
+        await sdk.actions.ready({ disableNativeGestures: true });
+        console.log('Farcaster SDK ready called successfully (native gestures disabled)');
         
         // Автоматически добавляем приложение при инициализации
         try {
