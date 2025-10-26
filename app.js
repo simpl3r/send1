@@ -398,6 +398,7 @@ async function sendTransaction() {
         const shortHash = `${txHash.substring(0, 8)}...${txHash.substring(txHash.length - 6)}`;
         const linkMessage = `Transaction sent! <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer" onclick="window.open('${explorerUrl}', '_blank'); return false;" style="color: #00d4aa; text-decoration: underline;">${shortHash}</a>`;
         showStatus(linkMessage, 'success', true);
+        try { if (sdk?.haptics?.notificationOccurred) sdk.haptics.notificationOccurred('success'); } catch (_) {}
         
         // Получаем chain ID цепи, в которую была отправлена транзакция (Step 4)
         const chainId = 42220; // CELO mainnet chain ID
