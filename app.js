@@ -1198,7 +1198,7 @@ function setupSlider() {
         if (confirmed) {
             transferSlider.classList.add('success');
             sliderProgress.style.width = '100%';
-            try { if (sdk?.haptics?.impactOccurred) sdk.haptics.impactOccurred('medium'); } catch (_) {}
+            try { if (sdk?.haptics?.impactOccurred) sdk.haptics.impactOccurred('heavy'); } catch (_) {}
 
             try {
                 await sendTransaction();
@@ -1217,7 +1217,7 @@ function setupSlider() {
 
     transferSlider.addEventListener('pointerdown', (e) => {
         transferSlider.classList.add('dragging');
-        try { if (sdk?.haptics?.impactOccurred) sdk.haptics.impactOccurred('light'); } catch (_) {}
+        try { if (sdk?.haptics?.impactOccurred) sdk.haptics.impactOccurred('medium'); } catch (_) {}
         // Prevent default gestures and ensure continuous events
         transferSlider.setPointerCapture(e.pointerId);
         trackRect = transferSlider.getBoundingClientRect();
