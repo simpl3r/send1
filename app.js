@@ -1129,7 +1129,7 @@ function shareApp() {
     try {
         const origin = window.location.origin;
         const shareUrl = origin + '/';
-        const shareText = '🚀 CELO Sender — send CELO to friends in one click';
+        const shareText = '🚀 CELO Sender — send CELO to friends in one click! Builded by @s1mpl3r';
 
         // Предпочитаем официальный SDK-метод: открыть композер с текстом и эмбеддом
         if (sdk?.actions?.composeCast) {
