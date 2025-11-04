@@ -1,4 +1,4 @@
-# CELO Transfer Mini App
+# CELO Sender
 
 > A Farcaster Mini App for seamless CELO token transfers with user search functionality
 
@@ -8,7 +8,7 @@
 
 ## 📖 About
 
-CELO Transfer Mini App is a decentralized application built for the Farcaster ecosystem that enables users to send CELO tokens directly within the Farcaster interface. The app features user search functionality powered by Neynar API and provides a seamless Web3 experience.
+CELO Sender is a decentralized application built for the Farcaster ecosystem that enables users to send CELO tokens directly within the Farcaster interface. The app features user search functionality powered by Neynar API and provides a seamless Web3 experience.
 
 ### ✨ Key Features
 
@@ -35,7 +35,7 @@ CELO Transfer Mini App is a decentralized application built for the Farcaster ec
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd celo-transfer-mini-app
+   cd celo-sender
    ```
 
 2. **Install dependencies**
@@ -165,7 +165,7 @@ npm run build      # Build for production
 ## 📁 Project Structure
 
 ```
-celo-transfer-mini-app/
+celo-sender/
 ├── 📄 index.html              # Main application interface
 ├── 📄 app.js                  # Core application logic
 ├── 📄 styles.css              # Application styles
