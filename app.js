@@ -1,53 +1,53 @@
 import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
 import { getReferralTag, submitReferral } from 'https://esm.sh/@divvi/referral-sdk';
 
-// Сообщаем Farcaster SDK, что приложение готово
-// Вызываем ready() сразу после импорта SDK
+// Notify Farcaster SDK that the app is ready
+// Call ready() immediately after importing the SDK
 (async function() {
     try {
         await sdk.actions.ready({ disableNativeGestures: true });
         console.log('Farcaster SDK ready called successfully (native gestures disabled)');
         
-        // Автоматически добавляем приложение при инициализации
+        // Automatically add the mini app on initialization
         try {
             await sdk.actions.addMiniApp();
-            console.log('Приложение автоматически добавлено');
+            console.log('Mini app automatically added');
         } catch (error) {
-            console.log('Приложение уже добавлено или ошибка:', error.message);
+            console.log('Mini app already added or error:', error.message);
         }
     } catch (error) {
-        console.error('Ошибка при вызове sdk.actions.ready():', error);
+        console.error('Error calling sdk.actions.ready():', error);
     }
 })();
 
 
 
-// Адрес контракта CELO
+// CELO contract address
 const CELO_CONTRACT_ADDRESS = '0xAc8f5e96f45600a9a67b33C5F6f060FFf48353d6';
-// Селектор функции sendCelo (0x3f4dbf04)
+// sendCelo function selector (0x3f4dbf04)
 const TRANSFER_FUNCTION_SELECTOR = '0x3f4dbf04';
 
-// Divvi consumer address (ваш Divvi Identifier)
+// Divvi consumer address (your Divvi Identifier)
 const DIVVI_CONSUMER_ADDRESS = '0xA2c408956988672D64562A23bb0eD1d247a03B98';
 
-// Конфигурация API
-let NEYNAR_API_KEY = "NEYNAR_API_DOCS"; // Приватный ключ для уведомлений
-let NEYNAR_SEARCH_API_KEY = "NEYNAR_API_DOCS"; // Публичный ключ для поиска
+// API configuration
+let NEYNAR_API_KEY = "NEYNAR_API_DOCS"; // Private key for notifications
+let NEYNAR_SEARCH_API_KEY = "NEYNAR_API_DOCS"; // Public key for search
 const NEYNAR_BASE_URL = 'https://api.neynar.com/v2';
 
-// Функция для загрузки конфигурации с сервера
+// Load configuration from server
 async function loadConfig() {
     try {
         const response = await fetch('/api/config');
         const config = await response.json();
-        NEYNAR_API_KEY = config.NEYNAR_API_KEY; // Для уведомлений
-        NEYNAR_SEARCH_API_KEY = config.NEYNAR_SEARCH_API_KEY; // Для поиска
-        console.log('API ключи загружены:', {
-            notifications: NEYNAR_API_KEY ? 'приватный' : 'публичный',
-            search: NEYNAR_SEARCH_API_KEY ? 'публичный' : 'fallback'
+        NEYNAR_API_KEY = config.NEYNAR_API_KEY; // For notifications
+        NEYNAR_SEARCH_API_KEY = config.NEYNAR_SEARCH_API_KEY; // For search
+        console.log('API keys loaded:', {
+            notifications: NEYNAR_API_KEY ? 'private' : 'public',
+            search: NEYNAR_SEARCH_API_KEY ? 'public' : 'fallback'
         });
     } catch (error) {
-        console.warn('Ошибка загрузки конфигурации, используем публичные ключи:', error);
+        console.warn('Error loading configuration, using public keys:', error);
     }
 }
 
@@ -76,16 +76,16 @@ const sliderProgress = transferSlider ? transferSlider.querySelector('.slider-pr
 const sliderText = transferSlider ? transferSlider.querySelector('.slider-text') : null;
 
 
-// Переменные для автодополнения
+// Autocomplete state
 let searchTimeout = null;
 let currentSearchResults = [];
 let selectedIndex = -1;
 let currentAbortController = null;
 let searchCache = new Map();
 
-// Параметры сети CELO
+// CELO network parameters
 const CELO_NETWORK = {
-    chainId: '0xa4ec', // 42220 в hex
+    chainId: '0xa4ec', // 42220 in hex
     chainName: 'Celo Mainnet',
     nativeCurrency: {
         name: 'CELO',
@@ -96,34 +96,34 @@ const CELO_NETWORK = {
     blockExplorerUrls: ['https://explorer.celo.org']
 };
 
-// Состояние приложения
+// App state
 let userAccount = null;
 let provider = null;
 
 
 
-// Инициализация приложения
+// App initialization
 async function initApp() {
     try {
-        // Загружаем конфигурацию API ключа
+        // Load API keys configuration
         await loadConfig();
         
-        // Получаем Ethereum провайдер из Farcaster SDK
+        // Get Ethereum provider from Farcaster SDK
         provider = await sdk.wallet.getEthereumProvider();
-        console.log('Farcaster Ethereum provider получен');
+        console.log('Farcaster Ethereum provider obtained');
         
-        // Настраиваем обработчики событий
+        // Set up event listeners
         setupEventListeners();
         
-        // Автоматически подключаем кошелек согласно практикам Farcaster Mini Apps
+        // Auto-connect wallet per Farcaster Mini Apps best practices
         await autoConnectWallet();
     } catch (error) {
-        console.error('Ошибка инициализации:', error);
+        console.error('Initialization error:', error);
         showStatus('Application initialization error', 'error');
     }
 }
 
-// Настройка обработчиков событий
+// Event listeners setup
 function setupEventListeners() {
     if (transferButton) {
         transferButton.addEventListener('click', sendTransaction);
@@ -135,32 +135,32 @@ function setupEventListeners() {
     increaseButton.addEventListener('click', increaseAmount);
     decreaseButton.addEventListener('click', decreaseAmount);
 
-    // Обработчики событий для автодополнения
+    // Autocomplete event handlers
     usernameSearchInput.addEventListener('input', handleSearchInput);
     usernameSearchInput.addEventListener('keydown', handleKeyNavigation);
     usernameSearchInput.addEventListener('focus', handleSearchFocus);
     
-    // Скрываем выпадающий список при клике вне области
+    // Hide dropdown when clicking outside
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.autocomplete-container')) {
             hideAutocomplete();
         }
     });
     
-    // Новый обработчик: поделиться приложением
+    // New handler: share app
     if (shareButton) {
         shareButton.addEventListener('click', shareApp);
     }
 }
 
-// Автоматическое подключение кошелька согласно практикам Farcaster Mini Apps
+// Auto wallet connection per Farcaster Mini Apps best practices
 async function autoConnectWallet() {
     try {
         showStatus('Connecting to wallet...', '');
         
-        // Проверяем, что provider инициализирован
+        // Ensure provider is initialized
         if (!provider) {
-            // Для локальной разработки игнорируем ошибки подключения
+            // Ignore wallet errors in local development
             if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
                 showStatus('Local development mode - wallet not required', 'success');
                 return;
@@ -169,11 +169,11 @@ async function autoConnectWallet() {
             return;
         }
         
-        // В Farcaster Mini Apps кошелек автоматически доступен
-        // Сначала проверяем существующие подключения
+        // In Farcaster Mini Apps the wallet is available automatically
+        // First check existing connections
         let accounts = await provider.request({ method: 'eth_accounts' });
         
-        // Если нет подключенных аккаунтов, запрашиваем доступ
+        // Request access if no connected accounts
         if (!accounts || accounts.length === 0) {
             accounts = await provider.request({ method: 'eth_requestAccounts' });
         }
@@ -187,8 +187,8 @@ async function autoConnectWallet() {
             showStatus('Wallet connection required', 'error');
         }
     } catch (error) {
-        console.error('Ошибка автоматического подключения кошелька');
-        // Для локальной разработки игнорируем ошибки подключения
+        console.error('Auto wallet connection error');
+        // Ignore wallet errors in local development
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             showStatus('Local development mode - wallet errors ignored', 'success');
             return;
@@ -197,26 +197,26 @@ async function autoConnectWallet() {
     }
 }
 
-// Подключение к кошельку (fallback для ручного подключения)
+// Connect wallet (manual fallback)
 async function connectWallet() {
     try {
         await autoConnectWallet();
     } catch (error) {
-        console.error('Ошибка подключения к кошельку:', error);
+        console.error('Wallet connection error:', error);
         showStatus('Failed to connect to wallet', 'error');
     }
 }
 
-// Переключение на сеть CELO
+// Switch to CELO network
 async function switchToCeloNetwork() {
     try {
-        // Пытаемся переключиться на сеть CELO
+        // Attempt to switch to CELO network
         await provider.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: CELO_NETWORK.chainId }],
         });
     } catch (switchError) {
-        // Если сеть не найдена, добавляем её
+        // If network not found, add it
         if (switchError && switchError.code === 4902) {
             try {
                 await provider.request({
@@ -224,32 +224,32 @@ async function switchToCeloNetwork() {
                     params: [CELO_NETWORK],
                 });
             } catch (addError) {
-                console.error('Ошибка добавления сети CELO:', addError);
+                console.error('Error adding CELO network:', addError);
                 showStatus('Failed to add CELO network', 'error');
             }
         } else {
-            console.error('Ошибка переключения на сеть CELO:', switchError);
+            console.error('Error switching to CELO network:', switchError);
             showStatus('Failed to switch to CELO network', 'error');
         }
     }
 }
 
-// Заполнение адреса текущего пользователя
+// Fill with current user's address
 function fillMyAddress() {
     if (userAccount) {
         recipientInput.value = userAccount;
-        // Очищаем поле поиска по username
+        // Clear username search field
         usernameSearchInput.value = '';
-        // Очищаем выбранных пользователей
+        // Clear selected users
         selectedUsers = [];
-        // Обновляем отображение выбранных пользователей
+        // Update selected users display
         updateSelectedUsersDisplay();
-        // Скрываем автодополнение
+        // Hide autocomplete
         hideAutocomplete();
     }
 }
 
-// Увеличение количества
+// Increase amount
 function increaseAmount() {
     try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
     const currentValue = parseFloat(amountInput.value) || 0;
@@ -257,7 +257,7 @@ function increaseAmount() {
     amountInput.value = newValue;
 }
 
-// Уменьшение количества
+// Decrease amount
 function decreaseAmount() {
     try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
     const currentValue = parseFloat(amountInput.value) || 0;
@@ -265,22 +265,22 @@ function decreaseAmount() {
     amountInput.value = newValue;
 }
 
-// Функция для оценки стоимости газа
+// Estimate gas cost
 async function estimateGasCost() {
     try {
-        // Получаем текущую цену газа
+        // Get current gas price
         const gasPrice = await provider.request({
             method: 'eth_gasPrice',
             params: []
         });
         
-        // Используем фиксированный лимит газа 200,000
+        // Use a fixed gas limit of 200,000
         const gasLimit = 200000;
         
-        // Рассчитываем стоимость газа в wei
+        // Calculate gas cost in wei
         const gasCostWei = ethers.BigNumber.from(gasPrice).mul(gasLimit);
         
-        // Конвертируем в CELO
+        // Convert to CELO
         const gasCostCelo = parseFloat(ethers.utils.formatEther(gasCostWei));
         
         return {
@@ -290,8 +290,8 @@ async function estimateGasCost() {
             gasLimit
         };
     } catch (error) {
-        console.error('Ошибка оценки стоимости газа:', error);
-        // Возвращаем консервативную оценку
+        console.error('Error estimating gas cost:', error);
+        // Return a conservative estimate
         return {
             gasCostWei: ethers.utils.parseEther('0.001'), // 0.001 CELO
             gasCostCelo: 0.001,
@@ -301,10 +301,10 @@ async function estimateGasCost() {
     }
 }
 
-// Отправка транзакции
+// Send transaction
 async function sendTransaction() {
     try {
-        // Проверяем, что все поля заполнены
+        // Ensure all fields are filled
         const recipient = recipientInput.value.trim();
         const amount = amountInput.value.trim();
         
@@ -325,13 +325,13 @@ async function sendTransaction() {
 
         showStatus('Checking balance and estimating fees...', '');
         
-        // Получаем текущий баланс
+        // Get current balance
         const currentBalance = await getCeloBalance(userAccount);
         
-        // Оцениваем стоимость газа
+        // Estimate gas cost
         const gasEstimate = await estimateGasCost();
         
-        // Проверяем, достаточно ли средств для транзакции + комиссия
+        // Check sufficient funds for amount + fee
         const totalRequired = parseFloat(amount) + gasEstimate.gasCostCelo;
         
         if (currentBalance < totalRequired) {
@@ -342,22 +342,22 @@ async function sendTransaction() {
         
         showStatus('Preparing transaction...', '');
         
-        // Конвертируем сумму в wei (18 десятичных знаков для CELO)
+        // Convert amount to wei (18 decimals for CELO)
         const amountInWei = ethers.utils.parseUnits(amount, 18);
         
-        // Кодируем данные для вызова функции sendCelo
-        // Функция sendCelo принимает один параметр: адрес получателя
+        // Encode data to call sendCelo
+        // sendCelo takes one parameter: recipient address
         const paddedAddress = recipient.slice(2).padStart(64, '0');
         let data = `${TRANSFER_FUNCTION_SELECTOR}${paddedAddress}`;
         
-        // Генерируем referral tag для пользователя (Step 2 из примера)
+        // Generate referral tag for the user (Step 2 from example)
         try {
             const referralTag = getReferralTag({
-                user: userAccount, // Адрес пользователя, совершающего транзакцию
-                consumer: DIVVI_CONSUMER_ADDRESS, // Ваш Divvi Identifier
+                user: userAccount, // Address of the user making the transaction
+                consumer: DIVVI_CONSUMER_ADDRESS, // Your Divvi Identifier
             });
             
-            // Добавляем referral tag к data полю для отслеживания атрибуции (Step 3)
+            // Append referral tag to data for attribution tracking (Step 3)
             data = data + referralTag;
             
             console.log('=== DIVVI REFERRAL DEBUG ===');
@@ -368,27 +368,27 @@ async function sendTransaction() {
             console.log('=== END DEBUG ===');
             
         } catch (error) {
-            console.error('Ошибка создания referral tag:', error);
-            // Продолжаем без referral tag если произошла ошибка
+            console.error('Error creating referral tag:', error);
+            // Continue without referral tag if an error occurred
         }
         
         console.log('Amount:', amount);
         console.log('Amount in Wei:', amountInWei.toString());
         console.log('Transaction data:', data);
         
-        // Создаем транзакцию с referral tag в data поле
+        // Create transaction with referral tag in data field
         const transactionParameters = {
-            from: userAccount, // Используем from для ethers.js
+            from: userAccount, // Use from for ethers.js
             to: CELO_CONTRACT_ADDRESS,
-            data: data, // data уже содержит referral tag
-            value: `0x${amountInWei.toHexString().slice(2)}`, // Передаем сумму в value для sendCelo
-            gas: `0x${gasEstimate.gasLimit.toString(16)}`, // Используем оценочный лимит газа
-            gasPrice: gasEstimate.gasPrice, // Используем текущую цену газа
+            data: data, // data already contains the referral tag
+            value: `0x${amountInWei.toHexString().slice(2)}`, // Pass the amount in value for sendCelo
+            gas: `0x${gasEstimate.gasLimit.toString(16)}`, // Use the estimated gas limit
+            gasPrice: gasEstimate.gasPrice, // Use the current gas price
         };
         
         showStatus('Confirm transaction in your wallet...', '');
         
-        // Отправляем транзакцию
+        // Send the transaction
         const txHash = await provider.request({
             method: 'eth_sendTransaction',
             params: [transactionParameters],
@@ -400,30 +400,30 @@ async function sendTransaction() {
         showStatus(linkMessage, 'success', true);
         try { if (sdk?.haptics?.notificationOccurred) sdk.haptics.notificationOccurred('success'); } catch (_) {}
         
-        // Получаем chain ID цепи, в которую была отправлена транзакция (Step 4)
+        // Get the chain ID where the transaction was sent (Step 4)
         const chainId = 42220; // CELO mainnet chain ID
         
-        // Отправляем транзакцию в Divvi для referral tracking (Step 5)
+        // Submit transaction to Divvi for referral tracking (Step 5)
         try {
             await submitReferral({
                 txHash,
                 chainId,
             });
-            console.log('Referral данные отправлены в Divvi');
+            console.log('Referral data sent to Divvi');
         } catch (divviError) {
-            console.error('Ошибка отправки referral данных:', divviError);
-            // Не показываем ошибку пользователю, так как транзакция уже прошла
+            console.error('Error submitting referral data:', divviError);
+            // Do not show error to user since the transaction already went through
         }
         
-        // Обновляем баланс после успешной транзакции
+        // Update balance after successful transaction
         setTimeout(async () => {
             await updateBalanceDisplay();
-        }, 2000); // Ждем 2 секунды для подтверждения транзакции
+        }, 2000); // Wait 2 seconds for confirmation
 
-        // Ждем подтверждение транзакции и даем краткий вибро-отклик
+        // Wait for confirmation and give short haptic feedback
         (async () => {
             try {
-                const timeoutMs = 30000; // максимум 30 секунд
+                const timeoutMs = 30000; // max 30 seconds
                 const intervalMs = 1500;
                 const start = Date.now();
                 let receipt = null;
@@ -441,14 +441,14 @@ async function sendTransaction() {
             } catch (_) {}
         })();
     } catch (error) {
-        console.error('Ошибка отправки транзакции:', error);
+        console.error('Error sending transaction:', error);
         showStatus('Error sending transaction', 'error');
     }
 }
 
-// Вспомогательные функции
+// Helper functions
 function showStatus(message, type, isHTML = false) {
-    // Скрываем сообщения о статусе подключения кошелька
+    // Hide wallet-connection status messages
     const walletStatusMessages = [
         'Wallet connected:',
         'Wallet connection failed',
@@ -456,18 +456,18 @@ function showStatus(message, type, isHTML = false) {
         'Local development mode - wallet errors ignored'
     ];
     
-    // Проверяем, является ли сообщение статусом кошелька
+    // Check if message is a wallet status
     const isWalletStatus = walletStatusMessages.some(walletMsg => 
         message.includes(walletMsg)
     );
     
     if (isWalletStatus) {
-        // Скрываем элемент статуса для сообщений о кошельке
+        // Hide status element for wallet messages
         statusElement.style.display = 'none';
         return;
     }
     
-    // Показываем элемент статуса для других сообщений
+    // Show status element for other messages
     statusElement.style.display = 'block';
     
     if (isHTML) {
@@ -483,7 +483,7 @@ function shortenAddress(address) {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 }
 
-// Получение баланса CELO
+// Get CELO balance
 async function getCeloBalance(address) {
     try {
         const balance = await provider.request({
@@ -491,26 +491,26 @@ async function getCeloBalance(address) {
             params: [address, 'latest']
         });
         
-        // Конвертируем из wei в CELO (18 decimals)
+        // Convert from wei to CELO (18 decimals)
         const balanceInCelo = parseFloat(ethers.utils.formatEther(balance));
         return balanceInCelo;
     } catch (error) {
-        console.error('Ошибка получения баланса:', error);
+        console.error('Error fetching balance:', error);
         return 0;
     }
 }
 
-// Обновление отображения баланса
+// Update balance display
 async function updateFarcasterProfile() {
     try {
         const context = await sdk.context;
         if (context && context.user) {
             const user = context.user;
             
-            // Отображаем display name или username
+            // Show display name or username
             profileName.textContent = user.displayName || user.username || 'Farcaster User';
             
-            // Отображаем username с @
+            // Show username with @
             if (user.username) {
                 profileUsername.textContent = `@${user.username}`;
                 profileUsername.style.display = 'block';
@@ -518,7 +518,7 @@ async function updateFarcasterProfile() {
                 profileUsername.style.display = 'none';
             }
             
-            // Отображаем аватар
+            // Show avatar
             if (user.pfpUrl) {
                 profileAvatar.src = user.pfpUrl;
                 profileAvatar.style.display = 'block';
@@ -528,7 +528,7 @@ async function updateFarcasterProfile() {
             
             console.log('Farcaster profile loaded:', user);
         } else {
-            // Если нет данных пользователя Farcaster
+            // If Farcaster user data is missing
             profileName.textContent = 'Not connected';
             profileUsername.style.display = 'none';
             profileAvatar.style.display = 'none';
@@ -558,21 +558,21 @@ async function updateBalanceDisplay() {
         const balance = await getCeloBalance(userAccount);
         balanceAmount.textContent = `${balance.toFixed(4)} CELO`;
     } catch (error) {
-        console.error('Ошибка обновления баланса:', error);
+        console.error('Error updating balance:', error);
         balanceAmount.textContent = 'Error loading balance';
     }
 }
 
-// Функции автодополнения
+// Autocomplete functions
 function handleSearchInput(e) {
     const query = e.target.value.trim();
     
-    // Очищаем предыдущий таймер
+    // Clear previous timer
     if (searchTimeout) {
         clearTimeout(searchTimeout);
     }
     
-    // Отменяем предыдущий запрос
+    // Cancel previous request
     if (currentAbortController) {
         currentAbortController.abort();
         currentAbortController = null;
@@ -584,10 +584,10 @@ function handleSearchInput(e) {
     }
     
     if (query.length < 3) {
-        return; // Минимум 3 символа для поиска (согласно документации Neynar)
+        return; // Minimum 3 characters for search (per Neynar docs)
     }
     
-    // Проверяем кэш
+    // Check cache
     if (searchCache.has(query)) {
         const cachedResults = searchCache.get(query);
         if (cachedResults.length > 0) {
@@ -600,7 +600,7 @@ function handleSearchInput(e) {
         return;
     }
     
-    // Debounce - ждем 300ms после последнего ввода
+    // Debounce - wait 300ms after last input
     searchTimeout = setTimeout(() => {
         performSearch(query);
     }, 300);
@@ -648,7 +648,7 @@ function updateSelection() {
     items.forEach((item, index) => {
         if (index === selectedIndex) {
             item.classList.add('selected');
-            // Прокручиваем к выбранному элементу
+            // Scroll to the selected item
             item.scrollIntoView({ block: 'nearest' });
         } else {
             item.classList.remove('selected');
@@ -664,13 +664,13 @@ async function performSearch(query) {
     
     showSearchLoading();
     
-    // Создаем новый AbortController для этого запроса
+    // Create a new AbortController for this request
     currentAbortController = new AbortController();
     
     try {
         const users = await searchMultipleUsers(query, currentAbortController.signal);
         
-        // Сохраняем результаты в кэш
+        // Cache the results
         searchCache.set(query, users || []);
         
         if (users && users.length > 0) {
@@ -681,7 +681,7 @@ async function performSearch(query) {
             showNoResults();
         }
     } catch (error) {
-        // Игнорируем ошибки отмены запроса
+        // Ignore request abort errors
         if (error.name === 'AbortError') {
             console.log('Search request was aborted');
             return;
@@ -697,15 +697,15 @@ async function performSearch(query) {
 
 
 
-// Новая функция для поиска множественных пользователей
+// New function to search multiple users
 async function searchMultipleUsers(query, signal) {
     try {
-        // Убираем @ если есть
+        // Remove @ if present
         const cleanQuery = query.replace('@', '').toLowerCase();
         
         console.log('Searching multiple users via Neynar API:', cleanQuery);
         
-        // Получаем FID текущего пользователя из SDK (если доступен)
+        // Get viewer FID from SDK (if available)
         let viewerFid = null;
         try {
             const context = await sdk.context;
@@ -716,14 +716,14 @@ async function searchMultipleUsers(query, signal) {
             console.log('Could not get viewer FID from SDK:', e.message);
         }
         
-        // Строим URL с параметрами
+        // Build URL with parameters
         let searchUrl = `${NEYNAR_BASE_URL}/farcaster/user/search?q=${encodeURIComponent(cleanQuery)}&limit=10`;
         if (viewerFid) {
             searchUrl += `&viewer_fid=${viewerFid}`;
             console.log('Using viewer_fid:', viewerFid);
         }
         
-        // Используем Neynar API search endpoint для множественных результатов
+        // Use Neynar API search endpoint for multiple results
         const response = await fetch(searchUrl, {
             method: 'GET',
             headers: {
@@ -744,29 +744,29 @@ async function searchMultipleUsers(query, signal) {
                 const users = data.result.users.map(user => {
                     console.log('Processing user from search:', user);
                     
-                    // Приоритет адресов для Primary Farcaster Wallet:
+                    // Address priority for Primary Farcaster Wallet:
                     let walletAddress = null;
                     
-                    // Приоритет 1: verified_addresses.primary.eth_address - Primary Farcaster Wallet
+                    // Priority 1: verified_addresses.primary.eth_address - Primary Farcaster Wallet
                     if (user.verified_addresses && 
                         user.verified_addresses.primary && 
                         user.verified_addresses.primary.eth_address) {
                         walletAddress = user.verified_addresses.primary.eth_address;
                         console.log('Using primary verified eth address:', walletAddress);
                     }
-                    // Приоритет 2: Первый адрес из verified_addresses.eth_addresses как fallback
+                    // Priority 2: First address from verified_addresses.eth_addresses as fallback
                     else if (user.verified_addresses && 
                             user.verified_addresses.eth_addresses && 
                             user.verified_addresses.eth_addresses.length > 0) {
                         walletAddress = user.verified_addresses.eth_addresses[0];
                         console.log('Using first verified eth address as fallback:', walletAddress);
                     }
-                    // Приоритет 3: Custody address как дополнительный fallback
+                    // Priority 3: Custody address as additional fallback
                     else if (user.custody_address && user.custody_address.startsWith('0x')) {
                         walletAddress = user.custody_address;
                         console.log('Using custody address as fallback:', walletAddress);
                     }
-                    // Приоритет 4: FID-based адрес как последний fallback
+                    // Priority 4: FID-based address as last fallback
                     else {
                         const fidHex = user.fid.toString(16).padStart(8, '0');
                         walletAddress = '0x' + fidHex.padEnd(40, '0');
@@ -779,7 +779,7 @@ async function searchMultipleUsers(query, signal) {
                         address: walletAddress,
                         displayName: user.display_name,
                         pfpUrl: user.pfp_url,
-                        // Добавляем метрики для сортировки
+                        // Add metrics for sorting
                         neynarScore: user.experimental?.neynar_user_score || 0,
                         followerCount: user.follower_count || 0,
                         powerBadge: user.power_badge || false,
@@ -787,24 +787,24 @@ async function searchMultipleUsers(query, signal) {
                     };
                 });
                 
-                // Сортируем результаты по качеству пользователя
+                // Sort results by user quality
                 users.sort((a, b) => {
-                    // Приоритет 1: Power Badge
+                    // Priority 1: Power Badge
                     if (a.powerBadge !== b.powerBadge) {
                         return b.powerBadge - a.powerBadge;
                     }
                     
-                    // Приоритет 2: Neynar Score (качество пользователя)
+                    // Priority 2: Neynar Score (user quality)
                     if (Math.abs(a.neynarScore - b.neynarScore) > 0.1) {
                         return b.neynarScore - a.neynarScore;
                     }
                     
-                    // Приоритет 3: Количество верифицированных адресов
+                    // Priority 3: Number of verified addresses
                     if (a.verifiedAddresses !== b.verifiedAddresses) {
                         return b.verifiedAddresses - a.verifiedAddresses;
                     }
                     
-                    // Приоритет 4: Количество подписчиков
+                    // Priority 4: Follower count
                     return b.followerCount - a.followerCount;
                 });
                 
@@ -817,7 +817,7 @@ async function searchMultipleUsers(query, signal) {
             console.log('Error response:', errorText);
         }
         
-        // Возвращаем пустой массив если Neynar API не дал результатов
+        // Return empty array if Neynar API returned no results
         console.log('No results from Neynar API');
         return [];
         
@@ -829,26 +829,26 @@ async function searchMultipleUsers(query, signal) {
         
         console.error('Error in searchMultipleUsers:', error);
         
-        // Проверяем тип ошибки для лучшей диагностики
+        // Inspect error type for better diagnostics
         if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
             console.log('Network error detected with Neynar API');
         } else if (error.message.includes('API key')) {
             console.error('API key issue detected');
         }
         
-        // Возвращаем пустой массив при ошибке Neynar API
+        // Return empty array on Neynar API error
         return [];
     }
 }
 
 async function searchByUsername(username) {
     try {
-        // Убираем @ если есть
+        // Remove @ if present
         const cleanUsername = username.replace('@', '').toLowerCase();
         
         console.log('Searching user via Neynar API:', cleanUsername);
         
-        // Используем только Neynar API согласно документации
+        // Use only Neynar API per documentation
         const response = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/by_username?username=${cleanUsername}`, {
             method: 'GET',
             headers: {
@@ -867,17 +867,17 @@ async function searchByUsername(username) {
                 const user = data.user;
                 console.log('User data from Neynar:', user);
                 
-                // Согласно Neynar API, приоритет адресов для Primary Farcaster Wallet:
+                // Per Neynar API, address priority for Primary Farcaster Wallet:
                 // 1. verified_addresses.primary.eth_address - Primary Farcaster Wallet
-                // 2. Первый адрес из verified_addresses.eth_addresses - как fallback
-                // 3. Custody address - как дополнительный fallback
-                // 4. FID-based адрес - как последний fallback
+                // 2. First address from verified_addresses.eth_addresses - as fallback
+                // 3. Custody address - as additional fallback
+                // 4. FID-based address - as last fallback
                 let walletAddress = null;
                 
                 console.log('User custody_address:', user.custody_address);
                 console.log('User verified_addresses:', user.verified_addresses);
                 
-                // Приоритет 1: Primary Farcaster Wallet из verified_addresses.primary.eth_address
+                // Priority 1: Primary Farcaster Wallet from verified_addresses.primary.eth_address
                 if (user.verified_addresses && 
                     user.verified_addresses.primary && 
                     user.verified_addresses.primary.eth_address && 
@@ -885,7 +885,7 @@ async function searchByUsername(username) {
                     walletAddress = user.verified_addresses.primary.eth_address;
                     console.log('Using Primary Farcaster Wallet:', walletAddress);
                 }
-                // Приоритет 2: Первый верифицированный Ethereum адрес как fallback
+                // Priority 2: First verified Ethereum address as fallback
                 else if (user.verified_addresses && 
                     user.verified_addresses.eth_addresses && 
                     Array.isArray(user.verified_addresses.eth_addresses) && 
@@ -893,14 +893,14 @@ async function searchByUsername(username) {
                     walletAddress = user.verified_addresses.eth_addresses[0];
                     console.log('Using first verified eth address as fallback:', walletAddress);
                 }
-                // Приоритет 3: Custody address как дополнительный fallback
+                // Priority 3: Custody address as additional fallback
                 else if (user.custody_address && user.custody_address.startsWith('0x')) {
                     walletAddress = user.custody_address;
                     console.log('Using custody address as fallback:', walletAddress);
                 }
-                // Приоритет 4: FID-based адрес как последний fallback
+                // Priority 4: FID-based address as last fallback
                 else {
-                    // Создаем детерминированный адрес на основе FID
+                    // Create deterministic address based on FID
                     const fidHex = user.fid.toString(16).padStart(8, '0');
                     walletAddress = '0x' + fidHex.padEnd(40, '0');
                     console.log('Using FID-based address as last fallback:', walletAddress);
@@ -918,7 +918,7 @@ async function searchByUsername(username) {
             console.log('Neynar API error:', response.status, response.statusText);
         }
         
-        console.log('Neynar API не вернул результатов для пользователя:', cleanUsername);
+        console.log('Neynar API returned no results for user:', cleanUsername);
         return null;
         
     } catch (error) {
@@ -965,15 +965,15 @@ function displayAutocompleteResults(users) {
     selectedIndex = -1;
     
     autocompleteDropdown.innerHTML = users.map((user, index) => {
-        // Используем pfpUrl если доступен, иначе первую букву username
+        // Use pfpUrl if available, otherwise first username letter
         const avatarContent = user.pfpUrl 
             ? `<img src="${user.pfpUrl}" alt="${user.username}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` 
             : user.username.charAt(0).toUpperCase();
         
-        // Используем displayName если доступен, иначе username
+        // Use displayName if available, otherwise username
         const displayName = user.displayName || user.username;
         
-        // Создаем бейджи для пользователя
+        // Create badges for user
         const badges = [];
         if (user.power_badge) {
             badges.push('<span class="badge badge-power">⚡ Power</span>');
@@ -990,7 +990,7 @@ function displayAutocompleteResults(users) {
         
         const badgesHtml = badges.length > 0 ? `<div class="user-badges">${badges.join('')}</div>` : '';
         
-        // Показываем Neynar User Score если доступен
+        // Show Neynar User Score if available
         const userScore = user.neynar_user_score ? `<div class="user-score">${user.neynar_user_score}</div>` : '';
         
         return `
@@ -1009,7 +1009,7 @@ function displayAutocompleteResults(users) {
         `;
     }).join('');
     
-    // Добавляем обработчики событий для каждого элемента результата
+    // Add event handlers for each result item
     const resultItems = autocompleteDropdown.querySelectorAll('.autocomplete-item');
     resultItems.forEach((item, index) => {
         item.addEventListener('click', () => {
@@ -1019,20 +1019,20 @@ function displayAutocompleteResults(users) {
     });
 }
 
-// Массив для хранения выбранных пользователей
+// Array to store selected users
 let selectedUsers = [];
 
 function selectUser(address, username, displayName, pfpUrl) {
     console.log('Selecting user:', { address, username, displayName, pfpUrl });
     
-    // Проверяем, что адрес валидный (простая проверка формата)
+    // Validate address format (simple check)
     if (!address || !address.startsWith('0x') || address.length !== 42) {
         console.error('Invalid address provided:', address);
         showStatus('Invalid user address', 'error');
         return;
     }
     
-    // Заменяем текущего выбранного пользователя новым (только один пользователь)
+    // Replace current selected user with new one (single selection)
     const user = {
         address,
         username,
@@ -1041,31 +1041,31 @@ function selectUser(address, username, displayName, pfpUrl) {
     };
     selectedUsers = [user];
     
-    // Устанавливаем адрес в поле получателя
+    // Set address to recipient input
     recipientInput.value = address;
     
-    // Очищаем поле поиска
+    // Clear search field
     usernameSearchInput.value = '';
     
-    // Скрываем автодополнение
+    // Hide autocomplete
     hideAutocomplete();
     
-    // Обновляем отображение выбранного пользователя
+    // Update selected user display
     updateSelectedUsersDisplay();
     
-    // На мобильных устройствах убираем фокус для сворачивания клавиатуры
+    // On mobile, blur to collapse keyboard
     if (window.innerWidth <= 768) {
         usernameSearchInput.blur();
-        // Дополнительно скрываем клавиатуру через небольшую задержку
+        // Additionally hide keyboard with a small delay
         setTimeout(() => {
             document.activeElement.blur();
         }, 100);
     } else {
-        // На десктопе фокусируемся обратно на поле поиска для удобства
+        // On desktop, focus back to search for convenience
         usernameSearchInput.focus();
     }
     
-    // Показываем статус
+    // Show status
     showStatus(`Selected user: ${displayName || username}`, 'success');
 }
 
@@ -1074,15 +1074,15 @@ function updateSelectedUsersDisplay() {
     
     if (selectedUsers.length === 0) {
         container.innerHTML = '';
-        // Обновляем placeholder когда нет выбранного пользователя
+        // Update placeholder when no user is selected
         usernameSearchInput.placeholder = 'Search Farcaster user...';
         return;
     }
     
-    // Обновляем placeholder когда есть выбранный пользователь
+    // Update placeholder when a user is selected
     usernameSearchInput.placeholder = 'Change user...';
     
-    const user = selectedUsers[0]; // Только один пользователь
+    const user = selectedUsers[0]; // Single user only
     const avatarSrc = user.pfpUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=f1f5f9&color=334155&size=24`;
     
     container.innerHTML = `
@@ -1098,7 +1098,7 @@ function removeSelectedUser(index) {
     selectedUsers.splice(index, 1);
     updateSelectedUsersDisplay();
     
-    // Если есть выбранные пользователи, устанавливаем последнего в поле получателя
+    // If there are selected users, set the last one to recipient input
     if (selectedUsers.length > 0) {
         recipientInput.value = selectedUsers[selectedUsers.length - 1].address;
     } else {
@@ -1110,15 +1110,15 @@ function removeSelectedUser(index) {
 
 
 
-// Делаем функцию доступной глобально для onclick
+// Make function globally available for onclick
 window.removeSelectedUser = removeSelectedUser;
 
-// Загружаем ethers.js для работы с Ethereum из надежного CDN
+// Load ethers.js from a reliable CDN for Ethereum
 const script = document.createElement('script');
 script.src = 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js';
 script.onload = initApp;
 script.onerror = function() {
-    console.error('Не удалось загрузить ethers.js');
+    console.error('Failed to load ethers.js');
     showStatus('Error loading required libraries', 'error');
 };
 document.body.appendChild(script);
@@ -1131,7 +1131,7 @@ function shareApp() {
         const shareUrl = origin + '/';
         const shareText = '🚀 CELO Sender — send CELO to friends in one click! Builded by @s1mpl3r';
 
-        // Предпочитаем официальный SDK-метод: открыть композер с текстом и эмбеддом
+        // Prefer official SDK method: open composer with text and embed
         if (sdk?.actions?.composeCast) {
             sdk.actions.composeCast({
                 text: shareText,
@@ -1145,17 +1145,17 @@ function shareApp() {
                 }
             })
             .catch((err) => {
-                console.warn('composeCast failed, fallback to web share or composer URL', err);
+                console.warn('composeCast failed, falling back to web share or composer URL', err);
                 fallbackShare();
             });
             return;
         }
 
-        // Фолбэки, если composeCast недоступен
+        // Fallbacks if composeCast is unavailable
         fallbackShare();
 
         function fallbackShare() {
-            // Используем домен Warpcast для композера
+            // Use Warpcast domain for composer
             const composeUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
             const isWarpcast = /Warpcast/i.test(navigator.userAgent) || /Farcaster/i.test(navigator.userAgent);
 
@@ -1163,7 +1163,7 @@ function shareApp() {
                 navigator.share({ title: 'CELO Sender', text: shareText, url: shareUrl })
                     .then(() => showStatus('Shared successfully', 'success'))
                     .catch((err) => {
-                        console.warn('Share failed, fallback to compose link', err);
+                        console.warn('Share failed, falling back to compose link', err);
                         window.open(composeUrl, '_blank');
                     });
             } else {

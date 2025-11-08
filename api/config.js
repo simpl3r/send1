@@ -1,4 +1,4 @@
-// Serverless функция для Vercel
+// Serverless function for Vercel
 export default function handler(req, res) {
   console.log('Config API called:', {
     method: req.method,
@@ -7,12 +7,12 @@ export default function handler(req, res) {
     timestamp: new Date().toISOString()
   });
   
-  // Устанавливаем CORS заголовки
+  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   
-  // Обрабатываем preflight запросы
+  // Handle preflight requests
   if (req.method === 'OPTIONS') {
     console.log('Handling OPTIONS request');
     res.status(200).end();
@@ -21,7 +21,7 @@ export default function handler(req, res) {
   
   if (req.method === 'GET') {
     try {
-      // Используем разные ключи для разных целей
+      // Use different keys for different purposes
       const notificationApiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
       const searchApiKey = process.env.NEYNAR_SEARCH_API_KEY || 'NEYNAR_API_DOCS';
       
@@ -43,7 +43,7 @@ export default function handler(req, res) {
       
       console.log('Sending response:', {
         ...response,
-        NEYNAR_API_KEY: response.NEYNAR_API_KEY.substring(0, 8) + '...' // Безопасное логирование
+        NEYNAR_API_KEY: response.NEYNAR_API_KEY.substring(0, 8) + '...' // Secure logging
       });
       
       res.status(200).json(response);

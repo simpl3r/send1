@@ -1,4 +1,4 @@
-// Тестовая функция для проверки Neynar API
+// Test function to check Neynar API
 export default async function handler(req, res) {
     console.log('Test Neynar API called:', {
         method: req.method,
@@ -7,12 +7,12 @@ export default async function handler(req, res) {
         timestamp: new Date().toISOString()
     });
     
-    // Устанавливаем CORS заголовки
+    // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     
-    // Обрабатываем preflight запросы
+    // Handle preflight requests
     if (req.method === 'OPTIONS') {
         console.log('Handling OPTIONS request');
         res.status(200).end();

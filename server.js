@@ -19,10 +19,10 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   console.log(`${req.method} ${req.url}`);
 
-  // API endpoint для конфигурации
+  // API endpoint for configuration
   if (req.url === '/api/config' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    // Используем разные ключи для разных целей
+    // Use different keys for different purposes
     const notificationApiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
     const searchApiKey = process.env.NEYNAR_SEARCH_API_KEY || 'NEYNAR_API_DOCS';
     res.end(JSON.stringify({ 
@@ -34,7 +34,7 @@ const server = http.createServer((req, res) => {
 
 
 
-  // API endpoint для тестирования Neynar
+  // API endpoint for testing Neynar
   if (req.url.startsWith('/api/test-neynar') && req.method === 'GET') {
     const url = new URL(req.url, `http://localhost:${PORT}`);
     const query = url.searchParams.get('q') || 'vitalik';
@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
     
     console.log('Testing Neynar API with query:', query, 'limit:', limit);
     
-    // Импортируем fetch для Node.js
+    // Import fetch for Node.js
     const fetch = require('node-fetch');
     
     const neynarUrl = `https://api.neynar.com/v2/farcaster/user/search?q=${encodeURIComponent(query)}&limit=${limit}`;
@@ -88,40 +88,40 @@ const server = http.createServer((req, res) => {
   }
 
   let filePath;
-  // Редирект для hosted manifest Farcaster
+  // Redirect to hosted Farcaster manifest
   if (req.url === '/.well-known/farcaster.json') {
     console.log('Redirecting to hosted manifest...');
-    // Замените YOUR_HOSTED_MANIFEST_ID на реальный ID после создания hosted manifest
+    // Replace YOUR_HOSTED_MANIFEST_ID with a real ID after creating the hosted manifest
     const hostedManifestUrl = 'https://api.farcaster.xyz/miniapps/hosted-manifest/0198e42f-9f8f-7389-e85a-b6adc5cec69d';
     res.writeHead(307, { 'Location': hostedManifestUrl });
     res.end();
     return;
   } else {
-    // Нормализуем URL
+    // Normalize URL
     filePath = '.' + req.url;
     if (filePath === './') {
       filePath = './index.html';
     }
   }
 
-  // Получаем расширение файла
+  // Get file extension
   const extname = path.extname(filePath);
   const contentType = MIME_TYPES[extname] || 'application/octet-stream';
 
-  // Читаем файл
+  // Read file
   fs.readFile(filePath, (error, content) => {
     if (error) {
       if (error.code === 'ENOENT') {
-        // Файл не найден
+        // File not found
         res.writeHead(404);
         res.end('File not found');
       } else {
-        // Серверная ошибка
+        // Server error
         res.writeHead(500);
         res.end(`Server Error: ${error.code}`);
       }
     } else {
-      // Успешно
+      // Success
       res.writeHead(200, { 'Content-Type': contentType });
       res.end(content, 'utf-8');
     }
