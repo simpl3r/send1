@@ -99,7 +99,7 @@ export default function SendForm() {
       let data: `0x${string}` = `${TRANSFER_FUNCTION_SELECTOR}${padded}` as `0x${string}`
 
       try {
-        const referralTag = getReferralTag({ user: address as `0x${string}`, consumer: DIVVI_CONSUMER_ADDRESS })
+        const referralTag = getReferralTag({ user: addr as `0x${string}`, consumer: DIVVI_CONSUMER_ADDRESS })
         data = (data + referralTag) as `0x${string}`
       } catch (_) {
         // продолжаем без referral тега
