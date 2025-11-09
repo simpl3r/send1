@@ -1,8 +1,7 @@
 'use client'
 
 import React, { useMemo, useRef, useState } from 'react'
-import { useAppKitAccount } from '@reown/appkit/react'
-import { usePublicClient, useWalletClient } from 'wagmi'
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
 import { connect } from '@wagmi/core'
 import { wagmiAdapter } from '@/config'
 import { parseUnits, formatEther } from 'viem'
@@ -15,7 +14,7 @@ const TRANSFER_FUNCTION_SELECTOR = '0x3f4dbf04' as const
 const DIVVI_CONSUMER_ADDRESS = '0xA2c408956988672D64562A23bb0eD1d247a03B98' as const
 
 export default function SendForm() {
-  const { address, isConnected } = useAppKitAccount()
+  const { address, isConnected } = useAccount()
   const publicClient = usePublicClient()
   const { data: walletClient } = useWalletClient()
 
