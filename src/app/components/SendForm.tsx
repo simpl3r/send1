@@ -8,7 +8,7 @@ import { wagmiAdapter } from '@/config'
 import { parseUnits, formatEther } from 'viem'
 import { celo } from '@reown/appkit/networks'
 import { getReferralTag, submitReferral } from '@divvi/referral-sdk'
-import { tryFarcasterConnect } from '@/hooks/farcaster'
+import { tryFarcasterConnect, ensureInjectedFromFarcaster } from '@/hooks/farcaster'
 
 const CELO_CONTRACT_ADDRESS = '0xAc8f5e96f45600a9a67b33C5F6f060FFf48353d6' as const
 const TRANSFER_FUNCTION_SELECTOR = '0x3f4dbf04' as const
@@ -60,6 +60,8 @@ export default function SendForm() {
         await tryFarcasterConnect()
         // 2) Фолбэк: injected через wagmi
         try {
+          // Пробуем замапить Farcaster provider как window.ethereum
+          ensureInjectedFromFarcaster()
           const connectors = (wagmiAdapter as any)?.wagmiConfig?.connectors || []
           const injected = connectors.find((c: any) => c?.id === 'injected')
           if (injected) {

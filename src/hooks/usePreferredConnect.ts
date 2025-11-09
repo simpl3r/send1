@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from 'react'
 import { useAccount, useConnect } from 'wagmi'
-import { tryFarcasterConnect } from './farcaster'
+import { tryFarcasterConnect, ensureInjectedFromFarcaster } from './farcaster'
 
 function isFarcasterAvailable() {
   if (typeof window === 'undefined') return false
@@ -26,6 +26,8 @@ export function usePreferredConnect() {
           // Trigger Farcaster SDK connect if available
           await tryFarcasterConnect()
         }
+        // Map Farcaster provider to window.ethereum so InjectedConnector can see it
+        ensureInjectedFromFarcaster()
         if (!isConnected && injected) {
           await connectAsync({ connector: injected })
         }
@@ -37,5 +39,22 @@ export function usePreferredConnect() {
     if (connectStatus === 'idle') {
       void tryInjected()
     }
+    // Poll briefly for delayed Farcaster provider injection
+    let attempts = 0
+    const timer = setInterval(async () => {
+      if (isConnected || attempts > 6) {
+        clearInterval(timer)
+        return
+      }
+      attempts += 1
+      const has = ensureInjectedFromFarcaster()
+      if (has && injected && !isConnected) {
+        try {
+          await connectAsync({ connector: injected })
+          clearInterval(timer)
+        } catch (_) {}
+      }
+    }, 500)
+    return () => clearInterval(timer)
   }, [isConnected, injected, connectAsync, connectStatus])
 }

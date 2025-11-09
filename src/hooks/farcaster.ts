@@ -22,3 +22,18 @@ export async function tryFarcasterConnect(): Promise<boolean> {
   } catch (_) {}
   return false
 }
+
+export function ensureInjectedFromFarcaster(): boolean {
+  if (typeof window === 'undefined') return false
+  const w = window as any
+  const fc = w.farcaster
+  try {
+    if (fc && fc.ethereum && !w.ethereum) {
+      w.ethereum = fc.ethereum
+      return true
+    }
+    return !!w.ethereum
+  } catch (_) {
+    return false
+  }
+}
