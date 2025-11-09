@@ -5,10 +5,12 @@ import { AppKitButton, AppKitNetworkButton, AppKitAccountButton } from '@reown/a
 import { useAppKitAccount } from '@reown/appkit/react'
 import { useBalance } from 'wagmi'
 import SendForm from './components/SendForm'
+import { usePreferredConnect } from '@/hooks/usePreferredConnect'
 
 export default function Home() {
   const { address, isConnected } = useAppKitAccount()
   const { data: balance } = useBalance({ address: address as `0x${string}`, query: { enabled: Boolean(address) } })
+  usePreferredConnect()
 
   return (
     <main>

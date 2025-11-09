@@ -3,6 +3,8 @@
 import React, { useMemo, useRef, useState } from 'react'
 import { useAppKitAccount } from '@reown/appkit/react'
 import { usePublicClient, useWalletClient } from 'wagmi'
+import { connect } from '@wagmi/core'
+import { wagmiAdapter } from '@/config'
 import { parseUnits, formatEther } from 'viem'
 import { celo } from '@reown/appkit/networks'
 import { getReferralTag, submitReferral } from '@divvi/referral-sdk'
@@ -53,8 +55,18 @@ export default function SendForm() {
   async function onSend() {
     try {
       if (!isConnected || !address || !walletClient) {
-        showStatus('Подключите кошелек для отправки', 'error')
-        return
+        // Attempt a quick injected connect once before failing
+        try {
+          const connectors = (wagmiAdapter as any)?.wagmiConfig?.connectors || []
+          const injected = connectors.find((c: any) => c?.id === 'injected')
+          if (injected) {
+            await connect(wagmiAdapter.wagmiConfig as any, { connector: injected })
+          }
+        } catch (_) {}
+        if (!isConnected || !address || !walletClient) {
+          showStatus('Подключите кошелек для отправки', 'error')
+          return
+        }
       }
 
       const to = recipient.trim()
