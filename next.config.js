@@ -10,6 +10,15 @@ const nextConfig = {
         statusCode: 307
       }
     ]
+  },
+  webpack: (config) => {
+    // Ignore React Native async storage in web builds to fix MetaMask SDK resolution
+    config.resolve = config.resolve || {}
+    config.resolve.alias = config.resolve.alias || {}
+    config.resolve.alias['@react-native-async-storage/async-storage'] = false
+    // WalletConnect optional pretty logger not needed in production web builds
+    config.resolve.alias['pino-pretty'] = false
+    return config
   }
 }
 
