@@ -4,8 +4,9 @@
   "description": "Send CELO tokens via smart contract on Farcaster",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "keywords": [
     "farcaster",
@@ -18,8 +19,17 @@
   "license": "MIT",
   "dependencies": {
     "@divvi/referral-sdk": "^2.3.0",
+    "@reown/appkit": "^1.8.2",
+    "@reown/appkit-adapter-wagmi": "^1.8.2",
+    "@tanstack/react-query": "^5.60.4",
+    "@wagmi/core": "^2.13.7",
     "dotenv": "^16.0.0",
-    "node-fetch": "^2.6.7"
+    "next": "^14.2.15",
+    "node-fetch": "^2.6.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "viem": "^2.21.17",
+    "wagmi": "^2.13.7"
   },
   "engines": {
     "node": "20.x"
