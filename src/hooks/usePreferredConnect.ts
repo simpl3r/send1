@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from 'react'
 import { useAccount, useConnect } from 'wagmi'
+import { tryFarcasterConnect } from './farcaster'
 
 function isFarcasterAvailable() {
   if (typeof window === 'undefined') return false
@@ -21,7 +22,11 @@ export function usePreferredConnect() {
     // Try Farcaster/injected first silently; if it fails, user can use AppKit modal
     async function tryInjected() {
       try {
-        if (!isConnected && isFarcasterAvailable() && injected) {
+        if (!isConnected && isFarcasterAvailable()) {
+          // Trigger Farcaster SDK connect if available
+          await tryFarcasterConnect()
+        }
+        if (!isConnected && injected) {
           await connectAsync({ connector: injected })
         }
       } catch (_) {

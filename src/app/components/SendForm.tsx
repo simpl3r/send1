@@ -8,6 +8,7 @@ import { wagmiAdapter } from '@/config'
 import { parseUnits, formatEther } from 'viem'
 import { celo } from '@reown/appkit/networks'
 import { getReferralTag, submitReferral } from '@divvi/referral-sdk'
+import { tryFarcasterConnect } from '@/hooks/farcaster'
 
 const CELO_CONTRACT_ADDRESS = '0xAc8f5e96f45600a9a67b33C5F6f060FFf48353d6' as const
 const TRANSFER_FUNCTION_SELECTOR = '0x3f4dbf04' as const
@@ -55,7 +56,9 @@ export default function SendForm() {
   async function onSend() {
     try {
       if (!isConnected || !address || !walletClient) {
-        // Attempt a quick injected connect once before failing
+        // 1) Пытаемся Farcaster SDK
+        await tryFarcasterConnect()
+        // 2) Фолбэк: injected через wagmi
         try {
           const connectors = (wagmiAdapter as any)?.wagmiConfig?.connectors || []
           const injected = connectors.find((c: any) => c?.id === 'injected')
@@ -154,6 +157,7 @@ export default function SendForm() {
 
   // Slider state and handlers (Slide to Send)
   const [sliderProgress, setSliderProgress] = useState(0)
+  const sliderProgressRef = useRef(0)
   const [dragging, setDragging] = useState(false)
   const sliderRef = useRef<HTMLDivElement | null>(null)
   const sliderWidthRef = useRef(0)
@@ -166,6 +170,7 @@ export default function SendForm() {
     const update = (clientX: number) => {
       const x = Math.min(Math.max(clientX - rect.left, 0), rect.width)
       const p = x / rect.width
+      sliderProgressRef.current = p
       setSliderProgress(p)
     }
     update(e.clientX)
@@ -175,7 +180,8 @@ export default function SendForm() {
       window.removeEventListener('pointerup', onUp)
       setDragging(false)
       const threshold = 0.85
-      if (sliderProgress >= threshold && !sending && isConnected) {
+      const current = sliderProgressRef.current
+      if (current >= threshold && !sending) {
         onSend()
       }
       setTimeout(() => setSliderProgress(0), 250)
