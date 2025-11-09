@@ -37,3 +37,24 @@ export function ensureInjectedFromFarcaster(): boolean {
     return false
   }
 }
+
+export function getFarcasterProvider(): any | null {
+  if (typeof window === 'undefined') return null
+  const w = window as any
+  if (w.farcaster?.ethereum) return w.farcaster.ethereum
+  if (w.ethereum) return w.ethereum
+  return null
+}
+
+export async function getFarcasterAddress(): Promise<string | null> {
+  try {
+    const provider = getFarcasterProvider()
+    if (!provider || typeof provider.request !== 'function') return null
+    const accounts: string[] = await provider.request({ method: 'eth_accounts' })
+    if (accounts && accounts[0]) return accounts[0]
+    const req: string[] = await provider.request({ method: 'eth_requestAccounts' })
+    return req && req[0] ? req[0] : null
+  } catch (_) {
+    return null
+  }
+}

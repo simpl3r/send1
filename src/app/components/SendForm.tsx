@@ -1,22 +1,20 @@
 'use client'
 
 import React, { useMemo, useRef, useState } from 'react'
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
-import { connect } from '@wagmi/core'
-import { wagmiAdapter } from '@/config'
-import { parseUnits, formatEther } from 'viem'
-import { celo } from '@reown/appkit/networks'
+import { usePublicClient } from 'wagmi'
+import { parseUnits, formatEther, createWalletClient, custom } from 'viem'
+import { celo } from 'viem/chains'
 import { getReferralTag, submitReferral } from '@divvi/referral-sdk'
-import { tryFarcasterConnect, ensureInjectedFromFarcaster } from '@/hooks/farcaster'
+import { tryFarcasterConnect, ensureInjectedFromFarcaster, getFarcasterProvider, getFarcasterAddress } from '@/hooks/farcaster'
 
 const CELO_CONTRACT_ADDRESS = '0xAc8f5e96f45600a9a67b33C5F6f060FFf48353d6' as const
 const TRANSFER_FUNCTION_SELECTOR = '0x3f4dbf04' as const
 const DIVVI_CONSUMER_ADDRESS = '0xA2c408956988672D64562A23bb0eD1d247a03B98' as const
 
 export default function SendForm() {
-  const { address, isConnected } = useAccount()
+  const [fcAddress, setFcAddress] = useState<`0x${string}` | null>(null)
+  const [fcWalletClient, setFcWalletClient] = useState<any | null>(null)
   const publicClient = usePublicClient()
-  const { data: walletClient } = useWalletClient()
 
   const [recipient, setRecipient] = useState('')
   const [amount, setAmount] = useState('0.001')
@@ -35,7 +33,7 @@ export default function SendForm() {
   async function estimateFees(valueWei: bigint, data: `0x${string}`) {
     try {
       const gas = await publicClient!.estimateGas({
-        account: address as `0x${string}`,
+        account: fcAddress as `0x${string}`,
         to: CELO_CONTRACT_ADDRESS,
         data,
         value: valueWei
@@ -54,23 +52,28 @@ export default function SendForm() {
 
   async function onSend() {
     try {
-      if (!isConnected || !address || !walletClient) {
-        // 1) Пытаемся Farcaster SDK
-        await tryFarcasterConnect()
-        // 2) Фолбэк: injected через wagmi
-        try {
-          // Пробуем замапить Farcaster provider как window.ethereum
-          ensureInjectedFromFarcaster()
-          const connectors = (wagmiAdapter as any)?.wagmiConfig?.connectors || []
-          const injected = connectors.find((c: any) => c?.id === 'injected')
-          if (injected) {
-            await connect(wagmiAdapter.wagmiConfig as any, { connector: injected })
-          }
-        } catch (_) {}
-        if (!isConnected || !address || !walletClient) {
-          showStatus('Подключите кошелек для отправки', 'error')
+      // Farcaster-only подключение и создание клиента
+      await tryFarcasterConnect()
+      ensureInjectedFromFarcaster()
+      let addr = fcAddress
+      let wc = fcWalletClient
+      if (!addr) {
+        const got = await getFarcasterAddress()
+        if (!got) {
+          showStatus('Подключите Farcaster кошелёк', 'error')
           return
         }
+        addr = got as `0x${string}`
+        setFcAddress(addr)
+      }
+      if (!wc) {
+        const provider = getFarcasterProvider()
+        if (!provider) {
+          showStatus('Farcaster провайдер не найден', 'error')
+          return
+        }
+        wc = createWalletClient({ chain: celo, transport: custom(provider) })
+        setFcWalletClient(wc)
       }
 
       const to = recipient.trim()
@@ -105,7 +108,7 @@ export default function SendForm() {
       const { gasCostCelo } = await estimateFees(valueWei, data)
 
       // Проверка баланса (упрощённо через публичный клиент)
-      const balanceWei = await publicClient!.getBalance({ address: address as `0x${string}` })
+      const balanceWei = await publicClient!.getBalance({ address: addr as `0x${string}` })
       const balanceCelo = Number(formatEther(balanceWei))
       const totalRequired = amountFloat + gasCostCelo
       if (balanceCelo < totalRequired) {
@@ -117,8 +120,8 @@ export default function SendForm() {
 
       showStatus('Preparing transaction...', 'info')
 
-      const hash = await walletClient.sendTransaction({
-        account: address as `0x${string}`,
+      const hash = await wc.sendTransaction({
+        account: addr as `0x${string}`,
         chain: celo,
         to: CELO_CONTRACT_ADDRESS,
         data,
@@ -141,7 +144,7 @@ export default function SendForm() {
   }
 
   function onFillMyAddress() {
-    if (address) setRecipient(address)
+    if (fcAddress) setRecipient(fcAddress)
   }
 
   function onIncrease() {

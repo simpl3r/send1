@@ -1,35 +1,39 @@
 'use client'
 
 import React from 'react'
-import { AppKitButton, AppKitNetworkButton, AppKitAccountButton } from '@reown/appkit/react'
-import { useAppKitAccount } from '@reown/appkit/react'
 import { useBalance } from 'wagmi'
 import SendForm from './components/SendForm'
 import { usePreferredConnect } from '@/hooks/usePreferredConnect'
+import { getFarcasterAddress } from '@/hooks/farcaster'
 
 export default function Home() {
-  const { address, isConnected } = useAppKitAccount()
-  const { data: balance } = useBalance({ address: address as `0x${string}`, query: { enabled: Boolean(address) } })
+  const [address, setAddress] = React.useState<`0x${string}` | null>(null)
+  const { data: balance } = useBalance({ address: address ?? undefined, query: { enabled: Boolean(address) } })
   usePreferredConnect()
+
+  React.useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      const addr = await getFarcasterAddress()
+      if (mounted && addr) setAddress(addr as `0x${string}`)
+    })()
+    return () => { mounted = false }
+  }, [])
 
   return (
     <main>
       <div className="container">
         <h1>CELO Sender</h1>
 
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-          <AppKitButton />
-          <AppKitNetworkButton />
-          {isConnected && <AppKitAccountButton />}
-        </div>
+        {/* Кнопки AppKit отключены. Оставляем только Farcaster-интеграцию. */}
 
         <div id="walletInfo">
           <div className="balance-display">
             <div className="farcaster-profile" id="farcasterProfile">
               <img className="profile-avatar" id="profileAvatar" src="" alt="Profile" style={{ display: 'none' }} />
               <div className="profile-info">
-                <div className="profile-name" id="profileName">{isConnected ? 'Connected' : 'Not connected'}</div>
-                <div className="profile-username" id="profileUsername">{address ? address : ''}</div>
+                <div className="profile-name" id="profileName">{address ? 'Connected (Farcaster)' : 'Not connected'}</div>
+                <div className="profile-username" id="profileUsername">{address ?? ''}</div>
               </div>
             </div>
             <div className="balance-info">
