@@ -72,12 +72,6 @@ export async function tryFarcasterConnect(): Promise<boolean> {
       await switchToCeloNetwork(fc.ethereum)
       return true
     }
-    // Fallback: use injected ethereum if available
-    if (w.ethereum && typeof w.ethereum.request === 'function') {
-      await w.ethereum.request({ method: 'eth_requestAccounts' })
-      await switchToCeloNetwork(w.ethereum)
-      return true
-    }
   } catch (_) {}
   return false
 }
@@ -91,11 +85,11 @@ export function ensureInjectedFromFarcaster(): boolean {
       w.ethereum = fc.ethereum
       return true
     }
-    if (!w.ethereum) {
+    if (!fc?.ethereum) {
       // Try load SDK and map provider
       void loadFarcasterSdk()
     }
-    return !!w.ethereum
+    return !!(fc && fc.ethereum)
   } catch (_) {
     return false
   }
@@ -104,9 +98,7 @@ export function ensureInjectedFromFarcaster(): boolean {
 export function getFarcasterProvider(): any | null {
   if (typeof window === 'undefined') return null
   const w = window as any
-  if (w.farcaster?.ethereum) return w.farcaster.ethereum
-  if (w.ethereum) return w.ethereum
-  return null
+  return w.farcaster?.ethereum ?? null
 }
 
 export async function getFarcasterAddress(): Promise<string | null> {
