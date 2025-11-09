@@ -5,6 +5,21 @@ export async function tryFarcasterConnect(): Promise<boolean> {
   const w = window as any
   const fc = w.farcaster
   try {
+    // Prefer using official Warpcast Mini App SDK when available
+    try {
+      const mod = await import('@farcaster/miniapp-sdk')
+      const sdk = (mod as any).sdk
+      if (sdk?.wallet?.getEthereumProvider) {
+        const provider = await sdk.wallet.getEthereumProvider()
+        if (provider) {
+          // Map SDK provider to window.ethereum for Wagmi compatibility
+          w.ethereum = provider
+          // Request accounts using EIP-1193
+          await provider.request({ method: 'eth_requestAccounts' })
+          return true
+        }
+      }
+    } catch (_) {}
     // Farcaster Miniapp SDK may expose connect() or an ethereum-like provider
     if (fc && typeof fc.connect === 'function') {
       await fc.connect()
@@ -28,6 +43,11 @@ export function ensureInjectedFromFarcaster(): boolean {
   const w = window as any
   const fc = w.farcaster
   try {
+    // Try to use SDK provider if present
+    if (!w.ethereum && fc?.ethereum) {
+      w.ethereum = fc.ethereum
+      return true
+    }
     if (fc && fc.ethereum && !w.ethereum) {
       w.ethereum = fc.ethereum
       return true
