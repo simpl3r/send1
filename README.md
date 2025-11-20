@@ -251,3 +251,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Made with ❤️ for the Farcaster ecosystem**
+## 🔒 Server Optimization & Security
+
+Recent improvements to server and deployment configuration:
+
+- Gzip compression for textual responses to reduce payload size
+- Cache-Control tuned: long cache for JS/CSS/images, no-cache for HTML
+- Last-Modified handling with 304 responses for efficient revalidation
+- Safe path resolution to prevent path traversal attacks
+- Security headers for API responses: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`
+- Basic in-memory rate limiting for API endpoints with `Retry-After`
+- Vercel `headers` configuration aligned with caching and security best practices
+
+Files touched:
+
+- `server.js`: compression, caching, 304, security headers, rate limit
+- `vercel.json`: headers for caching and security (HSTS included)
