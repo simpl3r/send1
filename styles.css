@@ -1668,6 +1668,10 @@ body[data-theme='dark'] .balance-display {
   background: rgba(53, 208, 127, 0.10);
   border-color: rgba(255, 255, 255, 0.08);
 }
+body[data-theme='dark'] .farcaster-profile {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
 
 body[data-theme='dark'] .profile-name,
 body[data-theme='dark'] .profile-username,
