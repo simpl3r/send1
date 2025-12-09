@@ -70,6 +70,7 @@ const usernameSearchInput = document.getElementById('usernameSearch');
 const autocompleteDropdown = document.getElementById('autocompleteDropdown');
 const searchLoading = document.getElementById('searchLoading');
 const shareButton = document.getElementById('shareButton');
+const themeToggle = document.getElementById('themeToggle');
 // Slider elements for Send CELO
 const transferSlider = document.getElementById('transferSlider');
 const sliderThumb = document.getElementById('sliderThumb');
@@ -78,6 +79,41 @@ const sliderText = transferSlider ? transferSlider.querySelector('.slider-text')
 
 
 // Autocomplete state
+
+// === Dark Theme Logic: START ===
+// Theme handling
+function applyTheme(theme) {
+  document.body.dataset.theme = theme;
+  if (themeToggle) {
+    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+    themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    themeToggle.title = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+  }
+}
+
+function initTheme() {
+  try {
+    const saved = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initial = saved || (systemPrefersDark ? 'dark' : 'light');
+    applyTheme(initial);
+  } catch (e) {
+    applyTheme('light');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const current = document.body.dataset.theme === 'dark' ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+    });
+  }
+});
+// === Dark Theme Logic: END ===
 let searchTimeout = null;
 let currentSearchResults = [];
 let selectedIndex = -1;

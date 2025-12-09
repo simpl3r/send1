@@ -22,6 +22,36 @@ body {
     box-sizing: border-box;
 }
 
+.top-bar {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.theme-toggle {
+    appearance: none;
+    background: transparent;
+    border: 1px solid rgba(86, 223, 124, 0.5);
+    color: #333;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.theme-toggle:hover {
+    background: rgba(86, 223, 124, 0.08);
+}
+
 h1 {
     text-align: center;
     color: #333;
@@ -32,7 +62,7 @@ h1 {
 }
 
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 10px;
     text-align: left;
 }
 
@@ -164,7 +194,7 @@ button:disabled {
     background: #ccf5d7;
     border-radius: 10px;
     padding: 3px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
@@ -1618,3 +1648,49 @@ button:disabled {
 .slider-progress { will-change: width; }
 .slider-button.dragging .slider-thumb { transition: none; }
 .slider-button.dragging .slider-progress { transition: none; }
+
+/* === Dark Theme Overrides: START === */
+/* To quickly disable dark theme, comment out this entire block */
+body[data-theme='dark'] {
+  background: linear-gradient(135deg, #0f172a 0%, #1f2937 100%);
+}
+
+body[data-theme='dark'] .container {
+  background-color: #0f1319;
+  border-color: rgba(86, 223, 124, 0.25);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+body[data-theme='dark'] h1 { color: #e5e7eb; }
+body[data-theme='dark'] label { color: #e5e7eb; }
+
+body[data-theme='dark'] .balance-display {
+  background: rgba(53, 208, 127, 0.10);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body[data-theme='dark'] .profile-name,
+body[data-theme='dark'] .profile-username,
+body[data-theme='dark'] .balance-label,
+body[data-theme='dark'] .slider-button .slider-text { color: #e5e7eb; }
+
+body[data-theme='dark'] .balance-amount { color: #ffffff; }
+
+body[data-theme='dark'] input:not(.autocomplete-container input) {
+  background: #111827;
+  color: #e5e7eb;
+  border-color: rgba(86, 223, 124, 0.35);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+body[data-theme='dark'] .autocomplete-dropdown {
+  background: #0f1319;
+  color: #e5e7eb;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+body[data-theme='dark'] .autocomplete-item:hover { background: rgba(86, 223, 124, 0.12); }
+
+body[data-theme='dark'] .slider-button .slider-track { background: rgba(255, 255, 255, 0.08); }
+body[data-theme='dark'] .theme-toggle { color: #e5e7eb; border-color: rgba(86, 223, 124, 0.4); }
+/* === Dark Theme Overrides: END === */
