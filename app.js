@@ -65,6 +65,7 @@ const sendToMyselfButton = document.getElementById('sendToMyselfButton');
 const statusElement = document.getElementById('status');
 const increaseButton = document.getElementById('increaseButton');
 const decreaseButton = document.getElementById('decreaseButton');
+const quickAmountButtons = document.querySelectorAll('.quick-amount-btn');
 const usernameSearchInput = document.getElementById('usernameSearch');
 const autocompleteDropdown = document.getElementById('autocompleteDropdown');
 const searchLoading = document.getElementById('searchLoading');
@@ -134,6 +135,15 @@ function setupEventListeners() {
     sendToMyselfButton.addEventListener('click', fillMyAddress);
     increaseButton.addEventListener('click', increaseAmount);
     decreaseButton.addEventListener('click', decreaseAmount);
+    // Quick amount preset buttons
+    if (quickAmountButtons && quickAmountButtons.length > 0) {
+        quickAmountButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const amt = parseFloat(btn.dataset.amount);
+                setQuickAmount(amt);
+            });
+        });
+    }
 
     // Autocomplete event handlers
     usernameSearchInput.addEventListener('input', handleSearchInput);
@@ -263,6 +273,14 @@ function decreaseAmount() {
     const currentValue = parseFloat(amountInput.value) || 0;
     const newValue = Math.max(0.001, currentValue - 0.001).toFixed(3);
     amountInput.value = newValue;
+}
+
+// Set amount via quick preset
+function setQuickAmount(val) {
+    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
+    const value = typeof val === 'number' ? val : parseFloat(val) || 0;
+    if (value <= 0) return;
+    amountInput.value = value.toString();
 }
 
 // Estimate gas cost

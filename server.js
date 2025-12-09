@@ -44,6 +44,8 @@ const server = http.createServer((req, res) => {
 
   // API endpoint for configuration
   if (req.url === '/api/config' && req.method === 'GET') {
+    // Set security headers BEFORE writing response headers
+    writeSecurityHeaders();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     // Use different keys for different purposes
     const notificationApiKey = process.env.NEYNAR_API_KEY || 'NEYNAR_API_DOCS';
@@ -52,7 +54,6 @@ const server = http.createServer((req, res) => {
       NEYNAR_API_KEY: notificationApiKey,
       NEYNAR_SEARCH_API_KEY: searchApiKey 
     });
-    writeSecurityHeaders();
     res.end(body);
     finishLog(200, Buffer.byteLength(body));
     return;

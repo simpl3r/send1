@@ -347,6 +347,48 @@ button:disabled {
     order: 2;
     align-items: stretch;
     flex-shrink: 0;
+    margin-left: auto;
+}
+
+/* Quick preset amount buttons */
+/* Quick preset amount buttons redesigned to match arrow button style */
+.quick-amounts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+    width: 100%;
+    height: 25px;
+}
+
+.quick-amount-btn {
+    background: rgb(255, 255, 245);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
+    padding: 0;
+    height: 25px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #374151;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 300ms ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-amount-btn:hover {
+    background: rgb(250, 250, 240);
+    color: #1f2937;
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.quick-amount-btn:active {
+    transform: translateY(0) scale(0.98);
 }
 
 /* Modern Search Field Container */
@@ -841,6 +883,7 @@ button:disabled {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-top: 6px;
 }
 
 .share-button {
