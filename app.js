@@ -523,6 +523,13 @@ function showStatus(message, type, isHTML = false) {
     
     // Show status element for other messages
     statusElement.style.display = 'block';
+    // Apply status type classes for styling
+    statusElement.classList.remove('success', 'error');
+    if (type === 'success') {
+        statusElement.classList.add('success');
+    } else if (type === 'error') {
+        statusElement.classList.add('error');
+    }
     
     if (isHTML) {
         statusElement.innerHTML = message;
