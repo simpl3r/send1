@@ -1764,7 +1764,7 @@ body[data-theme='dark'] .slider-thumb .arrow-icon {
 /* Dark: status message colors */
 body[data-theme='dark'] .status {
   background: #0f1319;
-  border-color: rgba(255, 255, 255, 0.10);
+  border: none;
   color: #e5e7eb;
 }
 body[data-theme='dark'] .status.success {
@@ -1773,6 +1773,6 @@ body[data-theme='dark'] .status.success {
 }
 body[data-theme='dark'] .status.error {
   color: #f87171; /* readable red on dark */
-  border-color: rgba(248, 113, 113, 0.35);
+  border: none;
 }
 /* === Dark Theme Overrides: END === */
