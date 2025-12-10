@@ -1761,4 +1761,13 @@ body[data-theme='dark'] .slider-thumb .arrow-icon {
   /* Colorize the black SVG to a warm yellow */
   filter: brightness(0) saturate(100%) invert(83%) sepia(69%) saturate(575%) hue-rotate(360deg) brightness(103%) contrast(104%);
 }
+/* Dark: status message colors */
+body[data-theme='dark'] .status {
+  background: #0f1319;
+  border-color: rgba(255, 255, 255, 0.10);
+}
+body[data-theme='dark'] .status.success {
+  color: #00d4aa; /* match transaction hash link color */
+  border-color: rgba(0, 212, 170, 0.35);
+}
 /* === Dark Theme Overrides: END === */
