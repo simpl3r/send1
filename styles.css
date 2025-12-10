@@ -1693,8 +1693,72 @@ body[data-theme='dark'] .autocomplete-dropdown {
   border-color: rgba(255, 255, 255, 0.08);
 }
 
+/* Dark: search input wrapper matches dark input field visuals */
+body[data-theme='dark'] .search-input-wrapper {
+  background: #111827;
+  border-color: rgba(86, 223, 124, 0.35);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+body[data-theme='dark'] .search-input-wrapper:focus-within {
+  border-color: #56DF7C;
+  box-shadow: 0 0 0 4px rgba(86, 223, 124, 0.12), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
 body[data-theme='dark'] .autocomplete-item:hover { background: rgba(86, 223, 124, 0.12); }
 
 body[data-theme='dark'] .slider-button .slider-track { background: rgba(255, 255, 255, 0.08); }
 body[data-theme='dark'] .theme-toggle { color: #e5e7eb; border-color: rgba(86, 223, 124, 0.4); }
+
+/* Buttons and controls in dark theme */
+body[data-theme='dark'] button {
+  background: #35D07F;
+  color: #0b0b0b;
+  border-color: rgba(86, 223, 124, 0.35);
+}
+
+/* Amount increment/decrement buttons */
+body[data-theme='dark'] .amount-btn {
+  background: #111827;
+  color: #e5e7eb;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+body[data-theme='dark'] .amount-btn:hover {
+  background: #1f2937;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Quick amount buttons */
+body[data-theme='dark'] .quick-amount-btn {
+  background: #111827;
+  color: #e5e7eb;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+body[data-theme='dark'] .quick-amount-btn:hover {
+  background: #1f2937;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Share and transfer click buttons */
+body[data-theme='dark'] .share-button,
+body[data-theme='dark'] .transfer-click-btn {
+  background: #0f1319;
+  color: #e5e7eb;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Slider visuals */
+body[data-theme='dark'] .slider-button { background: #0f1319; border-color: rgba(255,255,255,0.12); }
+body[data-theme='dark'] .slider-progress { background: #35D07F; }
+body[data-theme='dark'] .slider-thumb {
+  background: #111827;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e5e7eb;
+}
+/* Dark: make slider arrow icon yellow (matches light theme accent) */
+body[data-theme='dark'] .slider-thumb .arrow-icon {
+  /* Colorize the black SVG to a warm yellow */
+  filter: brightness(0) saturate(100%) invert(83%) sepia(69%) saturate(575%) hue-rotate(360deg) brightness(103%) contrast(104%);
+}
 /* === Dark Theme Overrides: END === */
