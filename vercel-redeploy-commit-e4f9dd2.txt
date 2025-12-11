@@ -1,0 +1,3 @@
+Trigger Vercel redeploy
+Commit: e4f9dd2b86bc38df48cfeb23383b25f5132df44b
+Reason: force redeploy after hard reset to target commit
