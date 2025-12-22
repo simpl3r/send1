@@ -1699,6 +1699,16 @@ body[data-theme='dark'] .search-input-wrapper {
   border-color: rgba(86, 223, 124, 0.35);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
+
+/* Dark theme: ensure username/handle in search results are readable */
+body[data-theme='dark'] .autocomplete-username {
+  color: #ffffff;
+}
+
+body[data-theme='dark'] .autocomplete-handle {
+  color: #059669;
+  background: rgba(5, 150, 105, 0.10);
+}
 body[data-theme='dark'] .search-input-wrapper:focus-within {
   border-color: #56DF7C;
   box-shadow: 0 0 0 4px rgba(86, 223, 124, 0.12), 0 2px 6px rgba(0, 0, 0, 0.4);
