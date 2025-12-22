@@ -1700,6 +1700,15 @@ body[data-theme='dark'] .search-input-wrapper {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
+/* Dark: search input text and placeholder colors */
+body[data-theme='dark'] .autocomplete-container input {
+  color: #e5e7eb;
+  caret-color: #e5e7eb;
+}
+body[data-theme='dark'] .autocomplete-container input::placeholder {
+  color: #cbd5e1;
+}
+
 /* Dark theme: ensure username/handle in search results are readable */
 body[data-theme='dark'] .autocomplete-username {
   color: #ffffff;
