@@ -1,13 +1,13 @@
 import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
-import { getReferralTag, submitReferral } from 'https://esm.sh/@divvi/referral-sdk';
+// import { getReferralTag, submitReferral } from 'https://esm.sh/@divvi/referral-sdk';
 
 // Notify Farcaster SDK that the app is ready
 // Call ready() immediately after importing the SDK
-(async function() {
+(async function () {
     try {
         await sdk.actions.ready({ disableNativeGestures: true });
         console.log('Farcaster SDK ready called successfully (native gestures disabled)');
-        
+
         // Automatically add the mini app on initialization
         try {
             await sdk.actions.addMiniApp();
@@ -28,7 +28,7 @@ const CELO_CONTRACT_ADDRESS = '0xAc8f5e96f45600a9a67b33C5F6f060FFf48353d6';
 const TRANSFER_FUNCTION_SELECTOR = '0x3f4dbf04';
 
 // Divvi consumer address (your Divvi Identifier)
-const DIVVI_CONSUMER_ADDRESS = '0xA2c408956988672D64562A23bb0eD1d247a03B98';
+// const DIVVI_CONSUMER_ADDRESS = '0xA2c408956988672D64562A23bb0eD1d247a03B98';
 
 // API configuration
 let NEYNAR_API_KEY = "NEYNAR_API_DOCS"; // Private key for notifications
@@ -83,35 +83,35 @@ const sliderText = transferSlider ? transferSlider.querySelector('.slider-text')
 // === Dark Theme Logic: START ===
 // Theme handling
 function applyTheme(theme) {
-  document.body.dataset.theme = theme;
-  if (themeToggle) {
-    themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
-    themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-    themeToggle.title = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
-  }
+    document.body.dataset.theme = theme;
+    if (themeToggle) {
+        themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        themeToggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        themeToggle.title = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+    }
 }
 
 function initTheme() {
-  try {
-    const saved = localStorage.getItem('theme');
-    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initial = saved || (systemPrefersDark ? 'dark' : 'light');
-    applyTheme(initial);
-  } catch (e) {
-    applyTheme('light');
-  }
+    try {
+        const saved = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initial = saved || (systemPrefersDark ? 'dark' : 'light');
+        applyTheme(initial);
+    } catch (e) {
+        applyTheme('light');
+    }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  if (themeToggle) {
-    themeToggle.addEventListener('click', () => {
-      const current = document.body.dataset.theme === 'dark' ? 'dark' : 'light';
-      const next = current === 'dark' ? 'light' : 'dark';
-      applyTheme(next);
-      try { localStorage.setItem('theme', next); } catch (e) {}
-    });
-  }
+    initTheme();
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            const current = document.body.dataset.theme === 'dark' ? 'dark' : 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            try { localStorage.setItem('theme', next); } catch (e) { }
+        });
+    }
 });
 // === Dark Theme Logic: END ===
 let searchTimeout = null;
@@ -144,14 +144,14 @@ async function initApp() {
     try {
         // Load API keys configuration
         await loadConfig();
-        
+
         // Get Ethereum provider from Farcaster SDK
         provider = await sdk.wallet.getEthereumProvider();
         console.log('Farcaster Ethereum provider obtained');
-        
+
         // Set up event listeners
         setupEventListeners();
-        
+
         // Auto-connect wallet per Farcaster Mini Apps best practices
         await autoConnectWallet();
     } catch (error) {
@@ -185,14 +185,14 @@ function setupEventListeners() {
     usernameSearchInput.addEventListener('input', handleSearchInput);
     usernameSearchInput.addEventListener('keydown', handleKeyNavigation);
     usernameSearchInput.addEventListener('focus', handleSearchFocus);
-    
+
     // Hide dropdown when clicking outside
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (!e.target.closest('.autocomplete-container')) {
             hideAutocomplete();
         }
     });
-    
+
     // New handler: share app
     if (shareButton) {
         shareButton.addEventListener('click', shareApp);
@@ -203,7 +203,7 @@ function setupEventListeners() {
 async function autoConnectWallet() {
     try {
         showStatus('Connecting to wallet...', '');
-        
+
         // Ensure provider is initialized
         if (!provider) {
             // Ignore wallet errors in local development
@@ -214,16 +214,16 @@ async function autoConnectWallet() {
             showStatus('Wallet provider not available', 'error');
             return;
         }
-        
+
         // In Farcaster Mini Apps the wallet is available automatically
         // First check existing connections
         let accounts = await provider.request({ method: 'eth_accounts' });
-        
+
         // Request access if no connected accounts
         if (!accounts || accounts.length === 0) {
             accounts = await provider.request({ method: 'eth_requestAccounts' });
         }
-        
+
         if (accounts && accounts.length > 0) {
             userAccount = accounts[0];
             await switchToCeloNetwork();
@@ -297,7 +297,7 @@ function fillMyAddress() {
 
 // Increase amount
 function increaseAmount() {
-    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
+    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) { }
     const currentValue = parseFloat(amountInput.value) || 0;
     const newValue = (currentValue + 0.001).toFixed(3);
     amountInput.value = newValue;
@@ -305,7 +305,7 @@ function increaseAmount() {
 
 // Decrease amount
 function decreaseAmount() {
-    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
+    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) { }
     const currentValue = parseFloat(amountInput.value) || 0;
     const newValue = Math.max(0.001, currentValue - 0.001).toFixed(3);
     amountInput.value = newValue;
@@ -313,7 +313,7 @@ function decreaseAmount() {
 
 // Set amount via quick preset
 function setQuickAmount(val) {
-    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
+    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) { }
     const value = typeof val === 'number' ? val : parseFloat(val) || 0;
     if (value <= 0) return;
     amountInput.value = value.toString();
@@ -327,16 +327,16 @@ async function estimateGasCost() {
             method: 'eth_gasPrice',
             params: []
         });
-        
+
         // Use a fixed gas limit of 200,000
         const gasLimit = 200000;
-        
+
         // Calculate gas cost in wei
         const gasCostWei = ethers.BigNumber.from(gasPrice).mul(gasLimit);
-        
+
         // Convert to CELO
         const gasCostCelo = parseFloat(ethers.utils.formatEther(gasCostWei));
-        
+
         return {
             gasCostWei,
             gasCostCelo,
@@ -361,50 +361,51 @@ async function sendTransaction() {
         // Ensure all fields are filled
         const recipient = recipientInput.value.trim();
         const amount = amountInput.value.trim();
-        
+
         if (!recipient || !amount) {
             showStatus('Please fill in all fields', 'error');
             return;
         }
-        
+
         if (!recipient.startsWith('0x') || recipient.length !== 42) {
             showStatus('Invalid recipient address format', 'error');
             return;
         }
-        
+
         if (parseFloat(amount) <= 0) {
             showStatus('Amount must be greater than zero', 'error');
             return;
         }
 
         showStatus('Checking balance and estimating fees...', '');
-        
+
         // Get current balance
         const currentBalance = await getCeloBalance(userAccount);
-        
+
         // Estimate gas cost
         const gasEstimate = await estimateGasCost();
-        
+
         // Check sufficient funds for amount + fee
         const totalRequired = parseFloat(amount) + gasEstimate.gasCostCelo;
-        
+
         if (currentBalance < totalRequired) {
             const shortfall = (totalRequired - currentBalance).toFixed(6);
             showStatus(`Insufficient balance. You need ${totalRequired.toFixed(6)} CELO (${amount} + ${gasEstimate.gasCostCelo.toFixed(6)} gas fee), but have only ${currentBalance.toFixed(6)} CELO. Missing: ${shortfall} CELO`, 'error');
             return;
         }
-        
+
         showStatus('Preparing transaction...', '');
-        
+
         // Convert amount to wei (18 decimals for CELO)
         const amountInWei = ethers.utils.parseUnits(amount, 18);
-        
+
         // Encode data to call sendCelo
         // sendCelo takes one parameter: recipient address
         const paddedAddress = recipient.slice(2).padStart(64, '0');
         let data = `${TRANSFER_FUNCTION_SELECTOR}${paddedAddress}`;
-        
+
         // Generate referral tag for the user (Step 2 from example)
+        /*
         try {
             const referralTag = getReferralTag({
                 user: userAccount, // Address of the user making the transaction
@@ -425,11 +426,12 @@ async function sendTransaction() {
             console.error('Error creating referral tag:', error);
             // Continue without referral tag if an error occurred
         }
-        
+        */
+
         console.log('Amount:', amount);
         console.log('Amount in Wei:', amountInWei.toString());
         console.log('Transaction data:', data);
-        
+
         // Create transaction with referral tag in data field
         const transactionParameters = {
             from: userAccount, // Use from for ethers.js
@@ -439,25 +441,26 @@ async function sendTransaction() {
             gas: `0x${gasEstimate.gasLimit.toString(16)}`, // Use the estimated gas limit
             gasPrice: gasEstimate.gasPrice, // Use the current gas price
         };
-        
+
         showStatus('Confirm transaction in your wallet...', '');
-        
+
         // Send the transaction
         const txHash = await provider.request({
             method: 'eth_sendTransaction',
             params: [transactionParameters],
         });
-        
+
         const explorerUrl = `https://celoscan.io/tx/${txHash}`;
         const shortHash = `${txHash.substring(0, 8)}...${txHash.substring(txHash.length - 6)}`;
         const linkMessage = `Transaction sent! <a href="${explorerUrl}" target="_blank" rel="noopener noreferrer" onclick="window.open('${explorerUrl}', '_blank'); return false;" style="color: #00d4aa; text-decoration: underline;">${shortHash}</a>`;
         showStatus(linkMessage, 'success', true);
-        try { if (sdk?.haptics?.notificationOccurred) sdk.haptics.notificationOccurred('success'); } catch (_) {}
-        
+        try { if (sdk?.haptics?.notificationOccurred) sdk.haptics.notificationOccurred('success'); } catch (_) { }
+
         // Get the chain ID where the transaction was sent (Step 4)
         const chainId = 42220; // CELO mainnet chain ID
-        
+
         // Submit transaction to Divvi for referral tracking (Step 5)
+        /*
         try {
             await submitReferral({
                 txHash,
@@ -468,7 +471,8 @@ async function sendTransaction() {
             console.error('Error submitting referral data:', divviError);
             // Do not show error to user since the transaction already went through
         }
-        
+        */
+
         // Update balance after successful transaction
         setTimeout(async () => {
             await updateBalanceDisplay();
@@ -490,9 +494,9 @@ async function sendTransaction() {
                     await new Promise(r => setTimeout(r, intervalMs));
                 }
                 if (receipt && receipt.status === '0x1') {
-                    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) {}
+                    try { if (sdk?.haptics?.selectionChanged) sdk.haptics.selectionChanged(); } catch (_) { }
                 }
-            } catch (_) {}
+            } catch (_) { }
         })();
     } catch (error) {
         console.error('Error sending transaction:', error);
@@ -509,18 +513,18 @@ function showStatus(message, type, isHTML = false) {
         'Wallet connection required',
         'Local development mode - wallet errors ignored'
     ];
-    
+
     // Check if message is a wallet status
-    const isWalletStatus = walletStatusMessages.some(walletMsg => 
+    const isWalletStatus = walletStatusMessages.some(walletMsg =>
         message.includes(walletMsg)
     );
-    
+
     if (isWalletStatus) {
         // Hide status element for wallet messages
         statusElement.style.display = 'none';
         return;
     }
-    
+
     // Show status element for other messages
     statusElement.style.display = 'block';
     // Apply status type classes for styling
@@ -530,7 +534,7 @@ function showStatus(message, type, isHTML = false) {
     } else if (type === 'error') {
         statusElement.classList.add('error');
     }
-    
+
     if (isHTML) {
         statusElement.innerHTML = message;
     } else {
@@ -551,7 +555,7 @@ async function getCeloBalance(address) {
             method: 'eth_getBalance',
             params: [address, 'latest']
         });
-        
+
         // Convert from wei to CELO (18 decimals)
         const balanceInCelo = parseFloat(ethers.utils.formatEther(balance));
         return balanceInCelo;
@@ -567,10 +571,10 @@ async function updateFarcasterProfile() {
         const context = await sdk.context;
         if (context && context.user) {
             const user = context.user;
-            
+
             // Show display name or username
             profileName.textContent = user.displayName || user.username || 'Farcaster User';
-            
+
             // Show username with @
             if (user.username) {
                 profileUsername.textContent = `@${user.username}`;
@@ -578,7 +582,7 @@ async function updateFarcasterProfile() {
             } else {
                 profileUsername.style.display = 'none';
             }
-            
+
             // Show avatar
             if (user.pfpUrl) {
                 profileAvatar.src = user.pfpUrl;
@@ -586,7 +590,7 @@ async function updateFarcasterProfile() {
             } else {
                 profileAvatar.style.display = 'none';
             }
-            
+
             console.log('Farcaster profile loaded:', user);
         } else {
             // If Farcaster user data is missing
@@ -608,12 +612,12 @@ function updateWalletDisplay() {
 
 async function updateBalanceDisplay() {
     updateWalletDisplay();
-    
+
     if (!userAccount) {
         balanceAmount.textContent = '-';
         return;
     }
-    
+
     try {
         balanceAmount.textContent = 'Loading...';
         const balance = await getCeloBalance(userAccount);
@@ -627,27 +631,27 @@ async function updateBalanceDisplay() {
 // Autocomplete functions
 function handleSearchInput(e) {
     const query = e.target.value.trim();
-    
+
     // Clear previous timer
     if (searchTimeout) {
         clearTimeout(searchTimeout);
     }
-    
+
     // Cancel previous request
     if (currentAbortController) {
         currentAbortController.abort();
         currentAbortController = null;
     }
-    
+
     if (query.length === 0) {
         hideAutocomplete();
         return;
     }
-    
+
     if (query.length < 3) {
         return; // Minimum 3 characters for search (per Neynar docs)
     }
-    
+
     // Check cache
     if (searchCache.has(query)) {
         const cachedResults = searchCache.get(query);
@@ -660,7 +664,7 @@ function handleSearchInput(e) {
         }
         return;
     }
-    
+
     // Debounce - wait 300ms after last input
     searchTimeout = setTimeout(() => {
         performSearch(query);
@@ -669,9 +673,9 @@ function handleSearchInput(e) {
 
 function handleKeyNavigation(e) {
     const items = autocompleteDropdown.querySelectorAll('.autocomplete-item');
-    
+
     if (items.length === 0) return;
-    
+
     switch (e.key) {
         case 'ArrowDown':
             e.preventDefault();
@@ -722,18 +726,18 @@ async function performSearch(query) {
         hideAutocomplete();
         return;
     }
-    
+
     showSearchLoading();
-    
+
     // Create a new AbortController for this request
     currentAbortController = new AbortController();
-    
+
     try {
         const users = await searchMultipleUsers(query, currentAbortController.signal);
-        
+
         // Cache the results
         searchCache.set(query, users || []);
-        
+
         if (users && users.length > 0) {
             currentSearchResults = users;
             displayAutocompleteResults(currentSearchResults);
@@ -747,7 +751,7 @@ async function performSearch(query) {
             console.log('Search request was aborted');
             return;
         }
-        
+
         console.error('Search error:', error);
         showStatus('Search failed. Please try again.', 'error');
         hideAutocomplete();
@@ -763,9 +767,9 @@ async function searchMultipleUsers(query, signal) {
     try {
         // Remove @ if present
         const cleanQuery = query.replace('@', '').toLowerCase();
-        
+
         console.log('Searching multiple users via Neynar API:', cleanQuery);
-        
+
         // Get viewer FID from SDK (if available)
         let viewerFid = null;
         try {
@@ -776,14 +780,14 @@ async function searchMultipleUsers(query, signal) {
         } catch (e) {
             console.log('Could not get viewer FID from SDK:', e.message);
         }
-        
+
         // Build URL with parameters
         let searchUrl = `${NEYNAR_BASE_URL}/farcaster/user/search?q=${encodeURIComponent(cleanQuery)}&limit=10`;
         if (viewerFid) {
             searchUrl += `&viewer_fid=${viewerFid}`;
             console.log('Using viewer_fid:', viewerFid);
         }
-        
+
         // Use Neynar API search endpoint for multiple results
         const response = await fetch(searchUrl, {
             method: 'GET',
@@ -794,31 +798,31 @@ async function searchMultipleUsers(query, signal) {
             },
             signal: signal
         });
-        
+
         console.log('Neynar search API response status:', response.status);
-        
+
         if (response.ok) {
             const data = await response.json();
             console.log('Neynar search API response:', data);
-            
+
             if (data.result && data.result.users && data.result.users.length > 0) {
                 const users = data.result.users.map(user => {
                     console.log('Processing user from search:', user);
-                    
+
                     // Address priority for Primary Farcaster Wallet:
                     let walletAddress = null;
-                    
+
                     // Priority 1: verified_addresses.primary.eth_address - Primary Farcaster Wallet
-                    if (user.verified_addresses && 
-                        user.verified_addresses.primary && 
+                    if (user.verified_addresses &&
+                        user.verified_addresses.primary &&
                         user.verified_addresses.primary.eth_address) {
                         walletAddress = user.verified_addresses.primary.eth_address;
                         console.log('Using primary verified eth address:', walletAddress);
                     }
                     // Priority 2: First address from verified_addresses.eth_addresses as fallback
-                    else if (user.verified_addresses && 
-                            user.verified_addresses.eth_addresses && 
-                            user.verified_addresses.eth_addresses.length > 0) {
+                    else if (user.verified_addresses &&
+                        user.verified_addresses.eth_addresses &&
+                        user.verified_addresses.eth_addresses.length > 0) {
                         walletAddress = user.verified_addresses.eth_addresses[0];
                         console.log('Using first verified eth address as fallback:', walletAddress);
                     }
@@ -833,7 +837,7 @@ async function searchMultipleUsers(query, signal) {
                         walletAddress = '0x' + fidHex.padEnd(40, '0');
                         console.log('Using FID-based address as last fallback:', walletAddress);
                     }
-                    
+
                     return {
                         username: user.username,
                         fid: user.fid,
@@ -847,28 +851,28 @@ async function searchMultipleUsers(query, signal) {
                         verifiedAddresses: user.verified_addresses?.eth_addresses?.length || 0
                     };
                 });
-                
+
                 // Sort results by user quality
                 users.sort((a, b) => {
                     // Priority 1: Power Badge
                     if (a.powerBadge !== b.powerBadge) {
                         return b.powerBadge - a.powerBadge;
                     }
-                    
+
                     // Priority 2: Neynar Score (user quality)
                     if (Math.abs(a.neynarScore - b.neynarScore) > 0.1) {
                         return b.neynarScore - a.neynarScore;
                     }
-                    
+
                     // Priority 3: Number of verified addresses
                     if (a.verifiedAddresses !== b.verifiedAddresses) {
                         return b.verifiedAddresses - a.verifiedAddresses;
                     }
-                    
+
                     // Priority 4: Follower count
                     return b.followerCount - a.followerCount;
                 });
-                
+
                 console.log('Processed and sorted users:', users);
                 return users;
             }
@@ -877,26 +881,26 @@ async function searchMultipleUsers(query, signal) {
             const errorText = await response.text().catch(() => 'Unknown error');
             console.log('Error response:', errorText);
         }
-        
+
         // Return empty array if Neynar API returned no results
         console.log('No results from Neynar API');
         return [];
-        
+
     } catch (error) {
         if (error.name === 'AbortError') {
             console.log('Search request was aborted');
             return [];
         }
-        
+
         console.error('Error in searchMultipleUsers:', error);
-        
+
         // Inspect error type for better diagnostics
         if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
             console.log('Network error detected with Neynar API');
         } else if (error.message.includes('API key')) {
             console.error('API key issue detected');
         }
-        
+
         // Return empty array on Neynar API error
         return [];
     }
@@ -906,9 +910,9 @@ async function searchByUsername(username) {
     try {
         // Remove @ if present
         const cleanUsername = username.replace('@', '').toLowerCase();
-        
+
         console.log('Searching user via Neynar API:', cleanUsername);
-        
+
         // Use only Neynar API per documentation
         const response = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/by_username?username=${cleanUsername}`, {
             method: 'GET',
@@ -917,39 +921,39 @@ async function searchByUsername(username) {
                 'api_key': NEYNAR_SEARCH_API_KEY
             }
         });
-        
+
         console.log('Neynar API response status:', response.status);
-        
+
         if (response.ok) {
             const data = await response.json();
             console.log('Neynar API response:', data);
-            
+
             if (data.user) {
                 const user = data.user;
                 console.log('User data from Neynar:', user);
-                
+
                 // Per Neynar API, address priority for Primary Farcaster Wallet:
                 // 1. verified_addresses.primary.eth_address - Primary Farcaster Wallet
                 // 2. First address from verified_addresses.eth_addresses - as fallback
                 // 3. Custody address - as additional fallback
                 // 4. FID-based address - as last fallback
                 let walletAddress = null;
-                
+
                 console.log('User custody_address:', user.custody_address);
                 console.log('User verified_addresses:', user.verified_addresses);
-                
+
                 // Priority 1: Primary Farcaster Wallet from verified_addresses.primary.eth_address
-                if (user.verified_addresses && 
-                    user.verified_addresses.primary && 
-                    user.verified_addresses.primary.eth_address && 
+                if (user.verified_addresses &&
+                    user.verified_addresses.primary &&
+                    user.verified_addresses.primary.eth_address &&
                     user.verified_addresses.primary.eth_address.startsWith('0x')) {
                     walletAddress = user.verified_addresses.primary.eth_address;
                     console.log('Using Primary Farcaster Wallet:', walletAddress);
                 }
                 // Priority 2: First verified Ethereum address as fallback
-                else if (user.verified_addresses && 
-                    user.verified_addresses.eth_addresses && 
-                    Array.isArray(user.verified_addresses.eth_addresses) && 
+                else if (user.verified_addresses &&
+                    user.verified_addresses.eth_addresses &&
+                    Array.isArray(user.verified_addresses.eth_addresses) &&
                     user.verified_addresses.eth_addresses.length > 0) {
                     walletAddress = user.verified_addresses.eth_addresses[0];
                     console.log('Using first verified eth address as fallback:', walletAddress);
@@ -966,7 +970,7 @@ async function searchByUsername(username) {
                     walletAddress = '0x' + fidHex.padEnd(40, '0');
                     console.log('Using FID-based address as last fallback:', walletAddress);
                 }
-                
+
                 return {
                     username: user.username,
                     fid: user.fid,
@@ -978,10 +982,10 @@ async function searchByUsername(username) {
         } else {
             console.log('Neynar API error:', response.status, response.statusText);
         }
-        
+
         console.log('Neynar API returned no results for user:', cleanUsername);
         return null;
-        
+
     } catch (error) {
         console.error('Error searching username:', error);
         return null;
@@ -1024,16 +1028,16 @@ function displayAutocompleteResults(users) {
     searchLoading.style.display = 'none';
     autocompleteDropdown.style.display = 'block';
     selectedIndex = -1;
-    
+
     autocompleteDropdown.innerHTML = users.map((user, index) => {
         // Use pfpUrl if available, otherwise first username letter
-        const avatarContent = user.pfpUrl 
-            ? `<img src="${user.pfpUrl}" alt="${user.username}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` 
+        const avatarContent = user.pfpUrl
+            ? `<img src="${user.pfpUrl}" alt="${user.username}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
             : user.username.charAt(0).toUpperCase();
-        
+
         // Use displayName if available, otherwise username
         const displayName = user.displayName || user.username;
-        
+
         // Create badges for user
         const badges = [];
         if (user.power_badge) {
@@ -1043,17 +1047,17 @@ function displayAutocompleteResults(users) {
             badges.push('<span class="badge badge-verified">✓ Verified</span>');
         }
         if (user.follower_count && user.follower_count > 1000) {
-            const followerText = user.follower_count > 1000000 
-                ? `${(user.follower_count / 1000000).toFixed(1)}M` 
+            const followerText = user.follower_count > 1000000
+                ? `${(user.follower_count / 1000000).toFixed(1)}M`
                 : `${(user.follower_count / 1000).toFixed(1)}K`;
             badges.push(`<span class="badge badge-follower-count">👥 ${followerText}</span>`);
         }
-        
+
         const badgesHtml = badges.length > 0 ? `<div class="user-badges">${badges.join('')}</div>` : '';
-        
+
         // Show Neynar User Score if available
         const userScore = user.neynar_user_score ? `<div class="user-score">${user.neynar_user_score}</div>` : '';
-        
+
         return `
             <div class="autocomplete-item" data-user-index="${index}">
                 ${userScore}
@@ -1069,7 +1073,7 @@ function displayAutocompleteResults(users) {
             </div>
         `;
     }).join('');
-    
+
     // Add event handlers for each result item
     const resultItems = autocompleteDropdown.querySelectorAll('.autocomplete-item');
     resultItems.forEach((item, index) => {
@@ -1085,14 +1089,14 @@ let selectedUsers = [];
 
 function selectUser(address, username, displayName, pfpUrl) {
     console.log('Selecting user:', { address, username, displayName, pfpUrl });
-    
+
     // Validate address format (simple check)
     if (!address || !address.startsWith('0x') || address.length !== 42) {
         console.error('Invalid address provided:', address);
         showStatus('Invalid user address', 'error');
         return;
     }
-    
+
     // Replace current selected user with new one (single selection)
     const user = {
         address,
@@ -1101,19 +1105,19 @@ function selectUser(address, username, displayName, pfpUrl) {
         pfpUrl
     };
     selectedUsers = [user];
-    
+
     // Set address to recipient input
     recipientInput.value = address;
-    
+
     // Clear search field
     usernameSearchInput.value = '';
-    
+
     // Hide autocomplete
     hideAutocomplete();
-    
+
     // Update selected user display
     updateSelectedUsersDisplay();
-    
+
     // On mobile, blur to collapse keyboard
     if (window.innerWidth <= 768) {
         usernameSearchInput.blur();
@@ -1125,27 +1129,27 @@ function selectUser(address, username, displayName, pfpUrl) {
         // On desktop, focus back to search for convenience
         usernameSearchInput.focus();
     }
-    
+
     // Show status
     showStatus(`Selected user: ${displayName || username}`, 'success');
 }
 
 function updateSelectedUsersDisplay() {
     const container = document.getElementById('selectedUsers');
-    
+
     if (selectedUsers.length === 0) {
         container.innerHTML = '';
         // Update placeholder when no user is selected
         usernameSearchInput.placeholder = 'Search Farcaster user...';
         return;
     }
-    
+
     // Update placeholder when a user is selected
     usernameSearchInput.placeholder = 'Change user...';
-    
+
     const user = selectedUsers[0]; // Single user only
     const avatarSrc = user.pfpUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=f1f5f9&color=334155&size=24`;
-    
+
     container.innerHTML = `
         <div class="user-chip" data-user-index="0">
              <img src="${avatarSrc}" alt="${user.username}" class="user-chip-avatar" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=f1f5f9&color=334155&size=24'">
@@ -1158,14 +1162,14 @@ function updateSelectedUsersDisplay() {
 function removeSelectedUser(index) {
     selectedUsers.splice(index, 1);
     updateSelectedUsersDisplay();
-    
+
     // If there are selected users, set the last one to recipient input
     if (selectedUsers.length > 0) {
         recipientInput.value = selectedUsers[selectedUsers.length - 1].address;
     } else {
         recipientInput.value = '';
     }
-    
+
     showStatus('User removed', 'success');
 }
 
@@ -1178,7 +1182,7 @@ window.removeSelectedUser = removeSelectedUser;
 const script = document.createElement('script');
 script.src = 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js';
 script.onload = initApp;
-script.onerror = function() {
+script.onerror = function () {
     console.error('Failed to load ethers.js');
     showStatus('Error loading required libraries', 'error');
 };
@@ -1198,17 +1202,17 @@ function shareApp() {
                 text: shareText,
                 embeds: [shareUrl],
             })
-            .then((result) => {
-                if (result?.cast) {
-                    showStatus('Post composed', 'success');
-                } else {
-                    showStatus('Share cancelled', '');
-                }
-            })
-            .catch((err) => {
-                console.warn('composeCast failed, falling back to web share or composer URL', err);
-                fallbackShare();
-            });
+                .then((result) => {
+                    if (result?.cast) {
+                        showStatus('Post composed', 'success');
+                    } else {
+                        showStatus('Share cancelled', '');
+                    }
+                })
+                .catch((err) => {
+                    console.warn('composeCast failed, falling back to web share or composer URL', err);
+                    fallbackShare();
+                });
             return;
         }
 
@@ -1264,7 +1268,7 @@ function setupSlider() {
                     lastHapticStep = step;
                 }
             }
-        } catch (_) {}
+        } catch (_) { }
         rafId = requestAnimationFrame(render);
     }
 
@@ -1294,7 +1298,7 @@ function setupSlider() {
         if (confirmed) {
             transferSlider.classList.add('success');
             sliderProgress.style.width = '100%';
-            try { if (sdk?.haptics?.impactOccurred) sdk.haptics.impactOccurred('heavy'); } catch (_) {}
+            try { if (sdk?.haptics?.impactOccurred) sdk.haptics.impactOccurred('heavy'); } catch (_) { }
 
             try {
                 await sendTransaction();
@@ -1313,7 +1317,7 @@ function setupSlider() {
 
     transferSlider.addEventListener('pointerdown', (e) => {
         transferSlider.classList.add('dragging');
-        try { if (sdk?.haptics?.impactOccurred) sdk.haptics.impactOccurred('medium'); } catch (_) {}
+        try { if (sdk?.haptics?.impactOccurred) sdk.haptics.impactOccurred('medium'); } catch (_) { }
         // Prevent default gestures and ensure continuous events
         transferSlider.setPointerCapture(e.pointerId);
         trackRect = transferSlider.getBoundingClientRect();
